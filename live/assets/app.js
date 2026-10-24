@@ -810,7 +810,7 @@
           h("div", { class: "s-lower-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
           h("div", { class: "s-lower-meta" }, bdi(s.artist), " · ", s.source)),
         h("div", { class: "s-lower-theme" }, h("small", null, "דו־קרב " + pad(r + 1)), SET[r].theme),
-        st.voteDuringSongs !== false ? h("div", { class: "s-lower-votes" }, h("small", null, "מצביעים עכשיו"), this.$songVotes = h("b", null, "0")) : null,
+        st.voteDuringSongs !== false ? h("div", { class: "s-lower-votes" }, h("span", { class: "s-onair" }, h("i"), "מצביעים עכשיו")) : null,
         h("div", { class: "s-lower-score" }, h("span", { class: "tv" }, "TV ", h("b", null, sc.tv)), h("span", { class: "film" }, h("b", null, sc.film), " FILM")));
       if (this.hasVideo()) return h("div", { class: "s-song has-video" + (overlay ? "" : " no-overlay") }, overlay ? lower : null);
       const nextSide = st.phase === "song1" ? ord[1] : null;
@@ -822,7 +822,7 @@
             h("div", { class: "s-hero-kick" }, h("span", { class: "eqbig" }, h("i"), h("i"), h("i"), h("i"), h("i")), "מתנגן עכשיו · ", SIDE[side].team),
             h("div", { class: "s-hero-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
             h("div", { class: "s-hero-meta" }, bdi(s.artist), " · ", h("b", null, s.source)),
-            st.voteDuringSongs !== false ? h("div", { class: "s-song-votes" }, h("span", { class: "s-onair" }, h("i"), "ההצבעה פתוחה"), this.$songVotes2 = h("b", null, "0"), h("span", null, "קולות")) : null)),
+            st.voteDuringSongs !== false ? h("div", { class: "s-song-votes" }, h("span", { class: "s-onair" }, h("i"), "ההצבעה פתוחה בטלפון")) : null)),
         nextSide ? h("div", { class: "s-next" }, h("small", null, "ואחריו, " + SIDE[nextSide].team + ":"), " ", bdi(songOf(r, nextSide).title)) :
           h("div", { class: "s-next" }, h("small", null, "אחרי השיר הזה"), " נפתחת ההצבעה"));
     }
@@ -845,8 +845,7 @@
         this.topBar("דו־קרב " + pad(r + 1) + " · " + SET[r].theme),
         h("div", { class: "s-vote-grid" },
           col(ord[0]),
-          h("div", { class: "s-vote-center" }, h("div", { class: "s-onair" }, h("i"), st.voteDuringSongs !== false ? "שניות אחרונות" : "ההצבעה פתוחה"), this.$clock,
-            h("div", { class: "s-vote-total" }, this.$total, h("span", null, "קולות"))),
+          h("div", { class: "s-vote-center" }, h("div", { class: "s-onair" }, h("i"), st.voteDuringSongs !== false ? "שניות אחרונות" : "ההצבעה פתוחה"), this.$clock),
           col(ord[1])),
         h("div", { class: "s-vote-qr" }, this.qr("scr-qr-mid")));
     }
@@ -861,7 +860,7 @@
           h("div", { class: "s-rcol-pct" }, h("span", { class: "count", "data-to": p }, "0"), "%"),
           h("div", { class: "s-rcol-side" }, SIDE[side].team),
           h("div", { class: "s-rcol-title" + (songOf(r, side).hebrew ? " is-he" : "") }, bdi(songOf(r, side).title)),
-          h("div", { class: "s-rcol-votes" }, (res[side] || 0) + " קולות"));
+          null);
       };
       const aw = (k, a) => a ? h("div", { class: "s-award" }, h("span", { class: "s-award-ico" }, k === "fast" ? "⚡" : "👑"),
         h("div", null, h("small", null, k === "fast" ? "המצביע המהיר" : "כתר המזל"), h("b", null, "#" + a.ticket), a.name ? h("span", null, a.name) : null)) : null;
@@ -895,7 +894,7 @@
             h("span", { class: "s-fg-n" }, pad(i + 1)), h("span", { class: "s-fg-t" }, d.theme),
             h("span", { class: "s-fg-w" }, x ? (x.winner === "tie" ? "תיקו" : bdi(songOf(i, x.winner).title)) : "–"));
         })),
-        h("div", { class: "s-final-foot" }, "סה״כ ", h("b", null, s.tvVotes + s.filmVotes), " קולות הערב"));
+        h("div", { class: "s-final-foot" }, "תודה שהצבעתם!"));
     }
     sRaffle() {
       this.$slot = h("div", { class: "s-slot" }, "####");
@@ -904,7 +903,7 @@
         h("div", { class: "s-raffle-k" }, "ההגרלה הגדולה"),
         h("div", { class: "s-raffle-stub" }, h("span", { class: "s-raffle-admit" }, "ADMIT ONE"), this.$slot),
         this.$rname,
-        h("div", { class: "s-raffle-foot" }, "מבין ", h("b", null, this.players.length), " כרטיסים בזירה"));
+        h("div", { class: "s-raffle-foot" }, "כל מי שנכנס לאפליקציה הערב בהגרלה"));
     }
     spinRaffle() {
       const rf = this.st.raffle; if (!rf || !this.$slot) return;
@@ -938,9 +937,8 @@
         if (this.$songVotes) this.$songVotes.textContent = n;
         if (this.$songVotes2) this.$songVotes2.textContent = n;
       }
-      if (st.phase === "voting" && this.$total) {
+      if (st.phase === "voting" && this.$bars) {
         const t = tally(this.votes.filter(v => v.r === st.round));
-        this.$total.textContent = t.total;
         ["tv", "film"].forEach(s => {
           const b = this.$bars[s]; if (!b) return;
           const p = pct(t[s], t.total);
