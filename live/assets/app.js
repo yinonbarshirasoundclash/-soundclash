@@ -4,7 +4,20 @@
    ========================================================================= */
 (function () {
   "use strict";
-  const CFG = window.SC_CONFIG, SET = window.SC_SETLIST, N = SET.length;
+  const CFG = window.SC_CONFIG;
+  /* the active show (chosen by the admin) decides setlist, sides and wording */
+  let SHOW, SET, N, SIDE, L;
+  function useShow(id) {
+    const all = window.SC_SHOWS || {};
+    SHOW = all[id] || all[CFG.DEFAULT_SHOW] || all[Object.keys(all)[0]];
+    SET = SHOW.setlist; N = SET.length;
+    SIDE = { tv: SHOW.sides.tv, film: SHOW.sides.film };
+    L = { tv: SIDE.tv.latin, film: SIDE.film.latin };
+    CFG.SHOW_ID = SHOW.id;
+    document.documentElement.classList.add("show-" + SHOW.theme);
+    window.SC_ART_RESOLVE = (key) => { const x = keyInfo(key); const sg = x && songOf(x.r, x.side); return sg && sg.art; };
+    return SHOW;
+  }
   const { safeStore, rid } = window.SCBackend;
 
   /* ---------------- helpers ---------------- */
@@ -32,11 +45,26 @@
   const pct = (a, t) => t ? Math.round(a * 100 / t) : 0;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const reduceMotion = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const SIDE = {
-    tv: { he: "סדרות", team: "צד הסדרות", latin: "TV", short: "סדרה" },
-    film: { he: "סרטים", team: "צד הסרטים", latin: "FILM", short: "סרט" }
-  };
   const other = (s) => s === "tv" ? "film" : "tv";
+  /* reads the lyrics the user pastes from the previous app's app.py (battles + encores) */
+  const norm = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9\u0590-\u05ff]+/g, "");
+  function parseOldLyrics(src) {
+    const out = [];
+    const unq = (v) => v.replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\'/g, "'").replace(/\r/g, "").trim();
+    const str = (k) => '"' + k + '"\\s*:\\s*(?:"""([\\s\\S]*?)"""|"((?:[^"\\\\]|\\\\.)*)")';
+    const val = (blk, k) => { const m = blk.match(new RegExp(str(k))); return m ? unq(m[1] !== undefined ? m[1] : m[2]) : null; };
+    const ei = src.indexOf("encores");
+    const battles = ei > 0 ? src.slice(0, ei) : src;
+    battles.split(/\{\s*"round"/).slice(1).forEach(p => {
+      const b = '"round"' + p;
+      [["usa_song", "usa_lyrics"], ["uk_song", "uk_lyrics"]].forEach(([sk, lk]) => { const song = val(b, sk), text = val(b, lk); if (song && text) out.push({ song, text }); });
+    });
+    if (ei >= 0) {
+      const enc = src.slice(ei);
+      enc.split(/"(?:USA|UK)"\s*:\s*\{/).slice(1).forEach(b => { const song = val(b, "song"), text = val(b, "lyrics"); if (song && text) out.push({ song, text }); });
+    }
+    return out;
+  }
   /* lyrics open on a licensed lyrics site; the app never shows lyrics itself */
   function lyricsUrl(s) {
     if (s.hebrew) return "https://www.google.com/search?q=" + encodeURIComponent((s.medley ? s.medley.join(" ") : s.title) + " " + s.artist + " מילים שירונט");
@@ -51,8 +79,26 @@
     if (st.phase === "song2") return sideOrder(st, st.round)[1];
     return null;
   }
-  const videoKey = (r, side) => pad(r + 1) + "-" + side;
-  const songOf = (r, side) => SET[r][side];
+  /* "03-usa", "03-tv" … and "enc-uk" for encores */
+  const videoKey = (r, side) => (r === "enc" ? "enc" : pad(r + 1)) + "-" + SIDE[side].slug;
+  /* FACTS: the admin's edits to a song's fact / scene text (stored per song key); the setlist file holds the originals */
+  let FACTS = {};
+  const baseSong = (r, side) => r === "enc" ? (SHOW.encores || {})[side] : SET[r][side];
+  const songOf = (r, side) => {
+    const s = baseSong(r, side), o = s && FACTS[videoKey(r, side)];
+    if (!o) return s;
+    const m = Object.assign({}, s);
+    if (o.fact) m.fact = o.fact;
+    if (o.scene) m.scene = o.scene;
+    return m;
+  };
+  function keyInfo(key) {
+    const m = /^(\d\d|enc)-(\w+)$/.exec(key || ""); if (!m) return null;
+    const side = SIDE.tv.slug === m[2] ? "tv" : SIDE.film.slug === m[2] ? "film" : null; if (!side) return null;
+    return { r: m[1] === "enc" ? "enc" : +m[1] - 1, side };
+  }
+  const roundLabel = (r) => r === "enc" ? "הדרן" : "דו־קרב " + pad(r + 1);
+  const meta = (s) => s.source ? [bdi(s.artist), " · ", s.source] : [bdi(s.artist)];
   function tally(votes) {
     const t = { tv: 0, film: 0, total: 0 };
     votes.forEach(v => { if (v.side === "tv" || v.side === "film") { t[v.side]++; t.total++; } });
@@ -82,7 +128,7 @@
       case "intro": return { eyebrow: "דו־קרב " + pad(r + 1) + " / " + N, title: d.theme, sub: "הצגת הנושא והצדדים" };
       case "song1": case "song2": {
         const sd = playingSide(st), sg = songOf(r, sd);
-        return { eyebrow: (st.phase === "song1" ? "שיר ראשון" : "שיר שני") + " · " + SIDE[sd].team, title: sg.title, sub: sg.artist + " · " + sg.source };
+        return { eyebrow: (st.phase === "song1" ? "שיר ראשון" : "שיר שני") + " · " + SIDE[sd].team, title: sg.title, sub: sg.artist + (sg.source ? " · " + sg.source : "") };
       }
       case "voting": return { eyebrow: "דו־קרב " + pad(r + 1), title: "ספירה לאחור להצבעה", sub: d.theme };
       case "reveal": return { eyebrow: "דו־קרב " + pad(r + 1), title: "התוצאה", sub: d.theme };
@@ -155,7 +201,7 @@
     save() { if (this.me) { this.me.votes = this.myVotes; safeStore.set(this.pkey, this.me); } }
     renderTop() {
       this.top.replaceChildren(
-        h("div", { class: "brand" }, h("span", { class: "brand-word" }, "SOUND", h("b", null, "CLASH")), h("span", { class: "brand-sub" }, "סדרות נגד סרטים")),
+        h("div", { class: "brand" }, h("span", { class: "brand-word" }, "SOUND", h("b", null, "CLASH")), h("span", { class: "brand-sub" }, SHOW.title)),
         h("div", { class: "aud-top-act" },
           h("button", { class: "contact-chip", type: "button", onclick: () => this.openSheet("contact") }, h("span", { "aria-hidden": "true" }, "📞"), "צרו קשר"),
           this.me ? h("button", { class: "me-chip", type: "button", onclick: () => this.openSheet("me"), "aria-label": "הערב שלי" }, "הערב שלי") : null)
@@ -180,7 +226,7 @@
       else view = this.vEncore();
       const promoOn = this.promoActive();
       if (promoOn) view = h("div", { class: "promo-wrap" }, this.promoCard(), view);
-      const key = (promoOn ? "promo" + st.promo.seq : "") + (this.me ? "in" : "out") + ph + st.round + (ph === "lobby" ? (this.me && this.me.prediction) : "") + (ph === "raffle" ? JSON.stringify(st.raffle) : "") + (["voting", "song1", "song2"].includes(ph) ? (this.myVotes[st.round] || "") + (st.voteDuringSongs !== false) : "") + (ph === "reveal" ? JSON.stringify((st.results || {})[st.round] || {}) : "");
+      const key = (promoOn ? "promo" + st.promo.seq : "") + (this.me ? "in" : "out") + ph + st.round + (ph === "lobby" ? (this.me && this.me.prediction) : "") + (ph === "raffle" ? JSON.stringify(st.raffle) : "") + (["voting", "song1", "song2"].includes(ph) ? (this.myVotes[st.round] || "") + (st.voteDuringSongs !== false) : "") + (ph === "reveal" ? JSON.stringify((st.results || {})[st.round] || {}) : "") + (ph === "encore" ? st.encoreSide || "" : "");
       if (key !== this._key) {
         this._key = key;
         this.main.replaceChildren(view);
@@ -226,9 +272,9 @@
         try { if (navigator.wakeLock) navigator.wakeLock.request("screen").catch(() => {}); } catch (err) { /* ignore */ }
       };
       return h("section", { class: "aud-join" },
-        h("div", { class: "screens-mark", "aria-hidden": "true" }, h("span", { class: "sm-tv" }, "TV"), h("span", { class: "sm-vs" }, "VS"), h("span", { class: "sm-film" }, "FILM")),
-        h("h1", { class: "aud-h1" }, "שני מסכים.", h("br"), "קרב אחד."),
-        h("p", { class: "aud-lead" }, "עשרה דו־קרבות, שיר מסדרה מול שיר מסרט. אחרי כל זוג שירים אתם מצביעים מכאן, והתוצאה עולה למסך."),
+        h("div", { class: "screens-mark", "aria-hidden": "true" }, h("span", { class: "sm-tv" }, L.tv), h("span", { class: "sm-vs" }, "VS"), h("span", { class: "sm-film" }, L.film)),
+        h("h1", { class: "aud-h1" }, SHOW.joinTitle[0], h("br"), SHOW.joinTitle[1]),
+        h("p", { class: "aud-lead" }, SHOW.joinLead),
         h("form", { class: "aud-join-form", onsubmit: go },
           h("label", { for: "aud-name", class: "field-label" }, "איך לקרוא לך? (לא חובה)"),
           input,
@@ -259,7 +305,7 @@
               h("span", { class: "pick-latin" }, SIDE[s].latin), h("span", { class: "pick-he" }, SIDE[s].team))))
         ),
         h("ol", { class: "how" },
-          h("li", null, h("span", null, h("b", null, "שיר מול שיר."), " הלהקה מנגנת שיר מסדרה ושיר מסרט על אותו נושא.")),
+          h("li", null, h("span", null, h("b", null, "שיר מול שיר."), " " + SHOW.howPair)),
           h("li", null, h("span", null, h("b", null, "מצביעים."), " אחרי השיר השני נפתחת ההצבעה לכמה שניות.")),
           h("li", null, h("span", null, h("b", null, "המסך מכריע."), " התוצאה עולה מיד, ובסוף הערב יש אלוף והגרלה.")),
           h("li", null, h("span", null, h("b", null, "שולחים ריאקשנים."), " לוחצים על 🔥 ❤️ 😮 בתחתית המסך, והם עפים על המסך הגדול באולם."))),
@@ -281,7 +327,7 @@
           state === "playing" ? h("span", { class: "eq", "aria-label": "מתנגן עכשיו" }, h("i"), h("i"), h("i"), h("i")) : null,
           state === "playing" ? h("span", { class: "tile-state" }, "על הבמה עכשיו") : state === "done" ? h("span", { class: "tile-state" }, "ניגנו") : (opts && opts.next ? h("span", { class: "tile-state" }, "הבא") : null)),
         h("h3", { class: "tile-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
-        h("p", { class: "tile-meta" }, bdi(s.artist), " · ", s.source),
+        h("p", { class: "tile-meta" }, meta(s)),
         h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("fact", { r, side }), "aria-label": "טריוויה על " + s.title }, "💡 ידעתם?")
       );
     }
@@ -300,7 +346,7 @@
     songLinks(r, side) {
       const s = songOf(r, side);
       return h("div", { class: "song-links" },
-        h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("fact", { r, side }) }, "💡 על השיר והסצנה"),
+        h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("fact", { r, side }) }, SHOW.factLabel),
         h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("lyrics", { r, side }) }, "📝 מילים"));
     }
     /* song tiles that are also vote buttons */
@@ -315,7 +361,7 @@
           window.SCArt.img(videoKey(r, s), "vbtn-art"),
           h("span", { class: "vbtn-side" }, SIDE[s].latin, h("small", null, SIDE[s].team), pill),
           h("span", { class: "vbtn-title" + (sg.hebrew ? " is-he" : "") }, bdi(sg.title)),
-          h("span", { class: "vbtn-meta" }, bdi(sg.artist), " · ", sg.source),
+          h("span", { class: "vbtn-meta" }, meta(sg)),
           open ? h("span", { class: "vbtn-check", "aria-hidden": "true" }, mine === s ? "✓ ההצבעה שלך" : "הצבעה") : null);
         return h("div", { class: "vote-item" }, btn, this.songLinks(r, s));
       }));
@@ -392,9 +438,9 @@
           h("span", { class: "winner-k" }, w === "tie" ? "תוצאה" : "ניצח בדו־קרב"),
           h("span", { class: "winner-v" }, w === "tie" ? "תיקו" : SIDE[w].team),
           w !== "tie" ? h("span", { class: "winner-song" }, bdi(songOf(r, w).title)) : null),
-        h("div", { class: "split", role: "img", "aria-label": "סדרות " + tv + " אחוז, סרטים " + film + " אחוז" },
-          h("div", { class: "split-tv", style: { flexGrow: Math.max(tv, 4) } }, h("b", null, tv + "%"), h("span", null, "TV")),
-          h("div", { class: "split-film", style: { flexGrow: Math.max(film, 4) } }, h("b", null, film + "%"), h("span", null, "FILM"))),
+        h("div", { class: "split", role: "img", "aria-label": SIDE.tv.he + " " + tv + " אחוז, " + SIDE.film.he + " " + film + " אחוז" },
+          h("div", { class: "split-tv", style: { flexGrow: Math.max(tv, 4) } }, h("b", null, tv + "%"), h("span", null, L.tv)),
+          h("div", { class: "split-film", style: { flexGrow: Math.max(film, 4) } }, h("b", null, film + "%"), h("span", null, L.film))),
         h("p", { class: "verdict" + (mine && mine === w ? " is-good" : "") }, verdict),
         h("div", { class: "awards" }, this.award("fast", res.fastest), this.award("luck", res.lucky)),
         this.scoreStrip(),
@@ -406,9 +452,9 @@
       const st = this.st, s = scoreboard(st), res = st.results || {};
       return h("div", { class: "score" },
         h("div", { class: "score-row" },
-          h("span", { class: "score-side tv" }, "TV ", h("b", null, s.tv)),
+          h("span", { class: "score-side tv" }, L.tv + " ", h("b", null, s.tv)),
           h("span", { class: "score-dots" }, SET.map((_, i) => h("i", { class: "dot " + (res[i] ? "w-" + res[i].winner : (i === st.round && st.phase !== "lobby" ? "is-now" : "")) }))),
-          h("span", { class: "score-side film" }, h("b", null, s.film), " FILM")));
+          h("span", { class: "score-side film" }, h("b", null, s.film), " " + L.film)));
     }
     tasteMeter() {
       const st = this.st, res = st.results || {}; let voted = 0, withCrowd = 0;
@@ -436,7 +482,7 @@
         h("div", { class: "champ champ-" + c },
           h("span", { class: "champ-k" }, c === "tie" ? "תיקו מושלם" : "האלופים של הערב"),
           h("span", { class: "champ-v" }, c === "tie" ? "שני המסכים" : SIDE[c].team),
-          h("span", { class: "champ-score" }, "TV ", h("b", null, s.tv), " : ", h("b", null, s.film), " FILM")),
+          h("span", { class: "champ-score" }, L.tv + " ", h("b", null, s.tv), " : ", h("b", null, s.film), " " + L.film)),
         p ? h("p", { class: "verdict" + (p === c ? " is-good" : "") }, p === c ? "ניחשת נכון מההתחלה. כל הכבוד!" : "ניחשת " + SIDE[p].team + ". הקהל חשב אחרת.") : null,
         h("div", { class: "card meter" },
           h("h3", { class: "aud-h3" }, "מד הטעם שלך"),
@@ -460,6 +506,13 @@
         this.contactBlock());
     }
     vEncore() {
+      const es = SHOW.encores && this.st.encoreSide;
+      if (es) return h("section", { class: "aud-final" },
+        h("h1", { class: "aud-h1 encore" }, "הדרן!"),
+        h("div", { class: "vote-item" }, h("div", { class: "vbtn vbtn-" + es + " is-static is-playing" }, window.SCArt.img(videoKey("enc", es), "vbtn-art"),
+          h("span", { class: "vbtn-side" }, SIDE[es].latin, h("small", null, SIDE[es].team), h("span", { class: "vbtn-live" }, h("span", { class: "eq", "aria-hidden": "true" }, h("i"), h("i"), h("i"), h("i")), "על הבמה עכשיו")),
+          h("span", { class: "vbtn-title" }, bdi(songOf("enc", es).title)), h("span", { class: "vbtn-meta" }, meta(songOf("enc", es)))), this.songLinks("enc", es)),
+        this.contactBlock());
       return h("section", { class: "aud-final" },
         h("h1", { class: "aud-h1 encore" }, "הדרן!"),
         h("p", { class: "aud-lead" }, "תודה ששיחקתם. שלחו תגובות ללהקה מהכפתורים למטה."),
@@ -498,18 +551,18 @@
       let body;
       if (kind === "fact") {
         const s = songOf(data.r, data.side);
-        body = [h("p", { class: "eyebrow" }, SIDE[data.side].team + " · דו־קרב " + pad(data.r + 1)),
+        body = [h("p", { class: "eyebrow" }, SIDE[data.side].team + " · " + roundLabel(data.r)),
           h("h2", { class: "aud-h2" + (s.hebrew ? "" : " latin-title") }, bdi(s.title)),
-          h("p", { class: "muted" }, bdi(s.artist), " · ", s.source, s.sourceEn && !s.hebrew ? " (" + s.sourceEn + ")" : "", s.year ? " · " + s.year : ""),
+          h("p", { class: "muted" }, meta(s), s.sourceEn && !s.hebrew ? " (" + s.sourceEn + ")" : "", s.year ? " · " + s.year : ""),
           s.medley ? h("p", null, "במחרוזת: ", s.medley.join(" ← ")) : null,
-          s.scene ? h("div", { class: "scene" }, h("span", { class: "scene-k" }, data.side === "tv" ? "בסדרה" : "בסרט"), h("p", null, s.scene)) : null,
+          s.scene ? h("div", { class: "scene" }, h("span", { class: "scene-k" }, SIDE[data.side].sceneLabel), h("p", null, s.scene)) : null,
           h("p", { class: "fact" }, "💡 ", s.fact),
           h("button", { class: "btn-ghost lyrics-btn", type: "button", onclick: () => this.openSheet("lyrics", data) }, "📝 למילים של השיר")];
       } else if (kind === "lyrics") {
         const s = songOf(data.r, data.side), box = h("div", { class: "lyrics", dir: s.hebrew ? "rtl" : "ltr" }, h("div", { class: "spinner", "aria-hidden": "true" }));
-        body = [h("p", { class: "eyebrow" }, SIDE[data.side].team + " · דו־קרב " + pad(data.r + 1)),
+        body = [h("p", { class: "eyebrow" }, SIDE[data.side].team + " · " + roundLabel(data.r)),
           h("h2", { class: "aud-h2" + (s.hebrew ? "" : " latin-title") }, bdi(s.title)),
-          h("p", { class: "muted" }, bdi(s.artist), " · ", s.source), box];
+          h("p", { class: "muted" }, meta(s)), box];
         this.be.getLyrics(videoKey(data.r, data.side)).then(l => {
           if (l && l.text) box.replaceChildren(l.text);
           else box.replaceChildren(h("p", { class: "lyrics-empty" }, "המילים לשיר הזה יעלו בקרוב."));
@@ -583,7 +636,7 @@
     }
     onState(prev) {
       const st = this.st;
-      const sig = st.phase + "|" + st.round + "|" + JSON.stringify((st.results || {})[st.round] || null) + "|" + JSON.stringify(st.raffle) + "|" + (st.screen && st.screen.overlay) + "|" + (st.screen && st.screen.qr) + "|" + st.liveBars + "|" + JSON.stringify(st.order || {}) + "|" + st.voteDuringSongs + "|" + this.hasVideo() + "|" + (st.promo && st.promo.at && st.promo.at + 25000 > Date.now() ? st.promo.seq : 0);
+      const sig = st.phase + "|" + st.round + "|" + JSON.stringify((st.results || {})[st.round] || null) + "|" + JSON.stringify(st.raffle) + "|" + (st.screen && st.screen.overlay) + "|" + (st.screen && st.screen.qr) + "|" + st.liveBars + "|" + JSON.stringify(st.order || {}) + "|" + st.voteDuringSongs + "|" + (st.encoreSide || "") + "|" + this.hasVideo() + "|" + (st.promo && st.promo.at && st.promo.at + 25000 > Date.now() ? st.promo.seq : 0);
       if (!prev || prev.round !== st.round || this.vRound !== st.round) {
         if (this.unVotes) this.unVotes();
         this.vRound = st.round; this.votes = [];
@@ -671,6 +724,7 @@
         const ambient = !this.stage.classList.contains("has-video") && (ph === "lobby" || ph === "final" || ph === "raffle" || ph === "encore" || ph === "intro");
         c.style.opacity = ambient ? 1 : 0.35;
         if (reduceMotion() && this._bgDrawn) return; this._bgDrawn = true;
+        if (SHOW.theme === "nineties") { this.bg90(ctx, t, dust); return; }
         // right half (RTL: TV side) — blue CRT static
         const d = noise.data;
         for (let i = 0; i < d.length; i += 4) { const g = Math.random() * 60; d[i] = g * 0.35; d[i + 1] = g * 0.55; d[i + 2] = g; d[i + 3] = 255; }
@@ -686,6 +740,26 @@
         const fl = 0.9 + Math.random() * 0.1; ctx.fillStyle = "rgba(0,0,0," + (1 - fl) + ")"; ctx.fillRect(0, 0, 240, 270);
       };
       this._bgRaf = requestAnimationFrame(loop);
+    }
+    /* 90s stage: two moving spotlights (red right / blue left) through haze, gold dust */
+    bg90(ctx, t, dust) {
+      ctx.fillStyle = "#07060a"; ctx.fillRect(0, 0, 480, 270);
+      const beam = (x0, ang, col) => {
+        const len = 340, w = 0.2, x1 = x0 + Math.cos(ang - w) * len, y1 = Math.sin(ang - w) * len, x2 = x0 + Math.cos(ang + w) * len, y2 = Math.sin(ang + w) * len;
+        const g = ctx.createLinearGradient(x0, 0, (x1 + x2) / 2, (y1 + y2) / 2); g.addColorStop(0, col.replace("A", ".55")); g.addColorStop(1, col.replace("A", "0"));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x0, -6); ctx.lineTo(x1, y1); ctx.lineTo(x2, y2); ctx.closePath(); ctx.fill();
+      };
+      const s = t / 2600;
+      ctx.globalCompositeOperation = "lighter";
+      beam(400, Math.PI / 2 + 0.45 * Math.sin(s), "rgba(229,72,77,A)");
+      beam(330, Math.PI / 2 + 0.35 * Math.sin(s * 1.3 + 2), "rgba(229,72,77,A)");
+      beam(80, Math.PI / 2 + 0.45 * Math.sin(s + 3.1), "rgba(79,134,232,A)");
+      beam(150, Math.PI / 2 + 0.35 * Math.sin(s * 1.2 + 1), "rgba(79,134,232,A)");
+      ctx.globalCompositeOperation = "source-over";
+      const fog = ctx.createLinearGradient(0, 170, 0, 270); fog.addColorStop(0, "rgba(255,255,255,0)"); fog.addColorStop(1, "rgba(255,240,220,.08)");
+      ctx.fillStyle = fog; ctx.fillRect(0, 170, 480, 100);
+      ctx.fillStyle = "rgba(255,227,140,.55)";
+      dust.forEach(p => { p.y -= p.v; p.x += Math.sin((t / 900) + p.y) * 0.15; if (p.y < 0) { p.y = 270; p.x = Math.random() * 240; } ctx.fillRect(p.x * 2, p.y, p.r, p.r); });
     }
     /* -- reactions -- */
     burst(r) {
@@ -732,19 +806,19 @@
     topBar(label) {
       const s = scoreboard(this.st), res = this.st.results || {};
       return h("div", { class: "scr-top" },
-        h("div", { class: "scr-brand" }, "SOUND", h("b", null, "CLASH"), h("span", null, "סדרות נגד סרטים")),
+        h("div", { class: "scr-brand" }, "SOUND", h("b", null, "CLASH"), h("span", null, SHOW.title)),
         label ? h("div", { class: "scr-top-label" }, label) : h("div"),
         h("div", { class: "scr-score" },
-          h("span", { class: "tv" }, "TV ", h("b", null, s.tv)),
+          h("span", { class: "tv" }, L.tv + " ", h("b", null, s.tv)),
           h("span", { class: "scr-dots" }, SET.map((_, i) => h("i", { class: res[i] ? "w-" + res[i].winner : (i === this.st.round && this.st.phase !== "lobby" && this.st.phase !== "final" ? "is-now" : "") }))),
-          h("span", { class: "film" }, h("b", null, s.film), " FILM")));
+          h("span", { class: "film" }, h("b", null, s.film), " " + L.film)));
     }
     card(r, side, cls) {
       const s = songOf(r, side);
       return h("div", { class: "scard scard-" + side + " " + (cls || "") },
         h("div", { class: "scard-frame" },
           window.SCArt.img(videoKey(r, side), "scard-art"),
-          h("div", { class: "scard-badge" }, h("span", null, SIDE[side].latin), h("small", null, side === "tv" ? "פרק " + pad(r + 1) : "סצנה " + pad(r + 1))),
+          h("div", { class: "scard-badge" }, h("span", null, SIDE[side].latin), h("small", null, SIDE[side].badge + " " + pad(r + 1))),
           h("div", { class: "scard-source" }, s.source),
           h("div", { class: "scard-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
           h("div", { class: "scard-artist" }, bdi(s.artist), s.year ? h("span", { class: "scard-year" }, s.year) : null)));
@@ -756,8 +830,8 @@
         h("div", { class: "s-lobby-top" },
           h("div", { class: "s-lobby-title" },
             h("div", { class: "s-lobby-word" }, h("span", { class: "w-tv" }, "SOUND"), h("span", { class: "w-film" }, "CLASH")),
-            h("div", { class: "s-lobby-he" }, "סדרות ", h("em", null, "נגד"), " סרטים"),
-            h("div", { class: "s-lobby-sub" }, "עשרה דו־קרבות. שיר מסדרה מול שיר מסרט. אתם מכריעים."),
+            h("div", { class: "s-lobby-he" }, SHOW.vs[0] + " ", h("em", null, "נגד"), " " + SHOW.vs[1]),
+            h("div", { class: "s-lobby-sub" }, SHOW.lobbySub),
             h("div", { class: "s-lobby-rx" }, "שלחו ", h("span", { class: "s-lobby-rx-e" }, "🔥 ❤️ 😮"), " מהטלפון, ותראו אותם עפים כאן")),
           h("div", { class: "s-lobby-join" },
             this.qr("scr-qr-big"),
@@ -793,7 +867,7 @@
       const a = n ? pct(tv, n) : 50;
       this.$pred.replaceChildren(
         h("div", { class: "scr-pred-bar" }, h("i", { class: "tv", style: { width: a + "%" } }), h("i", { class: "film", style: { width: (100 - a) + "%" } })),
-        h("div", { class: "scr-pred-lab" }, h("span", { class: "tv" }, "סדרות " + (n ? a + "%" : "")), h("span", { class: "film" }, (n ? (100 - a) + "% " : "") + "סרטים")));
+        h("div", { class: "scr-pred-lab" }, h("span", { class: "tv" }, SIDE.tv.he + " " + (n ? a + "%" : "")), h("span", { class: "film" }, (n ? (100 - a) + "% " : "") + SIDE.film.he)));
     }
     sIntro() {
       const st = this.st, r = st.round, ord = sideOrder(st, r);
@@ -816,10 +890,10 @@
         h("div", { class: "s-lower-badge" }, h("span", null, SIDE[side].latin), h("small", null, "מתנגן עכשיו")),
         h("div", { class: "s-lower-main" },
           h("div", { class: "s-lower-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
-          h("div", { class: "s-lower-meta" }, bdi(s.artist), " · ", s.source)),
+          h("div", { class: "s-lower-meta" }, meta(s))),
         h("div", { class: "s-lower-theme" }, h("small", null, "דו־קרב " + pad(r + 1)), SET[r].theme),
         st.voteDuringSongs !== false ? h("div", { class: "s-lower-votes" }, h("span", { class: "s-onair" }, h("i"), "מצביעים עכשיו"), this.voteFlow("vflow-sm")) : null,
-        h("div", { class: "s-lower-score" }, h("span", { class: "tv" }, "TV ", h("b", null, sc.tv)), h("span", { class: "film" }, h("b", null, sc.film), " FILM")));
+        h("div", { class: "s-lower-score" }, h("span", { class: "tv" }, L.tv + " ", h("b", null, sc.tv)), h("span", { class: "film" }, h("b", null, sc.film), " " + L.film)));
       if (this.hasVideo()) return h("div", { class: "s-song has-video" + (overlay ? "" : " no-overlay") }, overlay ? lower : null);
       const nextSide = st.phase === "song1" ? ord[1] : null;
       return h("div", { class: "s-song s-song-" + side },
@@ -829,7 +903,7 @@
           h("div", { class: "s-hero-text" },
             h("div", { class: "s-hero-kick" }, h("span", { class: "eqbig" }, h("i"), h("i"), h("i"), h("i"), h("i")), "מתנגן עכשיו · ", SIDE[side].team),
             h("div", { class: "s-hero-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
-            h("div", { class: "s-hero-meta" }, bdi(s.artist), " · ", h("b", null, s.source)),
+            h("div", { class: "s-hero-meta" }, bdi(s.artist), s.source ? [" · ", h("b", null, s.source)] : null),
             st.voteDuringSongs !== false ? h("div", { class: "s-song-votes" }, h("span", { class: "s-onair" }, h("i"), "ההצבעה פתוחה בטלפון"), this.voteFlow("vflow-lg")) : null)),
         nextSide ? h("div", { class: "s-next" }, h("small", null, "ואחריו, " + SIDE[nextSide].team + ":"), " ", bdi(songOf(r, nextSide).title)) :
           h("div", { class: "s-next" }, h("small", null, "אחרי השיר הזה"), " נפתחת ההצבעה"));
@@ -916,7 +990,7 @@
       return h("div", { class: "s-final s-final-" + c },
         h("div", { class: "s-final-k" }, c === "tie" ? "תיקו מושלם" : "האלופים של הערב"),
         h("div", { class: "s-final-w" }, c === "tie" ? "שני המסכים" : SIDE[c].team),
-        h("div", { class: "s-final-score" }, h("span", { class: "tv" }, "TV ", h("b", null, s.tv)), h("span", { class: "sep" }, ":"), h("span", { class: "film" }, h("b", null, s.film), " FILM")),
+        h("div", { class: "s-final-score" }, h("span", { class: "tv" }, L.tv + " ", h("b", null, s.tv)), h("span", { class: "sep" }, ":"), h("span", { class: "film" }, h("b", null, s.film), " " + L.film)),
         h("div", { class: "s-final-grid" }, SET.map((d, i) => {
           const x = res[i];
           return h("div", { class: "s-fg " + (x ? "w-" + x.winner : "") },
@@ -949,7 +1023,22 @@
       requestAnimationFrame(step);
     }
     sEncore() {
-      const C = CFG.CONTACT;
+      const C = CFG.CONTACT, es = SHOW.encores && this.st.encoreSide;
+      if (es) {
+        const sg = songOf("enc", es);
+        if (this.hasVideo()) return h("div", { class: "s-song has-video" }, h("div", { class: "s-lower s-lower-" + es },
+          h("div", { class: "s-lower-badge" }, h("span", null, SIDE[es].latin), h("small", null, "הדרן")),
+          h("div", { class: "s-lower-main" }, h("div", { class: "s-lower-title" }, bdi(sg.title)), h("div", { class: "s-lower-meta" }, meta(sg)))));
+        return h("div", { class: "s-song s-song-" + es },
+          this.topBar("הדרן"),
+          h("div", { class: "s-hero s-hero-" + es },
+            h("div", { class: "s-hero-media", "aria-hidden": "true" }, window.SCArt.img(videoKey("enc", es), "hero-art")),
+            h("div", { class: "s-hero-text" },
+              h("div", { class: "s-hero-kick" }, h("span", { class: "eqbig" }, h("i"), h("i"), h("i"), h("i"), h("i")), "הדרן! · ", SIDE[es].team),
+              h("div", { class: "s-hero-title" }, bdi(sg.title)),
+              h("div", { class: "s-hero-meta" }, bdi(sg.artist)))),
+          h("div", { class: "s-next" }, "רוצים את Soundclash באירוע שלכם? ", h("b", null, C.phoneYinon)));
+      }
       return h("div", { class: "s-encore" },
         h("div", { class: "s-encore-t" }, "הדרן!"),
         h("div", { class: "s-encore-sub" }, "רוצים את Soundclash באירוע שלכם?"),
@@ -1024,7 +1113,7 @@
       this.root.replaceChildren(
         h("header", { class: "adm-top" },
           h("div", { class: "brand" }, h("span", { class: "brand-word" }, "SOUND", h("b", null, "CLASH")), h("span", { class: "brand-sub" }, "שולחן הבמאי")),
-          this.$mode, this.$conn,
+          this.showPicker(), this.$mode, this.$conn,
           h("span", { class: "adm-count" }, this.$players, " בזירה"),
           live ? h("button", { class: "btn-link", type: "button", onclick: () => this.be.signOut() }, "יציאה") : null),
         h("div", { class: "adm-grid" },
@@ -1041,9 +1130,11 @@
             h("h2", { class: "adm-h" }, "סרטוני AI"),
             this.$vnow, this.$videos,
             h("h2", { class: "adm-h" }, "מילים לשירים"), this.$lyrics = h("div", { class: "lyr" }),
+            h("h2", { class: "adm-h" }, "עובדות על השירים"), this.$facts = h("div", { class: "lyr" }),
             this.crowd ? h("h2", { class: "adm-h" }, "חזרה עם קהל וירטואלי") : null, this.crowd ? this.$crowd : null)));
       this.preview = new ScreenView(this.previewHost, this.be, { mini: true });
       this.lyricsMap = {}; this.be.onLyricsList(m => { this.lyricsMap = m || {}; this.renderLyrics(); });
+      this.factsMap = {}; this.be.onFactsList(m => { this.factsMap = m || {}; this.renderFacts(); });
       if (this.st) this.onState(null);
     }
     loginView() {
@@ -1074,7 +1165,7 @@
       this.$promo.textContent = prOn ? "■ הסתרת \"עקבו אחרינו\"" : "📣 \"עקבו אחרינו\" על המסך ובטלפונים";
       this.$promo.classList.toggle("is-on", !!prOn);
       clearTimeout(this._prT); if (prOn) this._prT = setTimeout(() => this.onState(this.st), pr.at + 25100 - Date.now());
-      if (!this._lyrDone) { this._lyrDone = true; this.renderLyrics(); }
+      if (!this._lyrDone) { this._lyrDone = true; this.renderLyrics(); this.renderFacts(); }
       this.renderRun(); this.renderNow(); this.renderCtx(); this.renderTally(); this.renderVideos(); this.renderSettings(); this.renderCrowd();
       if (this.crowd) this.crowd.onState(st);
     }
@@ -1090,7 +1181,7 @@
         case "voting": return { label: "⏹ סגירת ההצבעה וחשיפת התוצאה", run: () => this.closeVoting() };
         case "reveal": return r + 1 < N ? { label: "לדו־קרב " + (r + 2) + " · " + SET[r + 1].theme, run: () => this.goIntro(r + 1) } : { label: "🏆 הכרזת האלופים", run: () => this.set({ phase: "final", video: this.vid("", "stop") }) };
         case "final": return { label: "🎟 ההגרלה הגדולה", run: () => this.set({ phase: "raffle", raffle: null }) };
-        case "raffle": return st.raffle ? { label: "הדרן", run: () => this.set({ phase: "encore" }) } : { label: "🎟 הגרלת זוכה", run: () => this.drawRaffle() };
+        case "raffle": return st.raffle ? { label: "הדרן", run: () => this.set({ phase: "encore", encoreSide: null }) } : { label: "🎟 הגרלת זוכה", run: () => this.drawRaffle() };
         default: return { label: "המופע הסתיים", run: null };
       }
     }
@@ -1201,6 +1292,20 @@
         h("li", null, h("button", { type: "button", class: "step" + (i === cur ? " is-now" : i < cur ? " is-done" : ""), "aria-current": i === cur ? "step" : null, onclick: x.go },
           h("span", { class: "step-n" }, i < cur ? "✓" : String(i + 1)), h("span", { class: "step-l" }, x.label), x.sub ? h("span", { class: "step-s" }, bdi(x.sub)) : null))));
     }
+    showPicker() {
+      const all = Object.values(window.SC_SHOWS || {});
+      if (all.length < 2) return null;
+      return h("label", { class: "show-pick" }, h("span", null, "מופע:"),
+        h("select", { id: "adm-show", class: "field field-sm", title: "החלפת מופע אפשרית בלובי (אחרי איפוס)", disabled: !!(this.st && this.st.phase !== "lobby"), onchange: (e) => this.switchShow(e.target.value) },
+          all.map(x => h("option", { value: x.id, selected: x.id === SHOW.id }, x.title))));
+    }
+    async switchShow(id) {
+      if (id === SHOW.id) return;
+      if (this.st && this.st.phase !== "lobby") { this.toast("אפשר להחליף מופע רק בלובי. אפסו קודם את המופע הנוכחי."); return; }
+      this.toast("עוברים למופע… כל הטלפונים והמסך יתעדכנו");
+      try { await this.be.setActiveShow(id); } catch (e) { this.toast("ההחלפה נכשלה: " + (e.message || e)); return; }
+      setTimeout(() => location.reload(), 600);
+    }
     renderCtx() {
       const st = this.st, r = st.round, kids = [];
       if (st.phase === "voting") {
@@ -1211,6 +1316,11 @@
             h("button", { class: "btn-ghost", type: "button", onclick: () => this.closeVoting() }, "סגירה עכשיו"),
             h("label", { class: "chk" }, h("input", { id: "adm-autoclose", type: "checkbox", checked: this.autoClose !== false, onchange: (e) => { this.autoClose = e.target.checked; } }), "סגירה אוטומטית כשהזמן נגמר"))));
       } else this.$clock = null;
+      const shows = Object.values(window.SC_SHOWS || {});
+      if (st.phase === "lobby" && shows.length > 1) kids.push(h("div", { class: "ctx-shows" },
+        h("p", null, "איזה מופע הערב? ", h("small", null, "הקהל והמסך נכנסים אוטומטית למופע שבחרת")),
+        h("div", { class: "ctx-btns" }, shows.map(x => h("button", { type: "button", class: "show-choice" + (x.id === SHOW.id ? " is-on" : ""), "aria-pressed": String(x.id === SHOW.id),
+          onclick: () => this.switchShow(x.id) }, h("b", null, x.title), h("small", null, x.id === SHOW.id ? "✓ פעיל עכשיו" : x.setlist.length + " דו־קרבות"))))));
       if (st.phase === "reveal" && (st.results || {})[r]) {
         const x = st.results[r];
         kids.push(h("div", { class: "ctx-awards" },
@@ -1218,6 +1328,10 @@
           h("p", null, "👑 כתר המזל: ", h("b", null, x.lucky ? "#" + x.lucky.ticket + (x.lucky.name ? " " + x.lucky.name : "") : "–")),
           h("button", { class: "btn-ghost", type: "button", onclick: () => this.closeVoting(true) }, "הגרלת כתר מזל מחדש")));
       }
+      if (st.phase === "encore" && SHOW.encores) kids.push(h("div", { class: "ctx-awards" },
+        h("p", null, "איזה הדרן מנגנים?"),
+        h("div", { class: "ctx-btns" }, ["tv", "film"].map(sd => h("button", { type: "button", class: st.encoreSide === sd ? "btn-primary" : "btn-ghost",
+          onclick: () => this.set({ encoreSide: sd, video: this.vid(videoKey("enc", sd), "play") }) }, "🎤 " + SIDE[sd].latin + ": ", bdi(songOf("enc", sd).title))))));
       if (st.phase === "raffle" && st.raffle) kids.push(h("div", { class: "ctx-awards" }, h("p", null, "🎟 זוכה: ", h("b", null, "#" + st.raffle.ticket + (st.raffle.name ? " " + st.raffle.name : ""))),
         h("button", { class: "btn-ghost", type: "button", onclick: () => this.drawRaffle() }, "הגרלה מחדש")));
       if (["intro", "song1", "song2"].includes(st.phase)) {
@@ -1238,7 +1352,7 @@
       this.$tally.replaceChildren(
         h("div", { class: "tally-head" }, h("span", null, st.phase === "reveal" ? "תוצאה סופית" : "ספירה חיה (רק את/ה רואה את האחוזים כאן)"), h("b", null, t.total + " קולות")),
         h("div", { class: "tally-bar" }, h("i", { class: "tv", style: { width: (t.total ? tv : 50) + "%" } }), h("i", { class: "film", style: { width: (t.total ? 100 - tv : 50) + "%" } })),
-        h("div", { class: "tally-lab" }, h("span", { class: "tv" }, h("bdi", { dir: "ltr" }, "TV " + (t.total ? tv : 0) + "% · " + t.tv)), h("span", { class: "film" }, h("bdi", { dir: "ltr" }, "FILM " + (t.total ? 100 - tv : 0) + "% · " + t.film))));
+        h("div", { class: "tally-lab" }, h("span", { class: "tv" }, h("bdi", { dir: "ltr" }, L.tv + " " + (t.total ? tv : 0) + "% · " + t.tv)), h("span", { class: "film" }, h("bdi", { dir: "ltr" }, L.film + " " + (t.total ? 100 - tv : 0) + "% · " + t.film))));
     }
     renderSettings() {
       const st = this.st;
@@ -1284,6 +1398,7 @@
         h("p", { class: "vnow-meta" }, meta.at ? (have.size ? have.size + " סרטונים טעונים במחשב המסך" : meta.base ? "הסרטונים נטענים מכתובת" : "במחשב המסך עוד לא נטענה תיקיית סרטונים") : "מסך הבמה עוד לא מחובר"));
       const keys = [{ k: "lobby", t: "לופ לובי" }];
       SET.forEach((d, i) => sideOrder(st, i).forEach(s => keys.push({ k: videoKey(i, s), t: songOf(i, s).title, s })));
+      if (SHOW.encores) ["tv", "film"].forEach(sd => keys.push({ k: videoKey("enc", sd), t: "הדרן · " + songOf("enc", sd).title, s: sd }));
       keys.push({ k: "final", t: "לופ סיום" });
       this.$videos.replaceChildren(...keys.map(x => h("button", {
         type: "button", class: "vid" + (v.key === x.k && v.cmd !== "stop" ? " is-on" : "") + (avail(x.k) ? " is-ok" : ""), onclick: () => this.videoCmd("play", x.k), title: avail(x.k) ? "זמין" : "חסר קובץ"
@@ -1293,10 +1408,11 @@
       if (!this.$lyrics || !this.st) return;
       const st = this.st, map = this.lyricsMap || {};
       const keys = []; SET.forEach((d, i) => sideOrder(st, i).forEach(s => keys.push({ k: videoKey(i, s), s, song: songOf(i, s), i })));
+      if (SHOW.encores) ["tv", "film"].forEach(sd => keys.push({ k: videoKey("enc", sd), s: sd, song: songOf("enc", sd), i: "enc" }));
       if (!this.lyrKey) this.lyrKey = keys[0].k;
       const cur = keys.find(x => x.k === this.lyrKey) || keys[0];
       const sel = h("select", { id: "adm-lyr-song", class: "field field-sm", onchange: (e) => { this.lyrKey = e.target.value; this.renderLyrics(); } },
-        keys.map(x => h("option", { value: x.k, selected: x.k === cur.k }, (map[x.k] ? "✓ " : "· ") + pad(x.i + 1) + " " + SIDE[x.s].short + " · \u2068" + x.song.title + "\u2069")));
+        keys.map(x => h("option", { value: x.k, selected: x.k === cur.k }, (map[x.k] ? "✓ " : "· ") + (x.i === "enc" ? "הדרן" : pad(x.i + 1)) + " " + SIDE[x.s].short + " · \u2068" + x.song.title + "\u2069")));
       const ta = h("textarea", { id: "adm-lyr-text", class: "field lyr-text", rows: "10", dir: cur.song.hebrew ? "rtl" : "ltr", placeholder: "מדביקים כאן את מילות השיר. שורה ריקה = רווח בין בתים." });
       ta.value = (map[cur.k] && map[cur.k].text) || "";
       const msg = h("span", { class: "lyr-msg", role: "status" }, this.lyrMsg || ""); this.lyrMsg = "";
@@ -1307,10 +1423,68 @@
         catch (e) { msg.textContent = "השמירה נכשלה: " + (e.message || e); }
       };
       const done = keys.filter(x => map[x.k]).length;
+      const impTa = h("textarea", { id: "adm-lyr-import", class: "field lyr-text", rows: "5", dir: "ltr", placeholder: "מדביקים כאן את כל התוכן של app.py" });
+      const impMsg = h("span", { class: "lyr-msg", role: "status" });
+      const runImport = async () => {
+        const found = parseOldLyrics(impTa.value);
+        const plan = [];
+        found.forEach(f => { const x = keys.find(k => k.song && norm(k.song.title) === norm(f.song)); if (x) plan.push({ k: x.k, text: f.text }); });
+        if (!plan.length) { impMsg.textContent = "לא נמצאו מילים שמתאימות לשירים של המופע הזה."; return; }
+        impMsg.textContent = "שומר " + plan.length + " שירים…";
+        try { for (const p of plan) await this.be.setLyrics(p.k, p.text.slice(0, 20000)); this.lyrMsg = "יובאו מילים ל-" + plan.length + " שירים ✓"; impMsg.textContent = this.lyrMsg; impTa.value = ""; }
+        catch (e) { impMsg.textContent = "הייבוא נכשל: " + (e.message || e); }
+      };
+      const imp = h("details", { class: "lyr-imp" }, h("summary", null, "ייבוא מילים מהאפליקציה הקודמת"),
+        h("p", { class: "muted" }, "פותחים בגיטהאב את הקובץ app.py של האפליקציה הקודמת, מעתיקים את כל התוכן ומדביקים כאן. האפליקציה מוצאת את המילים של כל שיר לפי שם השיר ושומרת אותן אצלו."),
+        impTa, h("div", { class: "set-row" }, h("button", { class: "btn-ghost", type: "button", onclick: runImport }, "ייבוא"), impMsg));
       this.$lyrics.replaceChildren(
         h("p", { class: "muted" }, "המילים מוצגות לקהל בתוך האפליקציה, בכפתור \"📝 מילים\" של כל שיר. יש מילים ל-" + done + " מתוך " + keys.length + " שירים."),
         h("div", { class: "set-row" }, h("label", { for: "adm-lyr-song" }, "שיר"), sel), ta,
-        h("div", { class: "set-row" }, h("button", { class: "btn-primary", type: "button", onclick: save }, "שמירת המילים"), msg));
+        h("div", { class: "set-row" }, h("button", { class: "btn-primary", type: "button", onclick: save }, "שמירת המילים"), msg), imp);
+    }
+    /* facts: the current text is already in the box, the admin just fixes what's needed */
+    songKeys() {
+      const st = this.st, keys = [];
+      SET.forEach((d, i) => sideOrder(st, i).forEach(s => keys.push({ k: videoKey(i, s), s, i })));
+      if (SHOW.encores) ["tv", "film"].forEach(sd => keys.push({ k: videoKey("enc", sd), s: sd, i: "enc" }));
+      return keys;
+    }
+    renderFacts() {
+      if (!this.$facts || !this.st) return;
+      if (this.$facts.contains(document.activeElement) && document.activeElement.tagName === "TEXTAREA") return; // don't wipe what is being typed
+      const map = this.factsMap || {}, keys = this.songKeys();
+      if (!this.factKey || !keys.find(x => x.k === this.factKey)) this.factKey = keys[0].k;
+      const cur = keys.find(x => x.k === this.factKey), r = cur.i, orig = baseSong(r, cur.s), now = songOf(r, cur.s), o = map[cur.k];
+      const sel = h("select", { id: "adm-fact-song", class: "field field-sm", onchange: (e) => { this.factKey = e.target.value; this.renderFacts(); } },
+        keys.map(x => h("option", { value: x.k, selected: x.k === cur.k }, (map[x.k] ? "✎ " : "· ") + (x.i === "enc" ? "הדרן" : pad(x.i + 1)) + " " + SIDE[x.s].short + " · \u2068" + baseSong(x.i, x.s).title + "\u2069")));
+      const hasScene = !!(orig.scene || (o && o.scene)) || SHOW.id === "tv-vs-film";
+      const sceneTa = hasScene ? h("textarea", { id: "adm-fact-scene", class: "field lyr-text", rows: "3", dir: "rtl" }) : null;
+      if (sceneTa) sceneTa.value = now.scene || "";
+      const factTa = h("textarea", { id: "adm-fact-text", class: "field lyr-text", rows: "5", dir: "rtl" });
+      factTa.value = now.fact || "";
+      const fm = this.factMsg && this.factMsg.k === cur.k && Date.now() - this.factMsg.at < 8000 ? this.factMsg.t : "";
+      const msg = h("span", { class: "lyr-msg", role: "status" }, fm);
+      const say = (t) => { this.factMsg = { t, k: cur.k, at: Date.now() }; };
+      const clean = (v) => (v || "").replace(/\r/g, "").trim().slice(0, 1500);
+      const save = async () => {
+        const fact = clean(factTa.value), scene = sceneTa ? clean(sceneTa.value) : "";
+        // store only what differs from the original, so a later fix in the setlist file still shows through
+        const v = { fact: fact && fact !== (orig.fact || "") ? fact : "", scene: scene && scene !== (orig.scene || "") ? scene : "" };
+        try { say(v.fact || v.scene ? "נשמר ✓ הקהל רואה את הנוסח החדש." : "אין שינוי מהנוסח המקורי."); factTa.blur(); if (sceneTa) sceneTa.blur(); await this.be.setFact(cur.k, v); this.renderFacts(); }
+        catch (e) { msg.textContent = "השמירה נכשלה: " + (e.message || e); }
+      };
+      const restore = async () => {
+        try { say("חזרנו לנוסח המקורי."); await this.be.setFact(cur.k, {}); this.renderFacts(); }
+        catch (e) { msg.textContent = "הפעולה נכשלה: " + (e.message || e); }
+      };
+      const edited = keys.filter(x => map[x.k]).length;
+      this.$facts.replaceChildren(
+        h("p", { class: "muted" }, "הטקסט שהקהל רואה בכפתור \"💡 " + (SHOW.id === "tv-vs-film" ? "על השיר והסצנה" : "על השיר") + "\". הנוסח הנוכחי כבר בתיבה, מתקנים ושומרים." + (edited ? (edited === 1 ? " נערך שיר אחד (מסומן ב-✎)." : " נערכו " + edited + " שירים (מסומנים ב-✎).") : "")),
+        h("div", { class: "set-row" }, h("label", { for: "adm-fact-song" }, "שיר"), sel),
+        sceneTa ? h("label", { class: "fact-lbl", for: "adm-fact-scene" }, SIDE[cur.s].sceneLabel || "הסצנה") : null, sceneTa,
+        h("label", { class: "fact-lbl", for: "adm-fact-text" }, "💡 העובדה"), factTa,
+        h("div", { class: "set-row" }, h("button", { class: "btn-primary", type: "button", onclick: save }, "שמירת העובדה"),
+          o ? h("button", { class: "btn-ghost", type: "button", onclick: restore }, "חזרה לנוסח המקורי") : null, msg));
     }
     renderCrowd() {
       if (!this.crowd || !this.$crowd) return;
@@ -1395,7 +1569,7 @@
     const phone = h("div", { class: "phone" }), screenBox = h("div", { class: "demo-screen" }), adminBox = h("div", { class: "demo-admin" });
     root.append(
       h("header", { class: "demo-head" },
-        h("div", null, h("p", { class: "demo-eyebrow" }, "Soundclash · סדרות נגד סרטים"), h("h1", { class: "demo-title" }, "חדר הבקרה של המופע"),
+        h("div", null, h("p", { class: "demo-eyebrow" }, "Soundclash · " + SHOW.title), h("h1", { class: "demo-title" }, "חדר הבקרה של המופע"),
           h("p", { class: "demo-lead" }, "שלושת המסכים רצים כאן יחד במצב הדגמה. לוחצים על הכפתור הגדול באדמין, והטלפון והמסך זזים איתו. הפעילו קהל וירטואלי כדי לראות הצבעות אמיתיות זורמות.")),
         h("p", { class: "demo-tip" }, "טיפ: באדמין, מתחת למסך, יש כפתור ", h("b", null, "הפעלת קהל וירטואלי"), ".")),
       h("div", { class: "demo-grid" },
@@ -1421,7 +1595,14 @@
       root.replaceChildren(h("div", { class: "fatal" }, h("h1", null, "אין חיבור לשרת ההצבעות"), h("p", null, "בדקו את החיבור לאינטרנט ורעננו את הדף."), h("p", { class: "muted" }, String(e.message || e))));
       return;
     }
+    let active = null;
+    try { active = await be.getActiveShow(); } catch (e) { active = null; }
+    useShow(active || CFG.DEFAULT_SHOW);
+    be.bindShow(SHOW.id);
+    /* when the admin switches show, every phone and screen reloads into it */
+    be.onActiveShow(id => { if (id && id !== SHOW.id && (window.SC_SHOWS || {})[id]) location.reload(); });
     be.on("error", (e) => console.warn("backend", e));
+    if (be.onFactsList) be.onFactsList(m => { FACTS = m || {}; });
     root.replaceChildren();
     if (view === "screen") new ScreenView(root, be, {});
     else if (view === "admin") { const crowd = be.isLive() ? null : new VirtualCrowd(be); new AdminView(root, be, { crowd }); }

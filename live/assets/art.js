@@ -315,10 +315,56 @@
         poly(c, [[0, -s], [s * .7, s * (.2 + r() * .5)], [-s * (.3 + r() * .5), s * .6]], c.fillStyle); c.strokeStyle = "rgba(255,255,255,.5)"; c.lineWidth = 1.5; c.stroke(); c.restore(); }
       c.fillStyle = lin(c, 0, H * .82, 0, H, [[0, "#ffffff"], [1, "#ff6bc1"]]); c.globalAlpha = .85; c.fillRect(W * .2, H * .86, W * .6, 10); c.globalAlpha = 1;
       stars(c, r, 80, "#ffd6f0", H * .7);
+    },
+    plaid(c, r) { // grunge: a flannel-plaid backdrop, an amp glowing red, stage smoke
+      fill(c, "#1a0f0c");
+      for (let x = -40; x < W; x += 120) { c.fillStyle = "rgba(170,30,30,.35)"; c.fillRect(x, 0, 60, H); c.fillStyle = "rgba(0,0,0,.35)"; c.fillRect(x + 60, 0, 14, H); }
+      for (let y = -40; y < H; y += 120) { c.fillStyle = "rgba(170,30,30,.3)"; c.fillRect(0, y, W, 60); c.fillStyle = "rgba(20,10,10,.4)"; c.fillRect(0, y + 60, W, 14); }
+      c.fillStyle = rad(c, W / 2, H * .5, 40, 520, [[0, "rgba(26,15,12,0)"], [1, "rgba(10,6,5,.92)"]]); fill(c, c.fillStyle);
+      beam(c, W * .5, -40, Math.PI / 2, .2, 700, "#ffe0c4", .35);
+      const ax = W * .5 - 130, ay = H * .52; c.fillStyle = "#121212"; c.fillRect(ax, ay, 260, 200); c.fillStyle = "#2a2a2a"; c.fillRect(ax + 12, ay + 40, 236, 148);
+      c.strokeStyle = "rgba(255,255,255,.08)"; for (let y = ay + 46; y < ay + 186; y += 8) { c.beginPath(); c.moveTo(ax + 14, y); c.lineTo(ax + 246, y); c.stroke(); }
+      c.fillStyle = "#c9a86a"; c.fillRect(ax + 12, ay + 12, 236, 20); for (let i = 0; i < 6; i++) { c.fillStyle = "#111"; c.beginPath(); c.arc(ax + 40 + i * 36, ay + 22, 6, 0, 7); c.fill(); }
+      glow(c, ax + 230, ay + 22, 30, "rgba(255,40,40,.9)");
+      for (let i = 0; i < 6; i++) { c.fillStyle = "rgba(255,255,255," + (.04 + r() * .05) + ")"; c.beginPath(); c.ellipse(r() * W, H * (.7 + r() * .3), 200 + r() * 200, 40 + r() * 30, 0, 0, 7); c.fill(); }
+    },
+    starsbeach(c, r) { // a night beach under a sky full of warm yellow stars
+      fill(c, lin(c, 0, 0, 0, H * .62, [[0, "#050a24"], [1, "#1c2a5e"]]));
+      for (let i = 0; i < 260; i++) { const x = r() * W, y = r() * H * .6, s = r() * 2.4 + .6; c.fillStyle = r() < .6 ? "#ffd84d" : "#fff6c9"; c.globalAlpha = .5 + r() * .5; c.fillRect(x, y, s, s); }
+      c.globalAlpha = 1; for (let i = 0; i < 10; i++) glow(c, r() * W, r() * H * .55, 30 + r() * 30, "rgba(255,216,77,.6)");
+      c.fillStyle = lin(c, 0, H * .62, 0, H * .8, [[0, "#14204a"], [1, "#0a1330"]]); c.fillRect(0, H * .62, W, H * .2);
+      for (let y = H * .64; y < H * .8; y += 5) { c.fillStyle = "rgba(255,216,77," + (.25 * r()) + ")"; c.fillRect(r() * W, y, 20 + r() * 60, 1.5); }
+      c.fillStyle = lin(c, 0, H * .8, 0, H, [[0, "#3a3020"], [1, "#16120c"]]); c.beginPath(); c.moveTo(0, H); c.lineTo(0, H * .8); c.quadraticCurveTo(W * .5, H * .76, W, H * .82); c.lineTo(W, H); c.fill();
+      c.strokeStyle = "rgba(255,255,255,.35)"; c.lineWidth = 2; c.beginPath(); c.moveTo(0, H * .8); c.quadraticCurveTo(W * .5, H * .76, W, H * .82); c.stroke();
+    },
+    stadium(c, r) { // festival night: floodlights over a sea of raised hands
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#06080f"], [1, "#151a2c"]]));
+      [[W * .15, H * .12], [W * .85, H * .12], [W * .38, H * .06], [W * .62, H * .06]].forEach(([x, y], i) => {
+        beam(c, x, y, Math.PI / 2 + (x < W / 2 ? -.25 : .25), .16, 700, i % 2 ? "#cfe0ff" : "#fff1d6", .3);
+        for (let k = 0; k < 6; k++) glow(c, x - 30 + (k % 3) * 30, y - 10 + Math.floor(k / 3) * 20, 18, "rgba(255,255,240,.9)");
+      });
+      glow(c, W / 2, H * .7, 300, "rgba(120,160,255,.25)");
+      c.fillStyle = "#07080c";
+      for (let i = 0; i < 90; i++) { const x = r() * W, y = H * (.7 + r() * .3), hs = 14 + r() * 10; c.beginPath(); c.arc(x, y, hs, 0, 7); c.fill();
+        if (r() < .45) { c.fillRect(x + (r() < .5 ? -hs : hs * .6), y - hs * 4, 6, hs * 3.4); c.beginPath(); c.arc(x + (r() < .5 ? -hs + 3 : hs * .6 + 3), y - hs * 4, 6, 0, 7); c.fill(); } }
+      c.fillRect(0, H * .9, W, H * .1);
+      for (let i = 0; i < 60; i++) { c.save(); c.translate(r() * W, r() * H * .6); c.rotate(r() * 3); c.fillStyle = ["#e4473b", "#4f7fd6", "#f2c230", "#fff"][i % 4]; c.globalAlpha = .7; c.fillRect(-4, -2, 8, 4); c.restore(); }
+      c.globalAlpha = 1;
+    },
+    roundel(c, r) { // britpop: a mod target roundel, red white and blue, with stage haze
+      fill(c, lin(c, 0, 0, W, H, [[0, "#0c1630"], [1, "#060a18"]]));
+      const x = W * .62, y = H * .5;
+      [[230, "#1f4aa8"], [170, "#f4efe6"], [110, "#d42a2a"]].forEach(([rr, col]) => { c.fillStyle = col; c.beginPath(); c.arc(x, y, rr, 0, 7); c.fill(); });
+      c.fillStyle = "rgba(0,0,0,.18)"; for (let k = 0; k < 8; k++) { c.beginPath(); c.arc(x, y, 230 - k * 2, 0, 7); c.arc(x, y, 228 - k * 2, 0, 7, true); c.fill(); }
+      glow(c, x, y, 320, "rgba(255,255,255,.12)");
+      c.strokeStyle = "rgba(244,239,230,.25)"; c.lineWidth = 3;
+      for (let i = 0; i < 9; i++) { c.beginPath(); c.moveTo(W * .1 + i * 26, H); c.lineTo(W * .1 + i * 26 + 160, 0); c.stroke(); }
+      for (let i = 0; i < 5; i++) { c.fillStyle = "rgba(255,255,255," + (.04 + r() * .05) + ")"; c.beginPath(); c.ellipse(r() * W, H * (.6 + r() * .4), 260, 50, 0, 0, 7); c.fill(); }
     }
   };
 
   function artNameFor(key) {
+    if (window.SC_ART_RESOLVE) { const n = window.SC_ART_RESOLVE(key); if (n) return n; }
     const m = /^(\d\d)-(tv|film)$/.exec(key || "");
     if (m) { const d = (window.SC_SETLIST || [])[+m[1] - 1]; if (d && d[m[2]] && d[m[2]].art) return d[m[2]].art; }
     return key;

@@ -6,7 +6,23 @@
    art:   איור האווירה (art.js)
    singer: הערה פנימית לאדמין בלבד
    ========================================================================= */
-window.SC_SETLIST = [
+window.SC_SHOWS = window.SC_SHOWS || {};
+window.SC_SHOWS["tv-vs-film"] = {
+  id: "tv-vs-film",
+  title: "סדרות נגד סרטים",
+  vs: ["סדרות", "סרטים"],
+  theme: "screens",
+  joinTitle: ["שני מסכים.", "קרב אחד."],
+  joinLead: "עשרה דו־קרבות, שיר מסדרה מול שיר מסרט. אחרי כל זוג שירים אתם מצביעים מכאן, והתוצאה עולה למסך.",
+  howPair: "הלהקה מנגנת שיר מסדרה ושיר מסרט על אותו נושא.",
+  lobbySub: "עשרה דו־קרבות. שיר מסדרה מול שיר מסרט. אתם מכריעים.",
+  factLabel: "💡 על השיר והסצנה",
+  sides: {
+    tv:   { slug: "tv",   he: "סדרות", team: "צד הסדרות", latin: "TV",   short: "סדרה", badge: "פרק",  sceneLabel: "בסדרה" },
+    film: { slug: "film", he: "סרטים", team: "צד הסרטים", latin: "FILM", short: "סרט",  badge: "סצנה", sceneLabel: "בסרט" }
+  },
+  encores: null,
+  setlist: [
   {
     theme: "פתיחה בדואט", first: "tv", singer: "דואט",
     tv:   { title: "Don't Stop Believin'", artist: "Glee Cast", source: "גלי", sourceEn: "Glee", year: 2009, art: "glee",
@@ -98,4 +114,5 @@ window.SC_SETLIST = [
             scene: "המסיבה שסוגרת את הסרט, וגם אצלנו היא סוגרת את המופע.",
             fact: "ניל דיימונד כתב את השיר, והמונקיז הפכו אותו ללהיט ב-1966." }
   }
-];
+]
+};

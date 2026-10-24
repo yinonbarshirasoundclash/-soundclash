@@ -36,17 +36,26 @@
     constructor(cfg) {
       super();
       this.cfg = cfg; this.mode = "demo";
-      this.key = "sc_local_" + cfg.SHOW_ID;
-      const saved = safeStore.get(this.key, null);
-      this.db = saved || { state: initialState(cfg), votes: {}, players: {}, screen: {} };
       this.reactions = [];
-      try { this.bc = new BroadcastChannel("sc_" + cfg.SHOW_ID); this.bc.onmessage = (e) => this._apply(e.data, false); } catch (e) { this.bc = null; }
       let id = null; try { id = sessionStorage.getItem("sc_uid"); } catch (e) { /* ignore */ }
       if (!id) { id = "u_" + rid(8); try { sessionStorage.setItem("sc_uid", id); } catch (e) { /* ignore */ } }
       this._uid = id;
       this._saveT = 0;
     }
     async init() { return this; }
+    /* which show is running (the admin picks it); every open screen follows */
+    async getActiveShow() { return safeStore.get("sc_local_active", null); }
+    async setActiveShow(id) { safeStore.set("sc_local_active", id); try { new BroadcastChannel("sc_active").postMessage(id); } catch (e) { /* ignore */ } this.emit("active", id); }
+    onActiveShow(cb) {
+      try { const ch = new BroadcastChannel("sc_active"); ch.onmessage = (e) => cb(e.data); } catch (e) { /* ignore */ }
+      return this.on("active", cb);
+    }
+    bindShow(id) {
+      this.cfg.SHOW_ID = id;
+      this.key = "sc_local_" + id;
+      this.db = safeStore.get(this.key, null) || { state: initialState(this.cfg), votes: {}, players: {}, screen: {} };
+      try { this.bc = new BroadcastChannel("sc_" + id); this.bc.onmessage = (e) => this._apply(e.data, false); } catch (e) { this.bc = null; }
+    }
     online() { return true; }
     uid() { return this._uid; }
     isLive() { return false; }
@@ -61,7 +70,8 @@
         case "react": this.reactions.push(op.v); if (this.reactions.length > 80) this.reactions.shift(); this.emit("react", op.v); break;
         case "screen": d.screen = op.v; this.emit("screen", d.screen); break;
         case "lyrics": d.lyrics = d.lyrics || {}; if (op.v.text) d.lyrics[op.v.key] = op.v; else delete d.lyrics[op.v.key]; this.emit("lyrics"); break;
-        case "reset": this.db = { state: op.v, votes: {}, players: {}, screen: d.screen || {}, lyrics: d.lyrics || {} }; this.emit("state", this.db.state); this.emit("votes", -1); this.emit("players"); break;
+        case "facts": d.facts = d.facts || {}; if (op.v.fact || op.v.scene) d.facts[op.v.key] = op.v; else delete d.facts[op.v.key]; this.emit("facts"); break;
+        case "reset": this.db = { state: op.v, votes: {}, players: {}, screen: d.screen || {}, lyrics: d.lyrics || {}, facts: d.facts || {} }; this.emit("state", this.db.state); this.emit("votes", -1); this.emit("players"); break;
       }
       if (local && op.k !== "react") this._persist();
     }
@@ -92,6 +102,9 @@
     async getLyrics(key) { return (this.db.lyrics || {})[key] || null; }
     async setLyrics(key, text) { this._op({ k: "lyrics", v: { key, text, at: Date.now() } }); }
     onLyricsList(cb) { const f = () => cb(Object.assign({}, this.db.lyrics || {})); setTimeout(f, 0); return this.on("lyrics", f); }
+    /* the admin's own wording for a song's fact / scene text, one doc per song key */
+    async setFact(key, v) { this._op({ k: "facts", v: { key, fact: v.fact || "", scene: v.scene || "", at: Date.now() } }); }
+    onFactsList(cb) { const f = () => cb(Object.assign({}, this.db.facts || {})); setTimeout(f, 0); return this.on("facts", f); }
     async setScreenMeta(m) { this._op({ k: "screen", v: Object.assign({}, m, { at: Date.now() }) }); }
     async resetShow() { this._op({ k: "reset", v: initialState(this.cfg) }); }
     /* admin */
@@ -130,9 +143,16 @@
       this.auth = fb.auth(); this.fs = fb.firestore(); this.FV = fb.firestore.FieldValue;
       await new Promise((res) => { const u = this.auth.onAuthStateChanged(() => { u(); res(); }); });
       if (!this.auth.currentUser) await this.auth.signInAnonymously();
-      this.show = this.fs.collection("shows").doc(this.cfg.SHOW_ID);
-      try { this._first = JSON.parse(localStorage.getItem("sc_first_" + this.cfg.SHOW_ID) || "{}"); } catch (e) { this._first = {}; }
+      this.activeRef = this.fs.collection("live").doc("active");
       return this;
+    }
+    async getActiveShow() { const s = await this.activeRef.get(); return s.exists ? s.data().showId : null; }
+    async setActiveShow(id) { await this.activeRef.set({ showId: id, at: this.FV.serverTimestamp() }); }
+    onActiveShow(cb) { return this.activeRef.onSnapshot(s => { if (s.exists) cb(s.data().showId); }, () => {}); }
+    bindShow(id) {
+      this.cfg.SHOW_ID = id;
+      this.show = this.fs.collection("shows").doc(id);
+      try { this._first = JSON.parse(localStorage.getItem("sc_first_" + id) || "{}"); } catch (e) { this._first = {}; }
     }
     uid() { return this.auth.currentUser ? this.auth.currentUser.uid : ""; }
     online() { return this._online !== false; }
@@ -193,6 +213,13 @@
     }
     onLyricsList(cb) {
       return this.show.collection("lyrics").onSnapshot(qs => { const o = {}; qs.docs.forEach(d => { o[d.id] = norm(d.data()); }); cb(o); }, () => {});
+    }
+    async setFact(key, v) {
+      const ref = this.show.collection("facts").doc(key);
+      if (v.fact || v.scene) await ref.set({ key, fact: v.fact || "", scene: v.scene || "", at: this.FV.serverTimestamp() }); else await ref.delete();
+    }
+    onFactsList(cb) {
+      return this.show.collection("facts").onSnapshot(qs => { const o = {}; qs.docs.forEach(d => { o[d.id] = norm(d.data()); }); cb(o); }, () => {});
     }
     async setScreenMeta(m) { await this.show.collection("meta").doc("screen").set(Object.assign({}, m, { at: this.FV.serverTimestamp() })); }
     async resetShow() {
