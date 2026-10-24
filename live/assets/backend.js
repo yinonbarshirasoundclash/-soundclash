@@ -103,7 +103,7 @@
     async setLyrics(key, text) { this._op({ k: "lyrics", v: { key, text, at: Date.now() } }); }
     onLyricsList(cb) { const f = () => cb(Object.assign({}, this.db.lyrics || {})); setTimeout(f, 0); return this.on("lyrics", f); }
     /* the admin's own wording for a song's fact / scene text, one doc per song key */
-    async setFact(key, v) { this._op({ k: "facts", v: { key, fact: v.fact || "", scene: v.scene || "", at: Date.now() } }); }
+    async setFact(key, v) { this._op({ k: "facts", v: { key, fact: v.fact || "", scene: v.scene || "", base: v.base || "", at: Date.now() } }); }
     onFactsList(cb) { const f = () => cb(Object.assign({}, this.db.facts || {})); setTimeout(f, 0); return this.on("facts", f); }
     async setScreenMeta(m) { this._op({ k: "screen", v: Object.assign({}, m, { at: Date.now() }) }); }
     async resetShow() { this._op({ k: "reset", v: initialState(this.cfg) }); }
@@ -216,7 +216,7 @@
     }
     async setFact(key, v) {
       const ref = this.show.collection("facts").doc(key);
-      if (v.fact || v.scene) await ref.set({ key, fact: v.fact || "", scene: v.scene || "", at: this.FV.serverTimestamp() }); else await ref.delete();
+      if (v.fact || v.scene) await ref.set({ key, fact: v.fact || "", scene: v.scene || "", base: v.base || "", at: this.FV.serverTimestamp() }); else await ref.delete();
     }
     onFactsList(cb) {
       return this.show.collection("facts").onSnapshot(qs => { const o = {}; qs.docs.forEach(d => { o[d.id] = norm(d.data()); }); cb(o); }, () => {});

@@ -84,8 +84,11 @@
   /* FACTS: the admin's edits to a song's fact / scene text (stored per song key); the setlist file holds the originals */
   let FACTS = {};
   const baseSong = (r, side) => r === "enc" ? (SHOW.encores || {})[side] : SET[r][side];
+  /* an edit is tied to the text it was made on: when the setlist file's text changes, older edits stop applying */
+  const factSig = (s) => { const t = (s && (s.fact || "") + "|" + (s.scene || "")) || ""; let x = 5381; for (let i = 0; i < t.length; i++) x = ((x * 33) ^ t.charCodeAt(i)) >>> 0; return x.toString(36); };
+  const factEdit = (r, side, map) => { const s = baseSong(r, side), o = s && (map || FACTS)[videoKey(r, side)]; return o && o.base === factSig(s) ? o : null; };
   const songOf = (r, side) => {
-    const s = baseSong(r, side), o = s && FACTS[videoKey(r, side)];
+    const s = baseSong(r, side), o = factEdit(r, side);
     if (!o) return s;
     const m = Object.assign({}, s);
     if (o.fact) m.fact = o.fact;
@@ -1454,9 +1457,9 @@
       if (this.$facts.contains(document.activeElement) && document.activeElement.tagName === "TEXTAREA") return; // don't wipe what is being typed
       const map = this.factsMap || {}, keys = this.songKeys();
       if (!this.factKey || !keys.find(x => x.k === this.factKey)) this.factKey = keys[0].k;
-      const cur = keys.find(x => x.k === this.factKey), r = cur.i, orig = baseSong(r, cur.s), now = songOf(r, cur.s), o = map[cur.k];
+      const cur = keys.find(x => x.k === this.factKey), r = cur.i, orig = baseSong(r, cur.s), now = songOf(r, cur.s), o = factEdit(r, cur.s, map);
       const sel = h("select", { id: "adm-fact-song", class: "field field-sm", onchange: (e) => { this.factKey = e.target.value; this.renderFacts(); } },
-        keys.map(x => h("option", { value: x.k, selected: x.k === cur.k }, (map[x.k] ? "✎ " : "· ") + (x.i === "enc" ? "הדרן" : pad(x.i + 1)) + " " + SIDE[x.s].short + " · \u2068" + baseSong(x.i, x.s).title + "\u2069")));
+        keys.map(x => h("option", { value: x.k, selected: x.k === cur.k }, (factEdit(x.i, x.s, map) ? "✎ " : "· ") + (x.i === "enc" ? "הדרן" : pad(x.i + 1)) + " " + SIDE[x.s].short + " · \u2068" + baseSong(x.i, x.s).title + "\u2069")));
       const hasScene = !!(orig.scene || (o && o.scene)) || SHOW.id === "tv-vs-film";
       const sceneTa = hasScene ? h("textarea", { id: "adm-fact-scene", class: "field lyr-text", rows: "3", dir: "rtl" }) : null;
       if (sceneTa) sceneTa.value = now.scene || "";
@@ -1469,22 +1472,17 @@
       const save = async () => {
         const fact = clean(factTa.value), scene = sceneTa ? clean(sceneTa.value) : "";
         // store only what differs from the original, so a later fix in the setlist file still shows through
-        const v = { fact: fact && fact !== (orig.fact || "") ? fact : "", scene: scene && scene !== (orig.scene || "") ? scene : "" };
-        try { say(v.fact || v.scene ? "נשמר ✓ הקהל רואה את הנוסח החדש." : "אין שינוי מהנוסח המקורי."); factTa.blur(); if (sceneTa) sceneTa.blur(); await this.be.setFact(cur.k, v); this.renderFacts(); }
+        const v = { fact: fact && fact !== (orig.fact || "") ? fact : "", scene: scene && scene !== (orig.scene || "") ? scene : "", base: factSig(orig) };
+        try { say(v.fact || v.scene ? "נשמר ✓ הקהל רואה את הנוסח החדש." : "אין שינוי, זה הנוסח הקיים."); factTa.blur(); if (sceneTa) sceneTa.blur(); await this.be.setFact(cur.k, v); this.renderFacts(); }
         catch (e) { msg.textContent = "השמירה נכשלה: " + (e.message || e); }
       };
-      const restore = async () => {
-        try { say("חזרנו לנוסח המקורי."); await this.be.setFact(cur.k, {}); this.renderFacts(); }
-        catch (e) { msg.textContent = "הפעולה נכשלה: " + (e.message || e); }
-      };
-      const edited = keys.filter(x => map[x.k]).length;
+      const edited = keys.filter(x => factEdit(x.i, x.s, map)).length;
       this.$facts.replaceChildren(
         h("p", { class: "muted" }, "הטקסט שהקהל רואה בכפתור \"💡 " + (SHOW.id === "tv-vs-film" ? "על השיר והסצנה" : "על השיר") + "\". הנוסח הנוכחי כבר בתיבה, מתקנים ושומרים." + (edited ? (edited === 1 ? " נערך שיר אחד (מסומן ב-✎)." : " נערכו " + edited + " שירים (מסומנים ב-✎).") : "")),
         h("div", { class: "set-row" }, h("label", { for: "adm-fact-song" }, "שיר"), sel),
         sceneTa ? h("label", { class: "fact-lbl", for: "adm-fact-scene" }, SIDE[cur.s].sceneLabel || "הסצנה") : null, sceneTa,
         h("label", { class: "fact-lbl", for: "adm-fact-text" }, "💡 העובדה"), factTa,
-        h("div", { class: "set-row" }, h("button", { class: "btn-primary", type: "button", onclick: save }, "שמירת העובדה"),
-          o ? h("button", { class: "btn-ghost", type: "button", onclick: restore }, "חזרה לנוסח המקורי") : null, msg));
+        h("div", { class: "set-row" }, h("button", { class: "btn-primary", type: "button", onclick: save }, "שמירת העובדה"), msg));
     }
     renderCrowd() {
       if (!this.crowd || !this.$crowd) return;
