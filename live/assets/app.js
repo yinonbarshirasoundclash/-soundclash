@@ -875,7 +875,7 @@
         this.topBar(null),
         h("div", { class: "s-intro-head" },
           h("div", { class: "s-eyebrow" }, "דו־קרב ", h("b", null, pad(r + 1)), " מתוך " + N),
-          h("div", { class: "s-theme" }, SET[r].theme)),
+          h("div", { class: "s-theme" + (SET[r].theme.length > 16 ? " is-long" : "") }, SET[r].theme)),
         h("div", { class: "s-pair" },
           this.card(r, ord[0], "is-in-1"),
           h("div", { class: "s-vs" }, h("span", null, "VS")),

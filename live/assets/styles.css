@@ -897,3 +897,4 @@ html.show-nineties {
 .show-nineties .s-hero-film .s-hero-media { padding: 0; }
 .show-nineties .s-hero-film .s-hero-media::before, .show-nineties .s-hero-film .s-hero-media::after { display: none; }
 .show-nineties .s-hero-tv .s-hero-media::after { background: radial-gradient(120% 100% at 50% 30%, transparent 55%, rgba(0,0,0,.5)); }
+.s-theme.is-long { font-size: 92px; }
