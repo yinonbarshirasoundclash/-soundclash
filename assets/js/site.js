@@ -159,6 +159,36 @@ window.SC_CONFIG = {
 
   loadShows();
 
+  /* ---------- 4ב. "במות שבהן הופענו" בדף אירועי חברה ----------
+     הרשימה הקבועה כתובה ב-build.py. כאן מתווספת אליה כל הופעה מ-shows.json
+     שהתאריך שלה כבר עבר, אם המקום עוד לא ברשימה. אין צורך לעדכן ידנית. */
+  function loadPastVenues() {
+    var ul = document.querySelector("[data-past-venues]");
+    if (!ul) return;
+    var norm = function (t) { return String(t || "").replace(/["'׳״]/g, "").replace(/\s+/g, " ").trim(); };
+    var seen = {};
+    ul.querySelectorAll("li b").forEach(function (b) { seen[norm(b.textContent)] = true; });
+    fetch("shows.json", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (data) {
+        var today = new Date(); today.setHours(0, 0, 0, 0);
+        (data.shows || [])
+          .map(function (s) { var d = new Date(s.date + "T00:00:00"); return isNaN(d) ? null : Object.assign({}, s, { _d: d }); })
+          .filter(function (s) { return s && s.venue && s._d < today; })
+          .sort(function (a, b) { return a._d - b._d; })
+          .forEach(function (s) {
+            var key = norm(s.venue);
+            if (seen[key]) return;
+            seen[key] = true;
+            var li = document.createElement("li");
+            li.innerHTML = "<b>" + esc(s.venue) + "</b><span>" + esc(s.city || "") + "</span>";
+            ul.appendChild(li);
+          });
+      })
+      .catch(function () { /* הרשימה הקבועה נשארת כמו שהיא */ });
+  }
+  loadPastVenues();
+
   /* ---------- 5. טופס יצירת קשר ---------- */
   var form = document.querySelector("[data-contact-form]");
   if (form) {

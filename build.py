@@ -968,10 +968,11 @@ events_body = r"""<section class="hero hero-corp">
       </div>
       <div class="proof-venues reveal">
         <div class="pv-label">במות שבהן הופענו</div>
-        <ul>
+        <ul data-past-venues>
           <li><b>תמונע</b><span>תל אביב</span></li>
           <li><b>וונדרבר</b><span>חיפה</span></li>
           <li><b>אלפא פאב</b><span>אלפי מנשה</span></li>
+          <li><b>בלה צ'או</b><span>ראשון לציון</span></li>
         </ul>
       </div>
     </div>
