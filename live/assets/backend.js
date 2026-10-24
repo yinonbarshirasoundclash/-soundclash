@@ -16,7 +16,7 @@
   function initialState(cfg) {
     return {
       v: 1, phase: "lobby", round: 0, order: {},
-      voteSeconds: cfg.VOTE_SECONDS || 20, votingEndsAt: 0, liveBars: cfg.SHOW_LIVE_BARS !== false,
+      voteSeconds: cfg.VOTE_SECONDS || 20, votingEndsAt: 0, liveBars: cfg.SHOW_LIVE_BARS !== false, voteDuringSongs: true,
       results: {}, raffle: null,
       video: { key: "", cmd: "stop", seq: 0 },
       screen: { overlay: true, qr: false }, promo: null,
@@ -75,7 +75,9 @@
     async getVotes(r) { return this._votesFor(r); }
     async vote(r, side, meta, asUid) {
       const uid = asUid || this._uid, id = r + "_" + uid, prev = this.db.votes[id], now = Date.now();
-      if (this.db.state.phase !== "voting" || this.db.state.round !== r) throw new Error("closed");
+      const st = this.db.state, ph = st.phase;
+      const open = ph === "voting" || ((ph === "song1" || ph === "song2") && st.voteDuringSongs !== false);
+      if (!open || st.round !== r) throw new Error("closed");
       this._op({ k: "vote", v: { id, r, side, uid, ticket: meta.ticket, name: meta.name || "", at: now, firstAt: prev ? prev.firstAt : now } });
     }
     async join(p, asUid) { const uid = asUid || this._uid; this._op({ k: "player", v: Object.assign({}, p, { uid, joinedAt: (this.db.players[uid] || {}).joinedAt || Date.now() }) }); }
@@ -137,12 +139,15 @@
          the screen simply keeps showing the last result instead of an error */
       return this.show.onSnapshot({ includeMetadataChanges: true }, s => {
         this._setOnline(!s.metadata.fromCache && navigator.onLine !== false);
+        this._exists = s.exists;
         if (!s.metadata.hasPendingWrites || !this._lastState) { this._lastState = s.exists ? norm(s.data()) : initialState(this.cfg); }
         cb(s.exists ? norm(s.data()) : initialState(this.cfg));
       }, e => this.emit("error", e));
     }
     async setState(patch) {
-      const p = Object.assign({}, patch, { updatedAt: this.FV.serverTimestamp() });
+      /* first write of a new show: lay down the full initial state, so every field exists */
+      const base = this._exists === false ? initialState(this.cfg) : {};
+      const p = Object.assign(base, patch, { updatedAt: this.FV.serverTimestamp() });
       await this.show.set(p, { merge: true });
     }
     onVotes(r, cb) {

@@ -37,6 +37,11 @@
     film: { he: "סרטים", team: "צד הסרטים", latin: "FILM", short: "סרט" }
   };
   const other = (s) => s === "tv" ? "film" : "tv";
+  /* lyrics open on a licensed lyrics site; the app never shows lyrics itself */
+  function lyricsUrl(s) {
+    if (s.hebrew) return "https://www.google.com/search?q=" + encodeURIComponent((s.medley ? s.medley.join(" ") : s.title) + " " + s.artist + " מילים שירונט");
+    return "https://genius.com/search?q=" + encodeURIComponent(s.title.replace(/\(.*?\)/g, " ").replace(/\s+/g, " ").trim() + " " + s.artist);
+  }
 
   /* ---------------- show logic ---------------- */
   const firstSide = (st, r) => (st.order && st.order[r]) || SET[r].first || "tv";
@@ -79,7 +84,7 @@
         const sd = playingSide(st), sg = songOf(r, sd);
         return { eyebrow: (st.phase === "song1" ? "שיר ראשון" : "שיר שני") + " · " + SIDE[sd].team, title: sg.title, sub: sg.artist + " · " + sg.source };
       }
-      case "voting": return { eyebrow: "דו־קרב " + pad(r + 1), title: "ההצבעה פתוחה", sub: d.theme };
+      case "voting": return { eyebrow: "דו־קרב " + pad(r + 1), title: "ספירה לאחור להצבעה", sub: d.theme };
       case "reveal": return { eyebrow: "דו־קרב " + pad(r + 1), title: "התוצאה", sub: d.theme };
       case "final": return { eyebrow: "סוף הקרב", title: "האלופים של הערב", sub: "" };
       case "raffle": return { eyebrow: "פרס", title: "ההגרלה הגדולה", sub: "" };
@@ -153,8 +158,7 @@
         h("div", { class: "brand" }, h("span", { class: "brand-word" }, "SOUND", h("b", null, "CLASH")), h("span", { class: "brand-sub" }, "סדרות נגד סרטים")),
         h("div", { class: "aud-top-act" },
           h("button", { class: "contact-chip", type: "button", onclick: () => this.openSheet("contact") }, h("span", { "aria-hidden": "true" }, "📞"), "צרו קשר"),
-          this.me ? h("button", { class: "ticket-chip", type: "button", onclick: () => this.openSheet("me"), "aria-label": "הערב שלי" },
-            h("span", { class: "ticket-chip-label" }, "כרטיס"), h("span", { class: "ticket-chip-num" }, "#" + this.me.ticket)) : null)
+          this.me ? h("button", { class: "me-chip", type: "button", onclick: () => this.openSheet("me"), "aria-label": "הערב שלי" }, "הערב שלי") : null)
       );
     }
     render() {
@@ -176,7 +180,7 @@
       else view = this.vEncore();
       const promoOn = this.promoActive();
       if (promoOn) view = h("div", { class: "promo-wrap" }, this.promoCard(), view);
-      const key = (promoOn ? "promo" + st.promo.seq : "") + (this.me ? "in" : "out") + ph + st.round + (ph === "lobby" ? (this.me && this.me.prediction) : "") + (ph === "raffle" ? JSON.stringify(st.raffle) : "") + (ph === "voting" ? this.myVotes[st.round] : "") + (ph === "reveal" ? JSON.stringify((st.results || {})[st.round] || {}) : "");
+      const key = (promoOn ? "promo" + st.promo.seq : "") + (this.me ? "in" : "out") + ph + st.round + (ph === "lobby" ? (this.me && this.me.prediction) : "") + (ph === "raffle" ? JSON.stringify(st.raffle) : "") + (["voting", "song1", "song2"].includes(ph) ? (this.myVotes[st.round] || "") + (st.voteDuringSongs !== false) : "") + (ph === "reveal" ? JSON.stringify((st.results || {})[st.round] || {}) : "");
       if (key !== this._key) {
         this._key = key;
         this.main.replaceChildren(view);
@@ -280,44 +284,68 @@
         h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("fact", { r, side }), "aria-label": "טריוויה על " + s.title }, "💡 ידעתם?")
       );
     }
+    voteOpen() {
+      const st = this.st; if (!st) return false;
+      return st.phase === "voting" || ((st.phase === "song1" || st.phase === "song2") && st.voteDuringSongs !== false);
+    }
+    async castVote(r, side) {
+      if (this.closed || !this.voteOpen()) return;
+      this.myVotes[r] = side; this.save();
+      if (navigator.vibrate) navigator.vibrate(18);
+      this._key = null; this.render();
+      try { await this.be.vote(r, side, { ticket: this.me.ticket, name: this.me.name }); }
+      catch (e) { if (this.voteNote) this.voteNote.textContent = "ההצבעה כבר נסגרה."; }
+    }
+    songLinks(r, side) {
+      const s = songOf(r, side);
+      return h("div", { class: "song-links" },
+        h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("fact", { r, side }) }, "💡 על השיר והסצנה"),
+        h("a", { class: "tile-fact", href: lyricsUrl(s), target: "_blank", rel: "noopener" }, "📝 מילים"));
+    }
+    /* song tiles that are also vote buttons */
+    voteList(r, states) {
+      const st = this.st, ord = sideOrder(st, r), mine = this.myVotes[r], open = this.voteOpen();
+      return h("div", { class: "vote-btns" }, ord.map((s, i) => {
+        const sg = songOf(r, s), state = states ? states[i] : "";
+        const pill = state === "playing" ? h("span", { class: "vbtn-live" }, h("span", { class: "eq", "aria-hidden": "true" }, h("i"), h("i"), h("i"), h("i")), "על הבמה עכשיו")
+          : state === "done" ? h("span", { class: "vbtn-live is-done" }, "ניגנו") : state === "next" ? h("span", { class: "vbtn-live is-done" }, "הבא") : null;
+        const btn = h(open ? "button" : "div", { type: open ? "button" : null, class: "vbtn vbtn-" + s + (mine === s ? " is-on" : "") + (mine && mine !== s ? " is-off" : "") + (open ? "" : " is-static") + (state === "playing" ? " is-playing" : ""),
+          "aria-pressed": open ? (mine === s ? "true" : "false") : null, onclick: open ? () => this.castVote(r, s) : null },
+          window.SCArt.img(videoKey(r, s), "vbtn-art"),
+          h("span", { class: "vbtn-side" }, SIDE[s].latin, h("small", null, SIDE[s].team), pill),
+          h("span", { class: "vbtn-title" + (sg.hebrew ? " is-he" : "") }, bdi(sg.title)),
+          h("span", { class: "vbtn-meta" }, bdi(sg.artist), " · ", sg.source),
+          open ? h("span", { class: "vbtn-check", "aria-hidden": "true" }, mine === s ? "✓ ההצבעה שלך" : "הצבעה") : null);
+        return h("div", { class: "vote-item" }, btn, this.songLinks(r, s));
+      }));
+    }
     vDuel() {
-      const st = this.st, r = st.round, ord = sideOrder(st, r), ph = st.phase;
-      const stateOf = (i) => ph === "intro" ? (i === 0 ? "next" : "wait") : ph === "song1" ? (i === 0 ? "playing" : "wait") : (i === 0 ? "done" : "playing");
+      const st = this.st, r = st.round, ph = st.phase, open = this.voteOpen(), mine = this.myVotes[r];
+      this.closed = null; this.root.classList.remove("vote-closed");
+      const states = ph === "intro" ? ["next", ""] : ph === "song1" ? ["playing", ""] : ["done", "playing"];
+      this.voteNote = h("p", { class: "aud-note vote-note" },
+        open ? (mine ? "ההצבעה נקלטה. אפשר לשנות עד סוף הדו־קרב." : "אפשר להצביע כבר עכשיו, ולשנות עד סוף הדו־קרב.")
+          : (ph === "song2" ? "ההצבעה נפתחת מיד כשהשיר נגמר. תהיו מוכנים." : "ההצבעה נפתחת אחרי שני השירים."));
       return h("section", { class: "aud-duel" },
-        this.duelHead(st),
-        h("div", { class: "tiles" }, ord.map((s, i) => this.songTile(r, s, stateOf(i), { next: ph === "intro" && i === 0 }))),
-        h("p", { class: "aud-note" }, ph === "song2" ? "ההצבעה נפתחת מיד כשהשיר נגמר. תהיו מוכנים." : "ההצבעה נפתחת אחרי שני השירים."),
+        h("div", { class: "vote-top" },
+          h("div", null, open ? h("p", { class: "onair" }, h("i"), "ההצבעה פתוחה") : null, this.duelHead(st))),
+        this.voteList(r, states),
+        this.voteNote,
         this.scoreStrip(),
         this.followCard()
       );
     }
-    /* -- voting -- */
+    /* -- final countdown -- */
     vVoting() {
-      const st = this.st, r = st.round, ord = sideOrder(st, r), mine = this.myVotes[r];
+      const st = this.st, r = st.round, mine = this.myVotes[r];
       this.closed = null; this.root.classList.remove("vote-closed");
       this.clock = leader("leader-sm");
-      this.closedNote = h("p", { class: "aud-note vote-note" }, mine ? "ההצבעה נקלטה. אפשר לשנות עד שהזמן נגמר." : "בוחרים את השיר שניצח. אפשר לשנות עד שהזמן נגמר.");
-      const vote = async (side) => {
-        if (this.closed) return;
-        this.myVotes[r] = side; this.save();
-        if (navigator.vibrate) navigator.vibrate(18);
-        this._key = null; this.render();
-        try { await this.be.vote(r, side, { ticket: this.me.ticket, name: this.me.name }); }
-        catch (e) { this.closedNote.textContent = "ההצבעה כבר נסגרה."; }
-      };
+      this.voteNote = this.closedNote = h("p", { class: "aud-note vote-note" }, mine ? "ההצבעה נקלטה. אפשר לשנות עד שהזמן נגמר." : "בוחרים את השיר שניצח. אפשר לשנות עד שהזמן נגמר.");
       return h("section", { class: "aud-vote" },
         h("div", { class: "vote-top" },
-          h("div", null, h("p", { class: "onair" }, h("i"), "ההצבעה פתוחה"), h("h2", { class: "duel-theme" }, SET[r].theme)),
+          h("div", null, h("p", { class: "onair" }, h("i"), "שניות אחרונות להצבעה"), h("h2", { class: "duel-theme" }, SET[r].theme)),
           this.clock),
-        h("div", { class: "vote-btns" }, ord.map(s => {
-          const sg = songOf(r, s);
-          return h("button", { type: "button", class: "vbtn vbtn-" + s + (mine === s ? " is-on" : "") + (mine && mine !== s ? " is-off" : ""), "aria-pressed": mine === s ? "true" : "false", onclick: () => vote(s) },
-            window.SCArt.img(videoKey(r, s), "vbtn-art"),
-            h("span", { class: "vbtn-side" }, SIDE[s].latin, h("small", null, SIDE[s].team)),
-            h("span", { class: "vbtn-title" + (sg.hebrew ? " is-he" : "") }, bdi(sg.title)),
-            h("span", { class: "vbtn-meta" }, sg.source),
-            h("span", { class: "vbtn-check", "aria-hidden": "true" }, mine === s ? "✓ ההצבעה שלך" : "בחירה"));
-        })),
+        this.voteList(r, ["done", "done"]),
         this.closedNote
       );
     }
@@ -466,7 +494,10 @@
           h("h2", { class: "aud-h2" + (s.hebrew ? "" : " latin-title") }, bdi(s.title)),
           h("p", { class: "muted" }, bdi(s.artist), " · ", s.source, s.sourceEn && !s.hebrew ? " (" + s.sourceEn + ")" : "", s.year ? " · " + s.year : ""),
           s.medley ? h("p", null, "במחרוזת: ", s.medley.join(" ← ")) : null,
-          h("p", { class: "fact" }, "💡 ", s.fact)];
+          s.scene ? h("div", { class: "scene" }, h("span", { class: "scene-k" }, data.side === "tv" ? "בסדרה" : "בסרט"), h("p", null, s.scene)) : null,
+          h("p", { class: "fact" }, "💡 ", s.fact),
+          h("a", { class: "btn-ghost lyrics-btn", href: lyricsUrl(s), target: "_blank", rel: "noopener" }, "📝 למילים של השיר"),
+          h("p", { class: "aud-fine" }, "המילים נפתחות באתר מילים חיצוני.")];
       } else if (kind === "contact") {
         body = [h("p", { class: "eyebrow" }, "Soundclash"), h("h2", { class: "aud-h2" }, "דברו איתנו"), this.contactBlock()];
       } else {
@@ -536,7 +567,7 @@
     }
     onState(prev) {
       const st = this.st;
-      const sig = st.phase + "|" + st.round + "|" + JSON.stringify((st.results || {})[st.round] || null) + "|" + JSON.stringify(st.raffle) + "|" + (st.screen && st.screen.overlay) + "|" + (st.screen && st.screen.qr) + "|" + st.liveBars + "|" + JSON.stringify(st.order || {}) + "|" + this.hasVideo() + "|" + (st.promo && st.promo.at && st.promo.at + 25000 > Date.now() ? st.promo.seq : 0);
+      const sig = st.phase + "|" + st.round + "|" + JSON.stringify((st.results || {})[st.round] || null) + "|" + JSON.stringify(st.raffle) + "|" + (st.screen && st.screen.overlay) + "|" + (st.screen && st.screen.qr) + "|" + st.liveBars + "|" + JSON.stringify(st.order || {}) + "|" + st.voteDuringSongs + "|" + this.hasVideo() + "|" + (st.promo && st.promo.at && st.promo.at + 25000 > Date.now() ? st.promo.seq : 0);
       if (!prev || prev.round !== st.round || this.vRound !== st.round) {
         if (this.unVotes) this.unVotes();
         this.vRound = st.round; this.votes = [];
@@ -771,6 +802,7 @@
           h("div", { class: "s-lower-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
           h("div", { class: "s-lower-meta" }, bdi(s.artist), " · ", s.source)),
         h("div", { class: "s-lower-theme" }, h("small", null, "דו־קרב " + pad(r + 1)), SET[r].theme),
+        st.voteDuringSongs !== false ? h("div", { class: "s-lower-votes" }, h("small", null, "מצביעים עכשיו"), this.$songVotes = h("b", null, "0")) : null,
         h("div", { class: "s-lower-score" }, h("span", { class: "tv" }, "TV ", h("b", null, sc.tv)), h("span", { class: "film" }, h("b", null, sc.film), " FILM")));
       if (this.hasVideo()) return h("div", { class: "s-song has-video" + (overlay ? "" : " no-overlay") }, overlay ? lower : null);
       const nextSide = st.phase === "song1" ? ord[1] : null;
@@ -781,7 +813,8 @@
           h("div", { class: "s-hero-text" },
             h("div", { class: "s-hero-kick" }, h("span", { class: "eqbig" }, h("i"), h("i"), h("i"), h("i"), h("i")), "מתנגן עכשיו · ", SIDE[side].team),
             h("div", { class: "s-hero-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
-            h("div", { class: "s-hero-meta" }, bdi(s.artist), " · ", h("b", null, s.source)))),
+            h("div", { class: "s-hero-meta" }, bdi(s.artist), " · ", h("b", null, s.source)),
+            st.voteDuringSongs !== false ? h("div", { class: "s-song-votes" }, h("span", { class: "s-onair" }, h("i"), "ההצבעה פתוחה"), this.$songVotes2 = h("b", null, "0"), h("span", null, "קולות")) : null)),
         nextSide ? h("div", { class: "s-next" }, h("small", null, "ואחריו, " + SIDE[nextSide].team + ":"), " ", bdi(songOf(r, nextSide).title)) :
           h("div", { class: "s-next" }, h("small", null, "אחרי השיר הזה"), " נפתחת ההצבעה"));
     }
@@ -804,7 +837,7 @@
         this.topBar("דו־קרב " + pad(r + 1) + " · " + SET[r].theme),
         h("div", { class: "s-vote-grid" },
           col(ord[0]),
-          h("div", { class: "s-vote-center" }, h("div", { class: "s-onair" }, h("i"), "ההצבעה פתוחה"), this.$clock,
+          h("div", { class: "s-vote-center" }, h("div", { class: "s-onair" }, h("i"), st.voteDuringSongs !== false ? "שניות אחרונות" : "ההצבעה פתוחה"), this.$clock,
             h("div", { class: "s-vote-total" }, this.$total, h("span", null, "קולות"))),
           col(ord[1])),
         h("div", { class: "s-vote-qr" }, this.qr("scr-qr-mid")));
@@ -892,6 +925,11 @@
     updateLive() {
       const st = this.st; if (!st) return;
       if (st.phase === "lobby") { if (this.$joined) this.$joined.textContent = this.players.length; this.fillPred(); }
+      if (st.phase === "song1" || st.phase === "song2") {
+        const n = tally(this.votes.filter(v => v.r === st.round)).total;
+        if (this.$songVotes) this.$songVotes.textContent = n;
+        if (this.$songVotes2) this.$songVotes2.textContent = n;
+      }
       if (st.phase === "voting" && this.$total) {
         const t = tally(this.votes.filter(v => v.r === st.round));
         this.$total.textContent = t.total;
@@ -1009,10 +1047,10 @@
       const st = this.st, r = st.round;
       switch (st.phase) {
         case "lobby": return { label: "פתיחת דו־קרב 1 · " + SET[0].theme, run: () => this.goIntro(0) };
-        case "intro": { const sd = sideOrder(st, r)[0]; return { label: "▶ שיר ראשון: " + songOf(r, sd).title, run: () => this.goSong("song1") }; }
-        case "song1": { const sd = sideOrder(st, r)[1]; return { label: "▶ שיר שני: " + songOf(r, sd).title, run: () => this.goSong("song2") }; }
-        case "song2": return { label: "🗳 פתיחת ההצבעה (" + (st.voteSeconds || 20) + " שניות)", run: () => this.openVoting() };
-        case "voting": return { label: "סגירת ההצבעה וחשיפה", run: () => this.closeVoting() };
+        case "intro": { const sd = sideOrder(st, r)[0]; return { label: "▶ מתחילים את השיר הראשון: ", song: songOf(r, sd).title, run: () => this.goSong("song1") }; }
+        case "song1": { const sd = sideOrder(st, r)[1]; return { label: "השיר הראשון נגמר ← ▶ השיר השני: ", song: songOf(r, sd).title, run: () => this.goSong("song2") }; }
+        case "song2": return { label: "השיר השני נגמר ← 🗳 ספירה לאחור להצבעה (" + (st.voteSeconds || 20) + " שניות)", run: () => this.openVoting() };
+        case "voting": return { label: "⏹ סגירת ההצבעה וחשיפת התוצאה", run: () => this.closeVoting() };
         case "reveal": return r + 1 < N ? { label: "לדו־קרב " + (r + 2) + " · " + SET[r + 1].theme, run: () => this.goIntro(r + 1) } : { label: "🏆 הכרזת האלופים", run: () => this.set({ phase: "final", video: this.vid("", "stop") }) };
         case "final": return { label: "🎟 ההגרלה הגדולה", run: () => this.set({ phase: "raffle", raffle: null }) };
         case "raffle": return st.raffle ? { label: "הדרן", run: () => this.set({ phase: "encore" }) } : { label: "🎟 הגרלת זוכה", run: () => this.drawRaffle() };
@@ -1106,9 +1144,25 @@
       this.$now.replaceChildren(
         h("p", { class: "now-eyebrow" }, h("span", { class: "now-dot ph-" + st.phase }), t.eyebrow),
         h("h1", { class: "now-title" }, bdi(t.title)),
-        t.sub ? h("p", { class: "now-sub" }, bdi(t.sub)) : null);
-      this.$next.textContent = a.label; this.$next.disabled = !a.run;
+        t.sub ? h("p", { class: "now-sub" }, bdi(t.sub)) : null,
+        this.stepStrip());
+      this.$next.replaceChildren(a.label, a.song ? bdi(a.song) : ""); this.$next.disabled = !a.run;
       this.$back.disabled = st.phase === "lobby";
+    }
+    stepStrip() {
+      const st = this.st, r = st.round;
+      if (!["intro", "song1", "song2", "voting", "reveal"].includes(st.phase)) return null;
+      const ord = sideOrder(st, r), order = ["intro", "song1", "song2", "voting", "reveal"], cur = order.indexOf(st.phase);
+      const steps = [
+        { ph: "intro", label: "הצגת הדו־קרב", go: () => this.goIntro(r) },
+        { ph: "song1", label: "שיר 1 · " + SIDE[ord[0]].latin, sub: songOf(r, ord[0]).title, go: () => this.goSong("song1") },
+        { ph: "song2", label: "שיר 2 · " + SIDE[ord[1]].latin, sub: songOf(r, ord[1]).title, go: () => this.goSong("song2") },
+        { ph: "voting", label: "ספירה לאחור", sub: (st.voteSeconds || 20) + " שניות", go: () => this.openVoting() },
+        { ph: "reveal", label: "תוצאה", go: () => this.closeVoting() }
+      ];
+      return h("ol", { class: "steps", "aria-label": "שלבי הדו־קרב" }, steps.map((x, i) =>
+        h("li", null, h("button", { type: "button", class: "step" + (i === cur ? " is-now" : i < cur ? " is-done" : ""), "aria-current": i === cur ? "step" : null, onclick: x.go },
+          h("span", { class: "step-n" }, i < cur ? "✓" : String(i + 1)), h("span", { class: "step-l" }, x.label), x.sub ? h("span", { class: "step-s" }, bdi(x.sub)) : null))));
     }
     renderCtx() {
       const st = this.st, r = st.round, kids = [];
@@ -1139,12 +1193,13 @@
     renderTally() {
       if (!this.$tally || !this.st) return;
       const st = this.st, r = st.round;
-      if (!["voting", "reveal"].includes(st.phase)) { this.$tally.hidden = true; return; }
+      const songsOpen = (st.phase === "song1" || st.phase === "song2") && st.voteDuringSongs !== false;
+      if (!["voting", "reveal"].includes(st.phase) && !songsOpen) { this.$tally.hidden = true; return; }
       this.$tally.hidden = false;
       const t = st.phase === "reveal" && (st.results || {})[r] ? st.results[r] : tally(this.votes.filter(v => v.r === r));
       const tv = pct(t.tv, t.total);
       this.$tally.replaceChildren(
-        h("div", { class: "tally-head" }, h("span", null, st.phase === "voting" ? "ספירה חיה" : "תוצאה סופית"), h("b", null, t.total + " קולות")),
+        h("div", { class: "tally-head" }, h("span", null, st.phase === "reveal" ? "תוצאה סופית" : "ספירה חיה (רק את/ה רואה את האחוזים כאן)"), h("b", null, t.total + " קולות")),
         h("div", { class: "tally-bar" }, h("i", { class: "tv", style: { width: (t.total ? tv : 50) + "%" } }), h("i", { class: "film", style: { width: (t.total ? 100 - tv : 50) + "%" } })),
         h("div", { class: "tally-lab" }, h("span", { class: "tv" }, h("bdi", { dir: "ltr" }, "TV " + (t.total ? tv : 0) + "% · " + t.tv)), h("span", { class: "film" }, h("bdi", { dir: "ltr" }, "FILM " + (t.total ? 100 - tv : 0) + "% · " + t.film))));
     }
@@ -1155,6 +1210,7 @@
       this.$settings.replaceChildren(
         h("h2", { class: "adm-h" }, "הגדרות"),
         h("div", { class: "set-row" }, h("label", { for: "adm-secs" }, "זמן הצבעה"), secs),
+        h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-during", type: "checkbox", checked: st.voteDuringSongs !== false, onchange: (e) => this.set({ voteDuringSongs: e.target.checked }) }), "ההצבעה פתוחה כבר מתחילת השיר הראשון")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-live", type: "checkbox", checked: st.liveBars !== false, onchange: (e) => this.set({ liveBars: e.target.checked }) }), "להציג אחוזים חיים על המסך בזמן ההצבעה")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-qr", type: "checkbox", checked: !!(st.screen && st.screen.qr), onchange: (e) => this.set({ screen: Object.assign({}, st.screen, { qr: e.target.checked }) }) }), "QR קבוע בפינת המסך (למאחרים)")),
         this.dangerZone());
@@ -1239,6 +1295,15 @@
       this.st = st; if (!this.running) return;
       const key = st.phase + st.round;
       if (key === this.lastPhaseKey && !force) return; this.lastPhaseKey = key;
+      if ((st.phase === "song1" || st.phase === "song2") && st.voteDuringSongs !== false) {
+        const r = st.round, bias = 0.5 + Math.sin((r + 1) * 2.17) * 0.18;
+        this.bots.forEach(b => {
+          if (b.voted === r + "" || Math.random() < (st.phase === "song1" ? 0.75 : 0.5)) return;
+          b.voted = r + "";
+          const side = Math.random() < bias + b.taste ? "tv" : "film";
+          this.timers.push(setTimeout(() => { const ok = this.st.round === r && ["song1", "song2", "voting"].includes(this.st.phase); if (ok) this.be.vote(r, side, b, b.uid).catch(() => {}); }, 500 + Math.random() * 15000));
+        });
+      }
       if (st.phase === "voting") {
         const r = st.round, bias = 0.5 + Math.sin((r + 1) * 2.17) * 0.18, span = Math.max(3, (st.votingEndsAt - Date.now()) / 1000 - 2);
         this.bots.forEach(b => {

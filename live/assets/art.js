@@ -47,7 +47,7 @@
 
   const P = {
     /* 01 · פתיחה בדואט */
-    "01-tv"(c, r) { // show-choir stage: curtains, spotlights, a lone mic
+    glee(c, r) { // show-choir stage: curtains, spotlights, a lone mic
       fill(c, lin(c, 0, 0, 0, H, [[0, "#1a0612"], [1, "#3b0a1e"]]));
       for (let i = 0; i < 14; i++) { const x = i < 7 ? i * 28 : W - (i - 7) * 28 - 28; c.fillStyle = lin(c, x, 0, x + 28, 0, [[0, "#5e0f24"], [.5, "#a3203d"], [1, "#4a0b1c"]]); c.fillRect(x, 0, 30, H); }
       beam(c, W * .35, -40, Math.PI * .58, .16, 700, "#ffe6b8", .45); beam(c, W * .65, -40, Math.PI * .42, .16, 700, "#ffd4f0", .4); beam(c, W * .5, -60, Math.PI / 2, .12, 700, "#fff3d6", .5);
@@ -56,7 +56,7 @@
       c.beginPath(); c.ellipse(W / 2, H * .4, 14, 22, 0, 0, 7); c.fill(); glow(c, W / 2, H * .38, 60, "rgba(255,240,210,.7)");
       stars(c, r, 60, "#ffe9c9", H * .5);
     },
-    "01-film"(c, r) { // summer-camp dance night: string lights over a lake at dusk
+    dirtydancing(c, r) { // summer-camp dance night: string lights over a lake at dusk
       fill(c, lin(c, 0, 0, 0, H, [[0, "#13233d"], [.55, "#c86a45"], [.62, "#e89a5c"], [1, "#2a1a1f"]]));
       c.fillStyle = "#1d2433"; c.beginPath(); c.moveTo(0, H * .6); for (let x = 0; x <= W; x += 40) c.lineTo(x, H * .6 - 40 - Math.sin(x / 120) * 30 - r() * 20); c.lineTo(W, H * .62); c.lineTo(0, H * .62); c.fill();
       c.fillStyle = lin(c, 0, H * .62, 0, H, [[0, "#d98a56"], [1, "#1b1418"]]); c.fillRect(0, H * .62, W, H);
@@ -67,7 +67,7 @@
       stars(c, r, 40, "#fff", H * .3);
     },
     /* 02 · הריקוד */
-    "02-tv"(c, r) { // sixties lounge: sunburst + spinning vinyl
+    vinyl(c, r) { // sixties lounge: sunburst + spinning vinyl
       fill(c, "#0f2a2e");
       for (let i = 0; i < 36; i++) { const a = i / 36 * Math.PI * 2; c.fillStyle = i % 2 ? "#e8813a" : "#f2b04a"; c.beginPath(); c.moveTo(W * .3, H * .55); c.arc(W * .3, H * .55, 900, a, a + Math.PI / 36); c.fill(); }
       c.fillStyle = rad(c, W * .3, H * .55, 0, 700, [[0, "rgba(15,42,46,0)"], [1, "rgba(15,42,46,.9)"]]); fill(c, c.fillStyle);
@@ -76,7 +76,7 @@
       c.fillStyle = "#e24b3b"; c.beginPath(); c.arc(W * .68, H * .55, 60, 0, 7); c.fill(); c.fillStyle = "#0a0a0a"; c.beginPath(); c.arc(W * .68, H * .55, 6, 0, 7); c.fill();
       c.fillStyle = "rgba(255,255,255,.12)"; c.beginPath(); c.moveTo(W * .68, H * .55); c.arc(W * .68, H * .55, 188, -1.2, -.7); c.fill();
     },
-    "02-film"(c, r) { // lit-up disco floor in perspective + mirror ball
+    disco(c, r) { // lit-up disco floor in perspective + mirror ball
       fill(c, "#07030c");
       const cols = ["#ff3d7f", "#ffd23d", "#3dd6ff", "#a04dff", "#ff8a3d", "#5dff9a"];
       for (let row = 0; row < 9; row++) for (let col = -8; col < 9; col++) {
@@ -93,7 +93,7 @@
       glow(c, bx - 20, by - 25, 40, "rgba(255,255,255,.9)");
     },
     /* 03 · להציל חיים */
-    "03-tv"(c, r) { // hospital at night: a glowing heartbeat line across lit windows
+    ecg(c, r) { // hospital at night: a glowing heartbeat line across lit windows
       fill(c, lin(c, 0, 0, 0, H, [[0, "#06121f"], [1, "#0d2236"]]));
       for (let y = 40; y < H; y += 54) for (let x = 20; x < W; x += 74) { c.fillStyle = r() < .35 ? "rgba(140,200,255," + (.15 + r() * .35) + ")" : "rgba(255,255,255,.04)"; c.fillRect(x, y, 56, 36); }
       c.save(); c.globalCompositeOperation = "lighter";
@@ -103,7 +103,7 @@
       line(18, "rgba(80,255,190,.12)"); line(8, "rgba(80,255,190,.3)"); line(3, "#b8ffe4"); c.restore();
       glow(c, W * .82, H * .2, 90, "rgba(255,80,80,.35)"); c.fillStyle = "rgba(255,120,120,.85)"; c.fillRect(W * .82 - 8, H * .2 - 26, 16, 52); c.fillRect(W * .82 - 26, H * .2 - 8, 52, 16);
     },
-    "03-film"(c, r) { // open ocean at sunset, a distant liner glowing on the horizon
+    titanic(c, r) { // open ocean at sunset, a distant liner glowing on the horizon
       fill(c, lin(c, 0, 0, 0, H * .58, [[0, "#1d1440"], [.6, "#d4566b"], [1, "#ffb36b"]]));
       glow(c, W * .7, H * .56, 220, "rgba(255,200,120,.8)"); c.fillStyle = "#ffe2a8"; c.beginPath(); c.arc(W * .7, H * .56, 46, Math.PI, 0); c.fill();
       c.fillStyle = lin(c, 0, H * .58, 0, H, [[0, "#ef8a6a"], [.3, "#3a2a55"], [1, "#0c0b1c"]]); c.fillRect(0, H * .58, W, H);
@@ -114,7 +114,7 @@
       stars(c, r, 50, "#fff", H * .3);
     },
     /* 04 · להיות הכי טוב */
-    "04-tv"(c, r) { // bright adventure: lightning, rays and rolling green hills
+    pokemon(c, r) { // bright adventure: lightning, rays and rolling green hills
       fill(c, lin(c, 0, 0, 0, H, [[0, "#3aa0ff"], [1, "#bfe7ff"]]));
       for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; c.fillStyle = "rgba(255,255,255,.14)"; c.beginPath(); c.moveTo(W * .5, H * .4); c.arc(W * .5, H * .4, 900, a, a + .12); c.fill(); }
       glow(c, W * .5, H * .4, 260, "rgba(255,240,120,.8)");
@@ -123,7 +123,7 @@
       [["#58c24a", .72, 50], ["#3fa83a", .8, 40], ["#2f8f31", .9, 30]].forEach(([col, base, amp]) => { c.fillStyle = col; c.beginPath(); c.moveTo(0, H); for (let x = 0; x <= W; x += 20) c.lineTo(x, H * base - Math.sin(x / 140 + base * 9) * amp); c.lineTo(W, H); c.fill(); });
       for (let i = 0; i < 40; i++) { c.fillStyle = "rgba(255,255,255,.9)"; const x = r() * W, y = r() * H * .6, s = 2 + r() * 4; c.fillRect(x - s, y, s * 2, 1.5); c.fillRect(x, y - s, 1.5, s * 2); }
     },
-    "04-film"(c, r) { // the ring at night: ropes, one hard spotlight, tiger stripes at the edges
+    rocky(c, r) { // the ring at night: ropes, one hard spotlight, tiger stripes at the edges
       fill(c, "#0b0605");
       beam(c, W / 2, -80, Math.PI / 2, .3, 700, "#fff2d6", .5);
       c.fillStyle = rad(c, W / 2, H * .82, 10, 420, [[0, "rgba(255,236,200,.5)"], [1, "rgba(0,0,0,0)"]]); c.fillRect(0, H * .5, W, H * .5);
@@ -140,7 +140,7 @@
       glow(c, W / 2, H * .1, 80, "rgba(255,255,255,.7)");
     },
     /* 05 · לא נכנעים */
-    "05-tv"(c, r) { // the vault: red light, a heavy round door, bills in the air
+    vault(c, r) { // the vault: red light, a heavy round door, bills in the air
       fill(c, lin(c, 0, 0, W, H, [[0, "#2a0505"], [1, "#0c0202"]]));
       glow(c, W * .62, H * .5, 380, "rgba(220,30,30,.55)");
       const vx = W * .62, vy = H * .52;
@@ -149,7 +149,7 @@
       c.fillStyle = "#4d0a0a"; c.beginPath(); c.arc(vx, vy, 36, 0, 7); c.fill();
       for (let i = 0; i < 26; i++) { c.save(); c.translate(r() * W * .55, r() * H); c.rotate(r() * 3); c.fillStyle = "rgba(170,210,160," + (.35 + r() * .4) + ")"; c.fillRect(-34, -16, 68, 32); c.strokeStyle = "rgba(255,255,255,.3)"; c.strokeRect(-28, -11, 56, 22); c.restore(); }
     },
-    "05-film"(c, r) { // the big top: striped tent, spotlights, gold confetti
+    circus(c, r) { // the big top: striped tent, spotlights, gold confetti
       fill(c, "#12060a");
       for (let i = -10; i < 11; i++) { c.fillStyle = i % 2 ? "#b3172c" : "#f1e6d2"; c.beginPath(); c.moveTo(W / 2, -40); c.lineTo(W / 2 + i * 70, H); c.lineTo(W / 2 + (i + 1) * 70, H); c.closePath(); c.fill(); }
       c.fillStyle = rad(c, W / 2, H * .3, 40, 620, [[0, "rgba(18,6,10,.0)"], [1, "rgba(18,6,10,.92)"]]); fill(c, c.fillStyle);
@@ -158,7 +158,7 @@
       for (let i = 0; i < 160; i++) { c.save(); c.translate(r() * W, r() * H); c.rotate(r() * 3); c.fillStyle = r() < .7 ? "#f5c451" : "#fff"; c.globalAlpha = .5 + r() * .5; c.fillRect(-4, -2, 8, 4); c.restore(); }
     },
     /* 06 · סוף הניינטיז */
-    "06-tv"(c, r) { // the lineup wall: height lines and five pools of light
+    lineup(c, r) { // the lineup wall: height lines and five pools of light
       fill(c, lin(c, 0, 0, 0, H, [[0, "#14262c"], [1, "#1d1a16"]]));
       c.strokeStyle = "rgba(220,235,245,.35)"; c.lineWidth = 2;
       for (let i = 0; i < 12; i++) { const y = 60 + i * 34; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); c.lineWidth = i % 2 ? 1 : 3; }
@@ -167,7 +167,7 @@
       c.fillStyle = "rgba(10,14,18,.8)"; c.fillRect(0, H * .86, W, H * .14);
       glow(c, W * .9, H * .1, 70, "rgba(120,190,255,.4)");
     },
-    "06-film"(c, r) { // deep space: the earth's edge, a burning asteroid, sunrise flare
+    space(c, r) { // deep space: the earth's edge, a burning asteroid, sunrise flare
       fill(c, "#020309"); stars(c, r, 380, "#fff");
       c.fillStyle = rad(c, W * .5, H * 2.25, H * 1.6, H * 1.85, [[0, "#1d4f9e"], [.92, "#4aa0ff"], [1, "rgba(80,160,255,0)"]]); c.beginPath(); c.arc(W * .5, H * 2.25, H * 1.85, 0, 7); c.fill();
       glow(c, W * .14, H * .74, 220, "rgba(255,220,170,.9)");
@@ -178,7 +178,7 @@
       c.fillStyle = "rgba(255,170,90,.55)"; c.beginPath(); c.arc(ax - 18, ay + 16, 40, 0, 7); c.fill();
     },
     /* 07 · קרב האגדות */
-    "07-tv"(c, r) { // fairy-tale road: a rainbow, an emerald glow on the horizon, a heart-shaped cloud
+    rainbow(c, r) { // fairy-tale road: a rainbow, an emerald glow on the horizon, a heart-shaped cloud
       fill(c, lin(c, 0, 0, 0, H, [[0, "#6fb7ff"], [.6, "#ffd9f2"], [1, "#9ad07a"]]));
       ["#ff4d4d", "#ff9f3d", "#ffe14d", "#57d65b", "#4da6ff", "#8a5bff"].forEach((col, i) => { c.strokeStyle = col; c.globalAlpha = .7; c.lineWidth = 18; c.beginPath(); c.arc(W * .5, H * .78, 400 - i * 18, Math.PI, 0); c.stroke(); });
       c.globalAlpha = 1;
@@ -188,7 +188,7 @@
         for (let k = 0; k < 4; k++) poly(c, [[W / 2 - w0 / 2 + k * w0 / 4, y0], [W / 2 - w0 / 2 + (k + 1) * w0 / 4, y0], [W / 2 - w1 / 2 + (k + 1) * w1 / 4, y1], [W / 2 - w1 / 2 + k * w1 / 4, y1]], (row + k) % 2 ? "#f2c230" : "#ffd84d"); }
       c.globalAlpha = .85; heart(c, W * .8, H * .1, 90, "#fff"); heart(c, W * .8, H * .12, 70, "#ffeaf6"); c.globalAlpha = 1;
     },
-    "07-film"(c, r) { // misty swamp at night, a far-off fairy-tale castle, fireflies
+    swamp(c, r) { // misty swamp at night, a far-off fairy-tale castle, fireflies
       fill(c, lin(c, 0, 0, 0, H, [[0, "#0f2412"], [.6, "#2c4a1f"], [1, "#0c160a"]]));
       glow(c, W * .7, H * .25, 120, "rgba(230,255,200,.5)"); c.fillStyle = "#f2ffd8"; c.beginPath(); c.arc(W * .7, H * .25, 34, 0, 7); c.fill();
       c.fillStyle = "#1a2c14"; [[W * .18, 90], [W * .22, 130], [W * .26, 80], [W * .3, 110]].forEach(([x, hh]) => { c.fillRect(x - 12, H * .55 - hh, 24, hh); poly(c, [[x - 18, H * .55 - hh], [x, H * .55 - hh - 40], [x + 18, H * .55 - hh]], "#1a2c14"); });
@@ -198,7 +198,7 @@
       for (let i = 0; i < 40; i++) glow(c, r() * W, H * .35 + r() * H * .6, 10 + r() * 8, "rgba(220,255,120,.9)");
     },
     /* 08 · מישהו שיהיה שם */
-    "08-tv"(c, r) { // big-city friends: dusk skyline through a café window, a steaming mug
+    friends(c, r) { // big-city friends: dusk skyline through a café window, a steaming mug
       fill(c, lin(c, 0, 0, 0, H, [[0, "#2b2a5a"], [.6, "#f08a5d"], [1, "#2a1c1c"]]));
       skyline(c, r, H * .72, 60, 260, "#1c1830", "rgba(255,214,140,.85)", .3);
       c.fillStyle = "#3b2418"; c.fillRect(0, H * .72, W, H * .28);
@@ -209,7 +209,7 @@
       c.fillStyle = "#6b3a20"; c.beginPath(); c.ellipse(mx, my, 52, 10, 0, 0, 7); c.fill();
       c.strokeStyle = "rgba(255,255,255,.35)"; c.lineWidth = 6; for (let i = -1; i <= 1; i++) { c.beginPath(); c.moveTo(mx + i * 22, my - 10); c.bezierCurveTo(mx + i * 22 - 20, my - 50, mx + i * 22 + 20, my - 70, mx + i * 22, my - 110); c.stroke(); }
     },
-    "08-film"(c, r) { // eighties hero night: neon sun, grid horizon, a lightning storm
+    hero(c, r) { // eighties hero night: neon sun, grid horizon, a lightning storm
       fill(c, lin(c, 0, 0, 0, H * .62, [[0, "#0a0420"], [1, "#5b0f5e"]]));
       c.save(); c.beginPath(); c.arc(W / 2, H * .62, 170, Math.PI, 0); c.clip();
       c.fillStyle = lin(c, 0, H * .62 - 170, 0, H * .62, [[0, "#ffe14d"], [1, "#ff2e88"]]); c.fillRect(0, 0, W, H);
@@ -223,7 +223,7 @@
       c.restore();
     },
     /* 09 · תל אביב מול תל אביב */
-    "09-tv"(c, r) { // Tel Aviv rooftops at night: water heaters, antennas, a laundry line
+    rooftops(c, r) { // Tel Aviv rooftops at night: water heaters, antennas, a laundry line
       fill(c, lin(c, 0, 0, 0, H, [[0, "#1b1a2e"], [1, "#4a3e5c"]]));
       glow(c, W * .2, H * .2, 160, "rgba(255,190,140,.25)");
       skyline(c, r, H * .8, 40, 120, "#2a2536", "rgba(255,210,150,.6)", .18);
@@ -236,7 +236,7 @@
       ["#e24b3b", "#f2c230", "#5d8fd6", "#f4efe6", "#7fd49b"].forEach((col, i) => { const x = 120 + i * 160; c.fillStyle = col; c.globalAlpha = .8; c.fillRect(x, H * .56 + Math.sin(i) * 6, 40, 52); }); c.globalAlpha = 1;
       stars(c, r, 30, "#fff", H * .3);
     },
-    "09-film"(c, r) { // late-seventies Tel Aviv: rounded Bauhaus balconies, a palm, orange evening
+    bauhaus(c, r) { // late-seventies Tel Aviv: rounded Bauhaus balconies, a palm, orange evening
       fill(c, lin(c, 0, 0, 0, H, [[0, "#f39a4a"], [.7, "#ffd9a0"], [1, "#c97a3c"]]));
       glow(c, W * .82, H * .3, 200, "rgba(255,240,200,.7)");
       c.fillStyle = "#efe2c8"; c.fillRect(W * .08, H * .12, W * .56, H * .88);
@@ -249,7 +249,7 @@
       c.fillStyle = "#2f5a2a"; for (let i = 0; i < 9; i++) { const a = -Math.PI + i / 8 * Math.PI; c.save(); c.translate(W * .84, H * .34); c.rotate(a); c.beginPath(); c.ellipse(70, 0, 80, 12, .3, 0, 7); c.fill(); c.restore(); }
     },
     /* 10 · המנונים לרחבה */
-    "10-tv"(c, r) { // the dance studio: mirror wall, barre, neon stars and spotlights
+    fame(c, r) { // the dance studio: mirror wall, barre, neon stars and spotlights
       fill(c, lin(c, 0, 0, 0, H, [[0, "#1a0b2e"], [1, "#2e0f3a"]]));
       for (let i = 0; i < 6; i++) { c.fillStyle = "rgba(180,200,255,.06)"; c.fillRect(30 + i * 158, 40, 148, H * .55); c.strokeStyle = "rgba(255,255,255,.15)"; c.strokeRect(30 + i * 158, 40, 148, H * .55); }
       c.fillStyle = "#c9a86a"; c.fillRect(0, H * .5, W, 8);
@@ -259,21 +259,77 @@
       const star = (x, y, s, col) => { c.save(); c.translate(x, y); c.fillStyle = col; c.beginPath(); for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, d = i % 2 ? s * .42 : s; c.lineTo(Math.cos(a) * d, Math.sin(a) * d); } c.fill(); c.restore(); glow(c, x, y, s * 2.2, col, .5); };
       star(W * .5, H * .3, 70, "#ffe14d"); star(W * .2, H * .2, 30, "#ff5ec8"); star(W * .82, H * .24, 38, "#5de0ff");
     },
-    "10-film"(c, r) { // a pink city night in the rain: bokeh, streaks and falling hearts
+    rain(c, r) { // a pink city night in the rain: bokeh, streaks and falling hearts
       fill(c, lin(c, 0, 0, 0, H, [[0, "#2a0b2a"], [1, "#5c1340"]]));
       for (let i = 0; i < 45; i++) glow(c, r() * W, r() * H, 20 + r() * 60, ["rgba(255,90,170,.5)", "rgba(255,200,120,.45)", "rgba(140,170,255,.4)"][i % 3]);
       c.strokeStyle = "rgba(255,230,240,.45)"; c.lineWidth = 1.4;
       for (let i = 0; i < 260; i++) { const x = r() * W, y = r() * H, l = 14 + r() * 30; c.beginPath(); c.moveTo(x, y); c.lineTo(x - l * .25, y + l); c.stroke(); }
       for (let i = 0; i < 26; i++) { const s = 18 + r() * 34; c.globalAlpha = .55 + r() * .4; heart(c, r() * W, r() * H, s, r() < .5 ? "#ff3d8b" : "#ffb3d1"); }
       c.globalAlpha = 1;
+    },
+    rose(c, r) { // karaoke night: a single red rose under a spotlight, lyric-screen glow behind
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#140812"], [1, "#2a0b18"]]));
+      c.fillStyle = "rgba(90,120,255,.16)"; c.fillRect(W * .12, H * .1, W * .76, H * .5);
+      for (let i = 0; i < 4; i++) { c.fillStyle = "rgba(160,190,255," + (.25 - i * .04) + ")"; c.fillRect(W * .25, H * (.22 + i * .09), W * (.5 - i * .06), 10); }
+      beam(c, W / 2, -40, Math.PI / 2, .22, 700, "#ffe2ec", .4);
+      c.fillStyle = rad(c, W / 2, H * .9, 10, 280, [[0, "rgba(255,200,220,.4)"], [1, "rgba(0,0,0,0)"]]); c.fillRect(0, H * .55, W, H * .45);
+      const x = W / 2, y = H * .5;
+      c.strokeStyle = "#2f6b2a"; c.lineWidth = 7; c.beginPath(); c.moveTo(x, y + 40); c.quadraticCurveTo(x - 20, y + 140, x + 6, H * .98); c.stroke();
+      c.fillStyle = "#2f6b2a"; c.save(); c.translate(x - 12, y + 120); c.rotate(-.7); c.beginPath(); c.ellipse(0, 0, 30, 11, 0, 0, 7); c.fill(); c.restore();
+      ["#5e0a1a", "#8d1026", "#b5172f", "#d42a45", "#e9455e"].forEach((col, i) => {
+        const rr = 64 - i * 11; c.fillStyle = col; c.beginPath();
+        for (let k = 0; k <= 6; k++) { const a = k / 6 * Math.PI * 2 + i * .55, px = x + Math.cos(a) * rr, py = y + Math.sin(a) * rr * .8; k ? c.quadraticCurveTo(x + Math.cos(a - .5) * rr * 1.25, y + Math.sin(a - .5) * rr, px, py) : c.moveTo(px, py); }
+        c.fill(); });
+      glow(c, x, y, 120, "rgba(255,80,110,.35)");
+      for (let i = 0; i < 18; i++) { c.save(); c.translate(r() * W, H * .6 + r() * H * .4); c.rotate(r() * 3); c.fillStyle = "rgba(220,40,70," + (.4 + r() * .4) + ")"; c.beginPath(); c.ellipse(0, 0, 12, 7, 0, 0, 7); c.fill(); c.restore(); }
+    },
+    road(c, r) { // the long drive: an open highway at golden hour, mile markers flying by
+      fill(c, lin(c, 0, 0, 0, H * .55, [[0, "#2b3f7a"], [.6, "#f08a4b"], [1, "#ffd08a"]]));
+      glow(c, W * .5, H * .52, 200, "rgba(255,220,150,.9)");
+      c.fillStyle = "#3c2a3a"; c.beginPath(); c.moveTo(0, H * .55); for (let x = 0; x <= W; x += 30) c.lineTo(x, H * .55 - 24 - Math.sin(x / 90) * 18 - r() * 10); c.lineTo(W, H * .56); c.lineTo(0, H * .56); c.fill();
+      c.fillStyle = "#5a4a3a"; c.fillRect(0, H * .55, W, H * .45);
+      poly(c, [[W * .48, H * .55], [W * .52, H * .55], [W * .95, H], [W * .05, H]], "#2a2626");
+      for (let i = 0; i < 9; i++) { const t0 = i / 9, t1 = t0 + .05, y0 = H * .55 + Math.pow(t0, 2) * H * .45, y1 = H * .55 + Math.pow(t1, 2) * H * .45, w0 = 2 + t0 * 14, w1 = 2 + t1 * 14;
+        poly(c, [[W / 2 - w0, y0], [W / 2 + w0, y0], [W / 2 + w1, y1], [W / 2 - w1, y1]], "#ffd34d"); }
+      [[W * .05, W * .48], [W * .95, W * .52]].forEach(([xb, xt]) => { c.strokeStyle = "rgba(255,255,255,.5)"; c.lineWidth = 3; c.beginPath(); c.moveTo(xt, H * .55); c.lineTo(xb, H); c.stroke(); });
+      for (let i = 0; i < 5; i++) { const t = .15 + i * .2, y = H * .55 + t * t * H * .45, x = W / 2 + (W * .5) * t * 1.05; c.fillStyle = "#e8e2d4"; c.fillRect(x, y - 40 * t, 8 * t + 3, 40 * t); c.fillStyle = "#2f6b3a"; c.fillRect(x - 10 * t, y - 52 * t, 28 * t + 4, 14 * t + 2); }
+    },
+    greece(c, r) { // a Greek island: whitewashed houses, blue domes, a dazzling sea
+      fill(c, lin(c, 0, 0, 0, H * .5, [[0, "#1f7fd1"], [1, "#9fd6ff"]]));
+      glow(c, W * .82, H * .16, 140, "rgba(255,250,220,.95)");
+      c.fillStyle = lin(c, 0, H * .5, 0, H, [[0, "#1d6fbf"], [1, "#0b3a6e"]]); c.fillRect(0, H * .5, W, H * .5);
+      for (let y = H * .52; y < H; y += 7) { c.fillStyle = "rgba(255,255,255," + (.25 * r()) + ")"; c.fillRect(r() * W, y, 30 + r() * 80, 2); }
+      c.fillStyle = "#e9e1cf"; c.beginPath(); c.moveTo(0, H); c.lineTo(0, H * .55); c.quadraticCurveTo(W * .3, H * .48, W * .55, H * .7); c.lineTo(W * .62, H); c.fill();
+      const houses = [[30, .5, 120, 90], [150, .54, 100, 70], [60, .64, 140, 80], [230, .62, 110, 90], [10, .78, 160, 110], [190, .76, 150, 100], [340, .74, 120, 120]];
+      houses.forEach(([x, yf, w, hh], i) => { const y = H * yf; c.fillStyle = "#fbf8f1"; c.fillRect(x, y, w, hh); c.fillStyle = "rgba(0,0,0,.08)"; c.fillRect(x + w - 16, y, 16, hh);
+        c.fillStyle = "#2d63c8"; c.fillRect(x + 18, y + 24, 16, 22); if (i % 2) c.fillRect(x + w - 44, y + 24, 16, 22); });
+      [[95, .5, 34], [300, .62, 30]].forEach(([x, yf, rr]) => { c.fillStyle = "#1f56c4"; c.beginPath(); c.arc(x, H * yf, rr, Math.PI, 0); c.fill(); c.fillStyle = "#fbf8f1"; c.fillRect(x - 2, H * yf - rr - 18, 4, 18); c.fillRect(x - 8, H * yf - rr - 12, 16, 4); });
+      for (let i = 0; i < 9; i++) { c.fillStyle = "#e84d8a"; c.globalAlpha = .8; c.beginPath(); c.arc(40 + i * 46 + r() * 20, H * .72 + r() * 30, 8 + r() * 6, 0, 7); c.fill(); } c.globalAlpha = 1;
+    },
+    gaga(c, r) { // pop-club night: shattered mirror shards, magenta strobes, a white-hot stage
+      fill(c, "#0a0410");
+      for (let i = 0; i < 10; i++) beam(c, W * (.1 + i * .09), H, -Math.PI / 2 + (r() - .5) * .8, .05, 700, i % 2 ? "#ff2e9a" : "#ffffff", .3);
+      glow(c, W / 2, H * .7, 260, "rgba(255,60,170,.55)");
+      for (let i = 0; i < 26; i++) { const cx = r() * W, cy = r() * H * .75, s = 30 + r() * 70; c.save(); c.translate(cx, cy); c.rotate(r() * 6);
+        c.fillStyle = lin(c, -s, -s, s, s, [[0, "rgba(255,255,255,.55)"], [.5, "rgba(255,120,210,.25)"], [1, "rgba(120,60,255,.15)"]]);
+        poly(c, [[0, -s], [s * .7, s * (.2 + r() * .5)], [-s * (.3 + r() * .5), s * .6]], c.fillStyle); c.strokeStyle = "rgba(255,255,255,.5)"; c.lineWidth = 1.5; c.stroke(); c.restore(); }
+      c.fillStyle = lin(c, 0, H * .82, 0, H, [[0, "#ffffff"], [1, "#ff6bc1"]]); c.globalAlpha = .85; c.fillRect(W * .2, H * .86, W * .6, 10); c.globalAlpha = 1;
+      stars(c, r, 80, "#ffd6f0", H * .7);
     }
   };
 
+  function artNameFor(key) {
+    const m = /^(\d\d)-(tv|film)$/.exec(key || "");
+    if (m) { const d = (window.SC_SETLIST || [])[+m[1] - 1]; if (d && d[m[2]] && d[m[2]].art) return d[m[2]].art; }
+    return key;
+  }
+
   function generate(key) {
+    key = artNameFor(key);
     if (cache[key]) return cache[key];
     const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
     const c = cv.getContext("2d"), r = rng(key);
-    try { (P[key] || P["01-tv"])(c, r); finish(c, r); } catch (e) { c.fillStyle = "#14110e"; c.fillRect(0, 0, W, H); }
+    try { (P[key] || P.glee)(c, r); finish(c, r); } catch (e) { c.fillStyle = "#14110e"; c.fillRect(0, 0, W, H); }
     let url = ""; try { url = cv.toDataURL("image/jpeg", 0.84); } catch (e) { url = ""; }
     cache[key] = url; return url;
   }
