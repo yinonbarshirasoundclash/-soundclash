@@ -742,7 +742,6 @@
           h("div", { class: "scard-artist" }, bdi(s.artist), s.year ? h("span", { class: "scard-year" }, s.year) : null)));
     }
     sLobby() {
-      this.$joined = h("b", null, this.players.length);
       this.$pred = h("div", { class: "scr-pred" });
       this.fillPred();
       return h("div", { class: "s-lobby" },
@@ -753,7 +752,7 @@
             h("div", { class: "s-lobby-sub" }, "עשרה דו־קרבות. שיר מסדרה מול שיר מסרט. אתם מכריעים.")),
           h("div", { class: "s-lobby-join" },
             this.qr("scr-qr-big"),
-            h("div", { class: "s-joined" }, this.$joined, h("span", null, "כבר בזירה")))),
+            h("div", { class: "s-joined" }, h("span", { class: "s-onair s-joining" }, h("i"), "נכנסים לזירה עכשיו"), this.voteFlow("vflow-join")))),
         h("div", { class: "s-lobby-bottom" },
           h("div", { class: "s-pred-wrap" }, h("span", { class: "s-pred-k" }, "מי ינצח הערב? הניחושים של הקהל"), this.$pred),
           this.socialStrip()));
@@ -834,9 +833,9 @@
       requestAnimationFrame(() => this.updateLive());
       return el;
     }
-    flowTick(n) {
+    flowTick(n, kFixed) {
       const f = this.$flow; if (!f || !f.fill.isConnected) return;
-      const k = Math.max(8, this.players.length * 0.35), p = 100 * (1 - Math.exp(-n / k));
+      const k = kFixed || Math.max(8, this.players.length * 0.35), p = 100 * (1 - Math.exp(-n / k));
       f.fill.style.width = (n ? Math.max(6, p) : 0) + "%";
       if (f.shown < 0) { f.shown = n; return; }
       const add = Math.min(n - f.shown, this.mini ? 3 : 8); f.shown = n;
@@ -952,7 +951,7 @@
     /* -- live numbers -- */
     updateLive() {
       const st = this.st; if (!st) return;
-      if (st.phase === "lobby") { if (this.$joined) this.$joined.textContent = this.players.length; this.fillPred(); }
+      if (st.phase === "lobby") { this.flowTick(this.players.length, 30); this.fillPred(); }
       if (st.phase === "song1" || st.phase === "song2") {
         const n = tally(this.votes.filter(v => v.r === st.round)).total;
         this.flowTick(n);
