@@ -132,6 +132,7 @@ def nav(active, depth_prefix=""):
         <summary{drop_active}>הפורמטים</summary>
         <div class="drop-menu">{formats_menu}</div>
       </details>
+      {item("events.html", "לאירועי חברה", "events")}
       {item("shows.html", "הופעות", "shows")}
       {item("gallery.html", "גלריה", "gallery")}
       {item("about.html", "אודות", "about")}
@@ -193,6 +194,7 @@ def footer(p=""):
           <li><a href="tel:0546589303">054-6589303 · נעמה</a></li>
           <li><a href="{wa_link()}" target="_blank" rel="noopener">וואטסאפ</a></li>
           <li><a href="{wa_link()}" target="_blank" rel="noopener">וואטסאפ</a></li>
+          <li><a href="{p}events.html">לאירועי חברה</a></li>
           <li><a href="{p}contact.html">טופס הזמנה</a></li>
         </ul>
       </div>
@@ -807,5 +809,235 @@ contact_body = f"""
 page("contact.html", "יצירת קשר והזמנת המופע — Soundclash",
      "להזמנת מופע Soundclash: טלפון 054-6738192, וואטסאפ או טופס הזמנה. מועדונים, אירועי חברה, מחלקות תרבות ופסטיבלים.",
      contact_body, "contact", theme="theme-90", og_img=IMAGES[1][0])
+
+
+# ============================================================================
+#  דף אירועי חברה (events.html) — הזירה בראש הדף: סדרות נגד סרטים
+#  הסגנונות הייחודיים לדף יושבים ב-site.css תחת "דף אירועי חברה".
+# ============================================================================
+CORP_WA_TEXT = "היי, אשמח להצעת מחיר למופע Soundclash באירוע חברה."
+events_body = r"""<section class="hero hero-corp">
+  <div class="hero-photo" style="background-image:url('https://static.wixstatic.com/media/6340ee_d115b17d2a7547de89268dbb48c48452~mv2.jpg')"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-seam"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">לאירועי חברה · ערבי גיבוש · כנסים</div>
+    <div class="era-mark latin">TV/FILM</div>
+    <h2>סדרות נגד סרטים. והעובדים מכריעים.</h2>
+    <p class="lede">מופע קרב מוזיקלי חי: שישה נגנים, סולן וסולנית, <b>השירים מהסדרות</b> מול <span class="b-side">השירים מהסרטים</span> שכולם בחדר גדלו עליהם. כל עובד מצביע מהטלפון, התוצאה עולה למסך בזמן אמת, ובסוף הערב מוכרז מנצח.</p>
+    <div class="cta-row center">
+      <a class="btn btn-solid" href="#quote">לקבלת הצעת מחיר</a>
+      <a class="btn btn-wa" href="{CORP_WA}" target="_blank" rel="noopener">{WA} וואטסאפ</a>
+      <a class="btn btn-outline" href="tel:0546738192">{PH} 054-6738192</a>
+    </div>
+  </div>
+</section>
+
+<div class="stats"><div class="wrap"><div class="stat"><div class="num latin">6</div><div class="lbl">נגנים על הבמה</div></div><div class="stat"><div class="num latin">2</div><div class="lbl">סולן וסולנית</div></div><div class="stat"><div class="num latin">10</div><div class="lbl">דו־קרבות</div></div><div class="stat"><div class="num latin">300</div><div class="lbl">עובדים, לכל היותר</div></div><div class="stat"><div class="num latin">APP</div><div class="lbl">הצבעה מהטלפון</div></div></div></div>
+
+<section id="why">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">למה זה עובד בחברה</div>
+      <h2>המופע שבו אף אחד לא נשאר בצד</h2>
+      <p>ברוב ערבי החברה המוזיקה נשארת ברקע, וחצי מהאולם מדבר ליד הבר. כאן כל עובד הוא חלק מהתוצאה.</p>
+    </div>
+    <div class="audience">
+      <div class="aud-card reveal"><h3>כולם משתתפים</h3><p>כל אחד בחדר פותח את הטלפון, מצביע בסוף כל סיבוב ורואה את הקול שלו מזיז את התוצאה על המסך. מי שהצביע בסיבוב הראשון נשאר עד ההכרעה.</p></div>
+      <div class="aud-card reveal"><h3>מחבר בין דורות</h3><p>חברים, טיטאניק, פוקימון, רוקי וריקי גל. הרפרטואר מגיע מהמסך, ולכן גם עובד בן 25 וגם מנהלת בת 50 מזהים את השיר מהתו הראשון.</p></div>
+      <div class="aud-card reveal"><h3>יש מתח ויש מנצח</h3><p>הסדרות מול הסרטים, שיר מול שיר. רוב הקהל בטוח שהסרטים ינצחו, ובדרך כלל הקרב נשאר צמוד עד הדו־קרב האחרון.</p></div>
+      <div class="aud-card reveal"><h3>בלי ספק נוסף לתאם</h3><p>את אפליקציית ההצבעה, מסך התוצאות וההפעלה מול הקהל אנחנו מביאים ומפעילים. אין מה להוריד, אין הרשמה, ואין עוד מפעיל שצריך להזמין.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="duels">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">מהרפרטואר</div>
+      <h2>ככה נראה דו־קרב</h2>
+      <p>כל דו־קרב בנוי סביב נושא משותף: שיר מסדרה מול שיר מסרט. ארבע דוגמאות מתוך עשרה.</p>
+    </div>
+    <div class="duel-list">
+      <div class="duel-row reveal">
+        <div class="theme">פתיחה בדואט</div>
+        <div class="side tv"><span class="who latin">TV</span><b>Don't Stop Believin'</b><small>גלי</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>The Time of My Life</b><small>ריקוד מושחת</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">להיות הכי טוב</div>
+        <div class="side tv"><span class="who latin">TV</span><b>פוקימון</b><small>שיר הפתיחה</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>Eye of the Tiger</b><small>רוקי 3</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">מישהו שיהיה שם</div>
+        <div class="side tv"><span class="who latin">TV</span><b>I'll Be There for You</b><small>חברים</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>Holding Out for a Hero</b><small>פוטלוס</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">תל אביב מול תל אביב</div>
+        <div class="side tv"><span class="who latin">TV</span><b>מכה אפורה</b><small>פלורנטין</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>לגור איתו</b><small>דיזנגוף 99</small></div>
+      </div>
+    </div>
+    <p class="center mt-32" style="color:var(--text-dim)">הערב נגמר במסיבת ריקודים. על המסך רצים סרטוני אווירה מקוריים לכל שיר, ובין השירים עולות תוצאות ההצבעה.</p>
+  </div>
+</section>
+
+<section id="flow">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">מה קורה באולם</div>
+      <h2>ארבעה שלבים, מהשיר הראשון ועד ההכרזה</h2>
+    </div>
+    <div class="mechanism">
+      <div class="step reveal"><h3>סורקים קוד</h3><p>העובדים סורקים קוד מהמסך ונכנסים להצבעה מהטלפון, בלי הורדה ובלי הרשמה.</p></div>
+      <div class="step reveal"><h3>שיר מול שיר</h3><p>הלהקה מנגנת שיר מסדרה ומיד אחריו שיר מסרט, בביצוע חי ונאמן למקור.</p></div>
+      <div class="step reveal"><h3>הקהל מכריע</h3><p>ההצבעה נפתחת לכמה שניות, והתוצאה עולה למסך. האולם רואה מי מוביל ובכמה.</p></div>
+      <div class="step reveal"><h3>מנצח ופרסים</h3><p>הניקוד המצטבר קובע את הצד המנצח, ובין המצביעים מוגרלים פרסים.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="packages">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">חבילות</div>
+      <h2>שלוש דרכים להזמין</h2>
+      <p>המחיר נקבע לפי האולם, גודל הקהל והציוד שכבר קיים במקום. ספרו לנו על האירוע ותקבלו הצעת מחיר תוך 24 שעות.</p>
+    </div>
+    <div class="packages">
+      <article class="pkg reveal">
+        <div class="pkg-tag latin">SET</div>
+        <h3>סט קצר</h3>
+        <p class="pkg-for">להרמת כוסית, כנס או ערב עם תוכנית נוספת</p>
+        <ul>
+          <li>כ-45 דקות</li>
+          <li>5 דו־קרבות</li>
+          <li>הצבעה חיה ומסך תוצאות</li>
+          <li>הכרזת מנצח</li>
+        </ul>
+      </article>
+      <article class="pkg pkg-main reveal">
+        <div class="pkg-tag latin">FULL SHOW</div>
+        <h3>המופע המלא</h3>
+        <p class="pkg-for">ערב גיבוש או מסיבת חברה שהמופע הוא הלב שלה</p>
+        <ul>
+          <li>כ-90 דקות</li>
+          <li>10 דו־קרבות</li>
+          <li>הצבעה חיה ומסך תוצאות</li>
+          <li>הגרלת פרסים בין המצביעים</li>
+          <li>סיום במסיבת ריקודים</li>
+        </ul>
+      </article>
+      <article class="pkg reveal">
+        <div class="pkg-tag latin">BRANDED</div>
+        <h3>ערב ממותג</h3>
+        <p class="pkg-for">אירוע שנתי, השקה או חגיגה שרוצים שתיזכר</p>
+        <ul>
+          <li>כל מה שבמופע המלא</li>
+          <li>לוגו החברה על מסך ההצבעה</li>
+          <li>התאמת הרפרטואר לקהל</li>
+          <li>תיאום טכני מלא מול האולם</li>
+        </ul>
+      </article>
+    </div>
+    <p class="center mt-32" style="color:var(--text-dim)">לא מחפשים סדרות וסרטים? אותו מנגנון רץ גם בזירות <a class="inline" href="90s.html">ניינטיז</a>, <a class="inline" href="80s.html">אייטיז</a> ו-<a class="inline ltr" href="y2k.html">Y2K</a>.</p>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">כבר הופענו</div>
+      <h2>הקהל מכריע, והאולם מלא עד הסוף</h2>
+    </div>
+    <div class="proof-grid">
+      <div class="proof-main reveal">
+        <div class="proof-num latin">200</div>
+        <h3>המועצה האזורית אלפי מנשה</h3>
+        <p>הזמינה את Soundclash לערב קהילתי באלפא פאב, עם כ-200 משתתפים.</p>
+        <blockquote class="quote">
+          <p>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים. תמסור לצוות שלך תודה רבה מקהילת אלפא, ואתם מוזמנים תמיד.״</p>
+          <cite>שחר הרוש · קהילת אלפא, אלפי מנשה</cite>
+        </blockquote>
+      </div>
+      <div class="proof-venues reveal">
+        <div class="pv-label">במות שבהן הופענו</div>
+        <ul>
+          <li><b>תמונע</b><span>תל אביב</span></li>
+          <li><b>וונדרבר</b><span>חיפה</span></li>
+          <li><b>אלפא פאב</b><span>אלפי מנשה</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="video-grid mt-32"><article class="video-card reveal">
+        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/6XJsn9DJnxg?rel=0" title="תגובות הקהל"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+        <div class="video-info"><h3>תגובות הקהל</h3></div>
+      </article><article class="video-card reveal">
+        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/tjGkZa0l0NU?rel=0" title="ככה מצביעים באפליקציה"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+        <div class="video-info"><h3>ככה מצביעים באפליקציה</h3></div>
+      </article><article class="video-card reveal">
+        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/AxSH8I3mNvE?rel=0" title="רגעי ההכרעה"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+        <div class="video-info"><h3>רגעי ההכרעה</h3></div>
+      </article></div>
+    <p class="center mt-32" style="color:var(--text-dim)">הסרטונים צולמו בהופעות Soundclash. המנגנון, ההצבעה והמבנה זהים בכל הזירות.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap-narrow">
+    <div class="section-head reveal">
+      <div class="eyebrow">שאלות שרכזות שואלות</div>
+      <h2>מה צריך לדעת לפני שסוגרים</h2>
+    </div>
+    <div class="faq">
+      <details class="reveal"><summary>מה צריך מהאולם?</summary><p>הגברה ותאורה סטנדרטיות, ומסך או מקרן להצגת התוצאות. אם אין מסך באולם, נכלול אותו בהצעת המחיר. הדבר היחיד שחשוב במיוחד הוא קליטה סלולרית או Wi-Fi סבירים לעובדים.</p></details>
+      <details class="reveal"><summary>העובדים צריכים להוריד אפליקציה?</summary><p>לא. סורקים קוד מהמסך ומצביעים מהדפדפן בטלפון, בלי הורדה ובלי הרשמה.</p></details>
+      <details class="reveal"><summary>לכמה עובדים זה מתאים?</summary><p>מעשרות עובדים ועד כ-300. ההרכב והמשך מותאמים לגודל האירוע ולמבנה הערב.</p></details>
+      <details class="reveal"><summary>באיזו שפה המופע?</summary><p>ההגשה בעברית, והשירים בשפת המקור. בדרך יש גם רגעים בעברית שכל האולם שר.</p></details>
+      <details class="reveal"><summary>אפשר לשלב את המופע בתוך ערב עם נאומים, ארוחה או הענקת פרסים?</summary><p>כן. הסט הקצר נבנה בדיוק בשביל זה, ואת המופע המלא אפשר לחלק לשני חלקים סביב התוכנית שלכם.</p></details>
+      <details class="reveal"><summary>כמה זמן מראש צריך להזמין?</summary><p>מומלץ 4–6 שבועות לפני התאריך, כדי לתאם את הרפרטואר והצד הטכני מול האולם.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="lineup">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">מפרט</div>
+      <h2>המפרט, בלי לחפש</h2>
+    </div>
+    <dl class="spec reveal"><div class="spec-row"><dt>הרכב</dt><dd>ינון בר שירה – שירה וגיטרה אקוסטית | סולנית – שירה | ולאד פוזיילוב – גיטרה מובילה וקולות | חן ירמיצקי – קלידים | עומר מתתיהו – בס | תומר כהן – תופים</dd></div><div class="spec-row"><dt>אורך</dt><dd>סט קצר של כ-45 דקות, או מופע מלא של כ-90 דקות</dd></div><div class="spec-row"><dt>קהל</dt><dd>מעשרות עובדים ועד כ-300</dd></div><div class="spec-row"><dt>מה אנחנו מביאים</dt><dd>אפליקציית ההצבעה, מסך התוצאות וההפעלה מול הקהל</dd></div><div class="spec-row"><dt>מה נדרש במקום</dt><dd>הגברה ותאורה סטנדרטיות, קליטה סלולרית או Wi-Fi לעובדים</dd></div><div class="spec-row"><dt>מתאים ל</dt><dd>ערבי גיבוש, מסיבות חברה, הרמות כוסית, כנסים ואירועים שנתיים</dd></div></dl>
+  </div>
+</section>
+
+<section id="quote">
+  <div class="wrap">
+    <div class="contact-band reveal">
+      <div class="eyebrow" style="justify-content:center">הצעת מחיר</div>
+      <h2>ספרו לנו על האירוע</h2>
+      <p class="sub">תאריך, מקום, כמה עובדים ומה אופי הערב. נחזור אליכם עם הצעה תוך 24 שעות.</p>
+      <div class="people"><div class="person"><b>ינון בר שירה</b><a href="tel:0546738192">054-6738192</a></div><div class="person"><b>נעמה בר שירה</b><a href="tel:0546589303">054-6589303</a></div><div class="person"><b>אימייל</b><span>Stageart.pnima@gmail.com</span></div></div>
+      <div class="cta-row center">
+        <a class="btn btn-wa" href="{CORP_WA}" target="_blank" rel="noopener">{WA} וואטסאפ</a>
+        <a class="btn btn-solid" href="tel:0546738192">{PH} להזמנה בטלפון</a>
+        <a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>
+      </div>
+    </div>
+  </div>
+</section>"""
+events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["phone"])
+               .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))
+page("events.html", "Soundclash לאירועי חברה — קרב מוזיקלי שהעובדים מכריעים",
+     "מופע קרב מוזיקלי חי לאירועי חברה וערבי גיבוש: סדרות נגד סרטים, שישה נגנים, סולן וסולנית, והעובדים מצביעים מהטלפון ומכריעים. הצעת מחיר תוך 24 שעות: 054-6738192.",
+     events_body, "events", theme="theme-screen", og_img=HERO_IMG)
 
 print("נבנו הדפים:", ", ".join(sorted(f for f in os.listdir(OUT) if f.endswith(".html"))))
