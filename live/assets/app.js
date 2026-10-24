@@ -810,7 +810,7 @@
           h("div", { class: "s-lower-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
           h("div", { class: "s-lower-meta" }, bdi(s.artist), " · ", s.source)),
         h("div", { class: "s-lower-theme" }, h("small", null, "דו־קרב " + pad(r + 1)), SET[r].theme),
-        st.voteDuringSongs !== false ? h("div", { class: "s-lower-votes" }, h("span", { class: "s-onair" }, h("i"), "מצביעים עכשיו")) : null,
+        st.voteDuringSongs !== false ? h("div", { class: "s-lower-votes" }, h("span", { class: "s-onair" }, h("i"), "מצביעים עכשיו"), this.voteFlow("vflow-sm")) : null,
         h("div", { class: "s-lower-score" }, h("span", { class: "tv" }, "TV ", h("b", null, sc.tv)), h("span", { class: "film" }, h("b", null, sc.film), " FILM")));
       if (this.hasVideo()) return h("div", { class: "s-song has-video" + (overlay ? "" : " no-overlay") }, overlay ? lower : null);
       const nextSide = st.phase === "song1" ? ord[1] : null;
@@ -822,9 +822,30 @@
             h("div", { class: "s-hero-kick" }, h("span", { class: "eqbig" }, h("i"), h("i"), h("i"), h("i"), h("i")), "מתנגן עכשיו · ", SIDE[side].team),
             h("div", { class: "s-hero-title" + (s.hebrew ? " is-he" : "") }, bdi(s.title)),
             h("div", { class: "s-hero-meta" }, bdi(s.artist), " · ", h("b", null, s.source)),
-            st.voteDuringSongs !== false ? h("div", { class: "s-song-votes" }, h("span", { class: "s-onair" }, h("i"), "ההצבעה פתוחה בטלפון")) : null)),
+            st.voteDuringSongs !== false ? h("div", { class: "s-song-votes" }, h("span", { class: "s-onair" }, h("i"), "ההצבעה פתוחה בטלפון"), this.voteFlow("vflow-lg")) : null)),
         nextSide ? h("div", { class: "s-next" }, h("small", null, "ואחריו, " + SIDE[nextSide].team + ":"), " ", bdi(songOf(r, nextSide).title)) :
           h("div", { class: "s-next" }, h("small", null, "אחרי השיר הזה"), " נפתחת ההצבעה"));
+    }
+    /* "votes coming in": no numbers and no sides, just light flowing into a meter */
+    voteFlow(cls) {
+      const fill = h("i", { class: "vflow-fill" }), sparks = h("div", { class: "vflow-sparks", "aria-hidden": "true" });
+      this.$flow = { fill, sparks, shown: -1 };
+      const el = h("div", { class: "vflow " + (cls || ""), role: "img", "aria-label": "הצבעות נכנסות" }, fill, sparks);
+      requestAnimationFrame(() => this.updateLive());
+      return el;
+    }
+    flowTick(n) {
+      const f = this.$flow; if (!f || !f.fill.isConnected) return;
+      const k = Math.max(8, this.players.length * 0.35), p = 100 * (1 - Math.exp(-n / k));
+      f.fill.style.width = (n ? Math.max(6, p) : 0) + "%";
+      if (f.shown < 0) { f.shown = n; return; }
+      const add = Math.min(n - f.shown, this.mini ? 3 : 8); f.shown = n;
+      const cols = ["var(--tv-hi)", "var(--film-hi)", "var(--paper)"];
+      for (let i = 0; i < add; i++) {
+        if (f.sparks.childElementCount > 40) break;
+        const sp = h("i", { class: "vspark", style: { insetInlineStart: (Math.random() * 100) + "%", background: cols[Math.floor(Math.random() * 3)], animationDelay: (i * 70) + "ms" } });
+        f.sparks.append(sp); setTimeout(() => sp.remove(), 1500 + i * 70);
+      }
     }
     sVoting() {
       const st = this.st, r = st.round, ord = sideOrder(st, r);
@@ -934,8 +955,7 @@
       if (st.phase === "lobby") { if (this.$joined) this.$joined.textContent = this.players.length; this.fillPred(); }
       if (st.phase === "song1" || st.phase === "song2") {
         const n = tally(this.votes.filter(v => v.r === st.round)).total;
-        if (this.$songVotes) this.$songVotes.textContent = n;
-        if (this.$songVotes2) this.$songVotes2.textContent = n;
+        this.flowTick(n);
       }
       if (st.phase === "voting" && this.$bars) {
         const t = tally(this.votes.filter(v => v.r === st.round));

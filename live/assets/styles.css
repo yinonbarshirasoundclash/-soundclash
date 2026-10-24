@@ -794,3 +794,17 @@ html[data-view="demo"] #app, html[data-view="admin"] #app { height: auto; }
 .lyr select { max-width: 100%; }
 .lyr-text { min-height: 200px; font-size: 15px; line-height: 1.6; resize: vertical; unicode-bidi: plaintext; }
 .lyr-msg { font-size: 13px; color: var(--good); }
+
+/* ---- votes-coming-in meter (stage, during songs) ---- */
+.vflow { position: relative; height: 16px; border-radius: 999px; background: rgba(244,239,230,.12); box-shadow: inset 0 0 0 1px rgba(244,239,230,.15); }
+.vflow-lg { width: 560px; height: 20px; margin-top: 4px; }
+.vflow-sm { width: 240px; height: 12px; margin-top: 8px; }
+.vflow-fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0; border-radius: inherit; transition: width 1s cubic-bezier(.2,.7,.2,1);
+  background: linear-gradient(90deg, var(--tv), var(--paper) 50%, var(--film)); background-size: 200% 100%; animation: flowShift 3s linear infinite; box-shadow: 0 0 24px rgba(244,239,230,.35); }
+@keyframes flowShift { to { background-position: -200% 0; } }
+.vflow-sparks { position: absolute; inset: 0; pointer-events: none; }
+.vspark { position: absolute; bottom: -70px; width: 12px; height: 12px; border-radius: 50%; opacity: 0; box-shadow: 0 0 14px currentColor; animation: vsparkUp 1.3s cubic-bezier(.3,.7,.3,1) forwards; }
+.vflow-sm .vspark { width: 8px; height: 8px; bottom: -40px; }
+@keyframes vsparkUp { 0% { opacity: 0; transform: translateY(0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-64px) scale(1.2); } }
+.s-song-votes { flex-direction: column; align-items: flex-start; gap: 10px; }
+.s-lower-votes { gap: 4px; }
