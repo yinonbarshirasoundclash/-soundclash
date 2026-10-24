@@ -166,7 +166,7 @@
       this.renderTop();
       const ph = st.phase;
       this.root.dataset.phase = ph;
-      const showReact = this.me && (ph === "song1" || ph === "song2" || ph === "encore");
+      const showReact = this.me && (ph === "lobby" || ph === "intro" || ph === "song1" || ph === "song2" || ph === "encore");
       this.reactBar.hidden = !showReact;
       this.root.classList.toggle("has-react", !!showReact);
       let view;
@@ -261,7 +261,8 @@
         h("ol", { class: "how" },
           h("li", null, h("span", null, h("b", null, "שיר מול שיר."), " הלהקה מנגנת שיר מסדרה ושיר מסרט על אותו נושא.")),
           h("li", null, h("span", null, h("b", null, "מצביעים."), " אחרי השיר השני נפתחת ההצבעה לכמה שניות.")),
-          h("li", null, h("span", null, h("b", null, "המסך מכריע."), " התוצאה עולה מיד, ובסוף הערב יש אלוף והגרלה."))),
+          h("li", null, h("span", null, h("b", null, "המסך מכריע."), " התוצאה עולה מיד, ובסוף הערב יש אלוף והגרלה.")),
+          h("li", null, h("span", null, h("b", null, "שולחים ריאקשנים."), " לוחצים על 🔥 ❤️ 😮 בתחתית המסך, והם עפים על המסך הגדול באולם."))),
         this.followCard()
       );
     }
@@ -466,11 +467,18 @@
     }
     /* -- reactions -- */
     buildReactBar() {
-      const EMO = [["fire", "🔥"], ["clap", "👏"], ["pop", "🍿"], ["love", "😍"], ["rock", "🤘"]];
+      const EMO = [["fire", "🔥"], ["love", "❤️"], ["wow", "😮"], ["clap", "👏"], ["pop", "🍿"]];
+      this.rxLabel = h("span", { class: "rx-label" }, "⬆ לחצו, וזה יעוף על המסך הגדול");
+      this.reactBar.append(this.rxLabel);
+      if (!safeStore.get("sc_rx_seen", false)) this.reactBar.classList.add("is-new");
       EMO.forEach(([k, e]) => this.reactBar.append(h("button", { type: "button", class: "rx", "aria-label": "תגובה " + e, onclick: (ev) => this.react(k, e, ev) }, e)));
     }
     react(k, e, ev) {
       this.pending[k] = (this.pending[k] || 0) + 1;
+      if (this.reactBar.classList.contains("is-new")) { this.reactBar.classList.remove("is-new"); safeStore.set("sc_rx_seen", true); }
+      this.rxLabel.textContent = "נשלח למסך ✓"; this.rxLabel.classList.add("is-sent");
+      clearTimeout(this._rxT); this._rxT = setTimeout(() => { this.rxLabel.textContent = "⬆ לחצו, וזה יעוף על המסך הגדול"; this.rxLabel.classList.remove("is-sent"); }, 1300);
+      if (navigator.vibrate) navigator.vibrate(8);
       const b = ev.currentTarget.getBoundingClientRect(), rr = this.root.getBoundingClientRect();
       const f = h("span", { class: "float", style: { left: (b.left - rr.left + b.width / 2) + "px", top: (b.top - rr.top) + "px" } }, e);
       this.fx.append(f); setTimeout(() => f.remove(), 1400);
@@ -681,7 +689,7 @@
     }
     /* -- reactions -- */
     burst(r) {
-      const EMO = { fire: "🔥", clap: "👏", pop: "🍿", love: "😍", rock: "🤘" };
+      const EMO = { fire: "🔥", love: "❤️", wow: "😮", clap: "👏", pop: "🍿", rock: "🤘" };
       const c = r.c || {}; let n = 0;
       Object.keys(c).forEach(k => {
         const count = Math.min(c[k], this.mini ? 2 : 5);
@@ -749,7 +757,8 @@
           h("div", { class: "s-lobby-title" },
             h("div", { class: "s-lobby-word" }, h("span", { class: "w-tv" }, "SOUND"), h("span", { class: "w-film" }, "CLASH")),
             h("div", { class: "s-lobby-he" }, "סדרות ", h("em", null, "נגד"), " סרטים"),
-            h("div", { class: "s-lobby-sub" }, "עשרה דו־קרבות. שיר מסדרה מול שיר מסרט. אתם מכריעים.")),
+            h("div", { class: "s-lobby-sub" }, "עשרה דו־קרבות. שיר מסדרה מול שיר מסרט. אתם מכריעים."),
+            h("div", { class: "s-lobby-rx" }, "שלחו ", h("span", { class: "s-lobby-rx-e" }, "🔥 ❤️ 😮"), " מהטלפון, ותראו אותם עפים כאן")),
           h("div", { class: "s-lobby-join" },
             this.qr("scr-qr-big"),
             h("div", { class: "s-joined" }, h("span", { class: "s-onair s-joining" }, h("i"), "נכנסים לזירה עכשיו"), this.voteFlow("vflow-join")))),
@@ -1367,11 +1376,11 @@
       }
     }
     reactTick() {
-      const st = this.st; if (!st || !this.running || !["song1", "song2", "encore"].includes(st.phase) || !this.bots.length) return;
+      const st = this.st; if (!st || !this.running || !["lobby", "intro", "song1", "song2", "encore"].includes(st.phase) || !this.bots.length) return;
       const k = Math.floor(Math.random() * 4);
       for (let i = 0; i < k; i++) {
         const b = this.bots[Math.floor(Math.random() * this.bots.length)];
-        const opts = ["fire", "clap", "pop", "love", "rock"], c = {}; c[opts[Math.floor(Math.random() * opts.length)]] = 1 + Math.floor(Math.random() * 3);
+        const opts = ["fire", "love", "wow", "clap", "pop"], c = {}; c[opts[Math.floor(Math.random() * opts.length)]] = 1 + Math.floor(Math.random() * 3);
         this.be.react(c, b.uid);
       }
     }

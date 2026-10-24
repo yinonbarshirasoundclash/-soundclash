@@ -813,3 +813,21 @@ html[data-view="demo"] #app, html[data-view="admin"] #app { height: auto; }
 .s-joining { font-size: 30px; color: var(--film-hi); }
 .s-joining i { background: var(--film); box-shadow: 0 0 20px var(--film); }
 .vflow-join { width: 360px; height: 18px; }
+
+.aud-react { align-items: center; flex-wrap: wrap; }
+.rx-label { width: 100%; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--paper-3); margin-bottom: -2px; }
+.aud.has-react .aud-main { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 128px); }
+
+.rx-label { display: inline-block; width: auto; margin: 0 auto 2px; padding: 4px 12px; border-radius: 999px; background: rgba(232,163,61,.14); border: 1px solid rgba(232,163,61,.4);
+  color: var(--film-hi); font-size: 12px; letter-spacing: .02em; transition: background .2s, color .2s; }
+.aud-react .rx-label { flex-basis: auto; }
+.aud-react { justify-content: center; }
+.aud-react::before { content: ""; flex-basis: 100%; order: 1; height: 0; }
+.rx-label { order: 0; } .rx { order: 2; }
+.rx-label.is-sent { background: rgba(127,212,155,.16); border-color: rgba(127,212,155,.45); color: var(--good); }
+.aud-react.is-new .rx { animation: rxPulse 1.6s ease-in-out infinite; border-color: rgba(232,163,61,.6); }
+.aud-react.is-new .rx:nth-of-type(2) { animation-delay: .15s; } .aud-react.is-new .rx:nth-of-type(3) { animation-delay: .3s; }
+.aud-react.is-new .rx:nth-of-type(4) { animation-delay: .45s; } .aud-react.is-new .rx:nth-of-type(5) { animation-delay: .6s; }
+@keyframes rxPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232,163,61,0); } 40% { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(232,163,61,.25); } }
+.s-lobby-rx { margin-top: 18px; font-size: 32px; color: var(--paper-2); padding: 10px 22px; border-radius: 999px; background: rgba(11,10,9,.55); border: 1px solid var(--line-2); }
+.s-lobby-rx-e { font-size: 38px; }
