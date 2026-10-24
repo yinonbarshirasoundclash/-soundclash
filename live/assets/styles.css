@@ -335,6 +335,8 @@ html[data-view="screen"] .scr-viewport.show-cursor { cursor: default; }
 .scr-ctl.is-on { opacity: 1; pointer-events: auto; }
 .scr-ctl-btn { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line-2); cursor: pointer; font-weight: 700; background: var(--ink-3); }
 .scr-ctl-count { color: var(--film-hi); font-weight: 700; }
+.scr-ctl-resume { background: var(--film-hi); color: #0b0a09; border-color: transparent; font-size: 18px; padding: 12px 22px; }
+.scr-ctl.needs-click { opacity: 1; pointer-events: auto; }
 .scr-ctl-hint { color: var(--paper-3); font-size: 12px; }
 
 /* top bar */

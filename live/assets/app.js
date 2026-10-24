@@ -687,31 +687,86 @@
         this.be.setScreenMeta({ videos: keys, base: !!CFG.VIDEO_BASE_URL, playing: this.playingKey || "", status: status || "ok" }).catch(() => {});
       }, 300);
     }
-    buildControls() {
-      const input = h("input", { type: "file", id: "scr-folder", accept: "video/*,image/*", multiple: true, webkitdirectory: true, hidden: true });
-      const count = h("span", { class: "scr-ctl-count" }, "אין סרטונים טעונים");
-      input.addEventListener("change", () => {
-        Object.values(this.videoMap).forEach(u => { try { URL.revokeObjectURL(u); } catch (e) { /* ignore */ } });
-        this.videoMap = {};
-        let imgs = 0;
-        Array.from(input.files).forEach(f => {
-          const key = f.name.replace(/\.[^.]+$/, "").toLowerCase();
-          if (/^image\//.test(f.type) || /\.(jpe?g|png|webp)$/i.test(f.name)) { window.SCArt.overrides[key] = URL.createObjectURL(f); imgs++; return; }
-          if (!/^video\//.test(f.type) && !/\.(mp4|webm|mov|m4v)$/i.test(f.name)) return;
-          this.videoMap[key] = URL.createObjectURL(f);
-        });
-        const n = Object.keys(this.videoMap).length;
-        count.textContent = (n || imgs) ? n + " סרטונים · " + imgs + " תמונות" : "לא נמצאו סרטונים או תמונות בתיקייה";
-        this.sig = null;
-        this.lastSeq = -1; if (this.st) { this.handleVideo(this.st); this.sig = null; this.onState(this.st); } this.reportMeta();
+    /* -- video folder: chosen once, remembered by the browser (Chrome/Edge) -- */
+    applyFiles(files, label) {
+      Object.values(this.videoMap).forEach(u => { try { URL.revokeObjectURL(u); } catch (e) { /* ignore */ } });
+      this.videoMap = {};
+      let imgs = 0;
+      files.forEach(f => {
+        const key = f.name.replace(/\.[^.]+$/, "").toLowerCase();
+        if (/^image\//.test(f.type) || /\.(jpe?g|png|webp)$/i.test(f.name)) { window.SCArt.overrides[key] = URL.createObjectURL(f); imgs++; return; }
+        if (!/^video\//.test(f.type) && !/\.(mp4|webm|mov|m4v)$/i.test(f.name)) return;
+        this.videoMap[key] = URL.createObjectURL(f);
       });
+      const n = Object.keys(this.videoMap).length;
+      this.ctlCount.textContent = (label ? "📁 " + label + " · " : "") + ((n || imgs) ? n + " סרטונים · " + imgs + " תמונות" : "לא נמצאו סרטונים או תמונות בתיקייה");
+      this.ctlResume.hidden = true; this.ctl.classList.remove("needs-click");
+      this.sig = null;
+      this.lastSeq = -1; if (this.st) { this.handleVideo(this.st); this.sig = null; this.onState(this.st); } this.reportMeta();
+    }
+    dirDB(mode, value) {
+      return new Promise((resolve) => {
+        try {
+          const req = indexedDB.open("soundclash-screen", 1);
+          req.onupgradeneeded = () => req.result.createObjectStore("kv");
+          req.onerror = () => resolve(null);
+          req.onsuccess = () => {
+            try {
+              const tx = req.result.transaction("kv", mode === "set" ? "readwrite" : "readonly");
+              const store = tx.objectStore("kv");
+              const r = mode === "set" ? store.put(value, "videoDir") : store.get("videoDir");
+              r.onsuccess = () => resolve(mode === "set" ? true : (r.result || null));
+              r.onerror = () => resolve(null);
+            } catch (e) { resolve(null); }
+          };
+        } catch (e) { resolve(null); }
+      });
+    }
+    async loadDir(handle) {
+      const files = [];
+      for await (const entry of handle.values()) {
+        if (entry.kind === "file") { try { files.push(await entry.getFile()); } catch (e) { /* ignore */ } }
+      }
+      this.applyFiles(files, handle.name);
+    }
+    async pickDir() {
+      try {
+        const handle = await window.showDirectoryPicker({ id: "soundclash-videos", mode: "read", startIn: "videos" });
+        await this.dirDB("set", handle);
+        await this.loadDir(handle);
+      } catch (e) { /* cancelled */ }
+    }
+    async resumeDir(fromClick) {
+      const handle = this.savedDir || await this.dirDB("get");
+      if (!handle || !handle.queryPermission) return;
+      this.savedDir = handle;
+      try {
+        let p = await handle.queryPermission({ mode: "read" });
+        if (p !== "granted" && fromClick) p = await handle.requestPermission({ mode: "read" });
+        if (p === "granted") { await this.loadDir(handle); return; }
+      } catch (e) { /* folder moved or deleted */ }
+      this.ctlResume.textContent = "▶ טעינת התיקייה השמורה: " + handle.name;
+      this.ctlResume.hidden = false;
+      this.ctlCount.textContent = "הסרטונים עוד לא נטענו";
+      this.ctl.classList.add("is-on", "needs-click");
+    }
+    buildControls() {
+      const canPick = typeof window.showDirectoryPicker === "function";
+      const input = h("input", { type: "file", id: "scr-folder", accept: "video/*,image/*", multiple: true, webkitdirectory: true, hidden: true });
+      this.ctlCount = h("span", { class: "scr-ctl-count" }, "אין סרטונים טעונים");
+      this.ctlResume = h("button", { class: "scr-ctl-btn scr-ctl-resume", type: "button", hidden: true, onclick: () => this.resumeDir(true) });
+      input.addEventListener("change", () => this.applyFiles(Array.from(input.files)));
       const full = () => { const el = document.documentElement; if (!document.fullscreenElement) (el.requestFullscreen ? el.requestFullscreen() : Promise.reject()).catch(() => {}); else document.exitFullscreen().catch(() => {}); };
+      const pickBtn = canPick
+        ? h("button", { class: "scr-ctl-btn", type: "button", onclick: () => this.pickDir() }, "📁 בחירת תיקיית סרטונים")
+        : h("label", { class: "scr-ctl-btn", for: "scr-folder" }, "📁 טעינת תיקיית סרטונים");
       this.ctl = h("div", { class: "scr-ctl" },
-        h("label", { class: "scr-ctl-btn", for: "scr-folder" }, "📁 טעינת תיקיית סרטונים"), input, count,
+        this.ctlResume, pickBtn, input, this.ctlCount,
         h("button", { class: "scr-ctl-btn", type: "button", onclick: full }, "⛶ מסך מלא"),
-        h("span", { class: "scr-ctl-hint" }, "שמות הקבצים לפי הקוד שבאדמין: ", h("bdi", { dir: "ltr" }, "03-tv.mp4"), " לסרטון, ", h("bdi", { dir: "ltr" }, "03-tv.jpg"), " לתמונה"));
+        h("span", { class: "scr-ctl-hint" }, "שמות הקבצים לפי הקוד שבאדמין: ", h("bdi", { dir: "ltr" }, "03-tv.mp4"), " לסרטון, ", h("bdi", { dir: "ltr" }, "03-tv.jpg"), " לתמונה", canPick ? " · התיקייה נשמרת לפעם הבאה" : ""));
       this.root.append(this.ctl);
-      let t; const show = () => { this.ctl.classList.add("is-on"); this.root.classList.add("show-cursor"); clearTimeout(t); t = setTimeout(() => { this.ctl.classList.remove("is-on"); this.root.classList.remove("show-cursor"); }, 3500); };
+      if (canPick) this.resumeDir(false);
+      let t; const show = () => { this.ctl.classList.add("is-on"); this.root.classList.add("show-cursor"); clearTimeout(t); t = setTimeout(() => { if (this.ctl.classList.contains("needs-click")) return; this.ctl.classList.remove("is-on"); this.root.classList.remove("show-cursor"); }, 3500); };
       this.root.addEventListener("mousemove", show); this.root.addEventListener("click", show); show();
       setTimeout(() => this.reportMeta(), 800);
     }
