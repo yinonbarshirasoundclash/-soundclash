@@ -37,7 +37,7 @@ window.SC_SETLIST = [
   {
     theme: "להיות הכי טוב", first: "film", singer: "ינון",
     tv:   { title: "Pokémon Theme", artist: "Jason Paige", source: "פוקימון", sourceEn: "Pokémon", year: 1998, art: "pokemon",
-            scene: "שיר הפתיחה של הסדרה. אצלנו הפזמון האחרון בעברית, כמו בגרסה הישראלית.",
+            scene: "שיר הפתיחה של הסדרה. אצלנו: בית ופזמון באנגלית, בית ופזמון בעברית כמו בגרסה הישראלית, ושוב הפזמון באנגלית.",
             fact: "את הפתיח באנגלית שר ג'ייסון פייג', והוא נשאר אחד משירי הפתיחה המוכרים בעולם." },
     film: { title: "Eye of the Tiger", artist: "Survivor", source: "רוקי 3", sourceEn: "Rocky III", year: 1982, art: "rocky",
             scene: "השיר שמלווה את רוקי באימונים ובקרבות של הסרט.",

@@ -784,3 +784,13 @@ html[data-view="demo"] #app, html[data-view="admin"] #app { height: auto; }
 .step.is-now { border-color: var(--cue); background: rgba(224,73,61,.12); }
 .step.is-now .step-n { color: var(--cue); }
 @container (max-width: 520px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---- lyrics ---- */
+.lyrics { white-space: pre-wrap; font-size: 18px; line-height: 1.75; padding: 16px; border-radius: 16px; background: rgba(244,239,230,.04); border: 1px solid var(--line); unicode-bidi: plaintext; min-height: 80px; }
+.lyrics .spinner { margin: 10px auto; }
+.lyrics-empty { margin: 0; color: var(--paper-3); font-size: 16px; text-align: center; }
+.lyr { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 18px; background: var(--ink-2); border: 1px solid var(--line); }
+.lyr p { margin: 0; font-size: 13px; }
+.lyr select { max-width: 100%; }
+.lyr-text { min-height: 200px; font-size: 15px; line-height: 1.6; resize: vertical; unicode-bidi: plaintext; }
+.lyr-msg { font-size: 13px; color: var(--good); }

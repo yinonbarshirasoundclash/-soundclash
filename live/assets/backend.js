@@ -60,7 +60,8 @@
         case "player": d.players[op.v.uid] = Object.assign(d.players[op.v.uid] || {}, op.v); this.emit("players"); break;
         case "react": this.reactions.push(op.v); if (this.reactions.length > 80) this.reactions.shift(); this.emit("react", op.v); break;
         case "screen": d.screen = op.v; this.emit("screen", d.screen); break;
-        case "reset": this.db = { state: op.v, votes: {}, players: {}, screen: d.screen || {} }; this.emit("state", this.db.state); this.emit("votes", -1); this.emit("players"); break;
+        case "lyrics": d.lyrics = d.lyrics || {}; if (op.v.text) d.lyrics[op.v.key] = op.v; else delete d.lyrics[op.v.key]; this.emit("lyrics"); break;
+        case "reset": this.db = { state: op.v, votes: {}, players: {}, screen: d.screen || {}, lyrics: d.lyrics || {} }; this.emit("state", this.db.state); this.emit("votes", -1); this.emit("players"); break;
       }
       if (local && op.k !== "react") this._persist();
     }
@@ -87,6 +88,10 @@
     async react(counts, asUid) { this._op({ k: "react", v: { c: counts, uid: asUid || this._uid, at: Date.now() } }); }
     onReactions(cb) { return this.on("react", cb); }
     onScreenMeta(cb) { setTimeout(() => cb(this.db.screen || {}), 0); return this.on("screen", cb); }
+    /* lyrics typed in by the admin, one doc per song key (03-tv) */
+    async getLyrics(key) { return (this.db.lyrics || {})[key] || null; }
+    async setLyrics(key, text) { this._op({ k: "lyrics", v: { key, text, at: Date.now() } }); }
+    onLyricsList(cb) { const f = () => cb(Object.assign({}, this.db.lyrics || {})); setTimeout(f, 0); return this.on("lyrics", f); }
     async setScreenMeta(m) { this._op({ k: "screen", v: Object.assign({}, m, { at: Date.now() }) }); }
     async resetShow() { this._op({ k: "reset", v: initialState(this.cfg) }); }
     /* admin */
@@ -181,6 +186,14 @@
       }, e => this.emit("error", e));
     }
     onScreenMeta(cb) { return this.show.collection("meta").doc("screen").onSnapshot(s => cb(s.exists ? norm(s.data()) : {}), () => {}); }
+    async getLyrics(key) { const s = await this.show.collection("lyrics").doc(key).get(); return s.exists ? norm(s.data()) : null; }
+    async setLyrics(key, text) {
+      const ref = this.show.collection("lyrics").doc(key);
+      if (text) await ref.set({ key, text, at: this.FV.serverTimestamp() }); else await ref.delete();
+    }
+    onLyricsList(cb) {
+      return this.show.collection("lyrics").onSnapshot(qs => { const o = {}; qs.docs.forEach(d => { o[d.id] = norm(d.data()); }); cb(o); }, () => {});
+    }
     async setScreenMeta(m) { await this.show.collection("meta").doc("screen").set(Object.assign({}, m, { at: this.FV.serverTimestamp() })); }
     async resetShow() {
       for (const col of ["votes", "players", "reactions"]) {

@@ -300,7 +300,7 @@
       const s = songOf(r, side);
       return h("div", { class: "song-links" },
         h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("fact", { r, side }) }, "💡 על השיר והסצנה"),
-        h("a", { class: "tile-fact", href: lyricsUrl(s), target: "_blank", rel: "noopener" }, "📝 מילים"));
+        h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("lyrics", { r, side }) }, "📝 מילים"));
     }
     /* song tiles that are also vote buttons */
     voteList(r, states) {
@@ -496,8 +496,16 @@
           s.medley ? h("p", null, "במחרוזת: ", s.medley.join(" ← ")) : null,
           s.scene ? h("div", { class: "scene" }, h("span", { class: "scene-k" }, data.side === "tv" ? "בסדרה" : "בסרט"), h("p", null, s.scene)) : null,
           h("p", { class: "fact" }, "💡 ", s.fact),
-          h("a", { class: "btn-ghost lyrics-btn", href: lyricsUrl(s), target: "_blank", rel: "noopener" }, "📝 למילים של השיר"),
-          h("p", { class: "aud-fine" }, "המילים נפתחות באתר מילים חיצוני.")];
+          h("button", { class: "btn-ghost lyrics-btn", type: "button", onclick: () => this.openSheet("lyrics", data) }, "📝 למילים של השיר")];
+      } else if (kind === "lyrics") {
+        const s = songOf(data.r, data.side), box = h("div", { class: "lyrics", dir: s.hebrew ? "rtl" : "ltr" }, h("div", { class: "spinner", "aria-hidden": "true" }));
+        body = [h("p", { class: "eyebrow" }, SIDE[data.side].team + " · דו־קרב " + pad(data.r + 1)),
+          h("h2", { class: "aud-h2" + (s.hebrew ? "" : " latin-title") }, bdi(s.title)),
+          h("p", { class: "muted" }, bdi(s.artist), " · ", s.source), box];
+        this.be.getLyrics(videoKey(data.r, data.side)).then(l => {
+          if (l && l.text) box.replaceChildren(l.text);
+          else box.replaceChildren(h("p", { class: "lyrics-empty" }, "המילים לשיר הזה יעלו בקרוב."));
+        }).catch(() => box.replaceChildren(h("p", { class: "lyrics-empty" }, "אין חיבור כרגע. נסו שוב בעוד רגע.")));
       } else if (kind === "contact") {
         body = [h("p", { class: "eyebrow" }, "Soundclash"), h("h2", { class: "aud-h2" }, "דברו איתנו"), this.contactBlock()];
       } else {
@@ -1006,8 +1014,10 @@
             this.previewHost,
             h("h2", { class: "adm-h" }, "סרטוני AI"),
             this.$vnow, this.$videos,
+            h("h2", { class: "adm-h" }, "מילים לשירים"), this.$lyrics = h("div", { class: "lyr" }),
             this.crowd ? h("h2", { class: "adm-h" }, "חזרה עם קהל וירטואלי") : null, this.crowd ? this.$crowd : null)));
       this.preview = new ScreenView(this.previewHost, this.be, { mini: true });
+      this.lyricsMap = {}; this.be.onLyricsList(m => { this.lyricsMap = m || {}; this.renderLyrics(); });
       if (this.st) this.onState(null);
     }
     loginView() {
@@ -1038,6 +1048,7 @@
       this.$promo.textContent = prOn ? "■ הסתרת \"עקבו אחרינו\"" : "📣 \"עקבו אחרינו\" על המסך ובטלפונים";
       this.$promo.classList.toggle("is-on", !!prOn);
       clearTimeout(this._prT); if (prOn) this._prT = setTimeout(() => this.onState(this.st), pr.at + 25100 - Date.now());
+      if (!this._lyrDone) { this._lyrDone = true; this.renderLyrics(); }
       this.renderRun(); this.renderNow(); this.renderCtx(); this.renderTally(); this.renderVideos(); this.renderSettings(); this.renderCrowd();
       if (this.crowd) this.crowd.onState(st);
     }
@@ -1251,6 +1262,29 @@
       this.$videos.replaceChildren(...keys.map(x => h("button", {
         type: "button", class: "vid" + (v.key === x.k && v.cmd !== "stop" ? " is-on" : "") + (avail(x.k) ? " is-ok" : ""), onclick: () => this.videoCmd("play", x.k), title: avail(x.k) ? "זמין" : "חסר קובץ"
       }, h("span", { class: "vid-k" + (x.s ? " s-" + x.s : "") }, x.k), h("span", { class: "vid-t" }, bdi(x.t)))));
+    }
+    renderLyrics() {
+      if (!this.$lyrics || !this.st) return;
+      const st = this.st, map = this.lyricsMap || {};
+      const keys = []; SET.forEach((d, i) => sideOrder(st, i).forEach(s => keys.push({ k: videoKey(i, s), s, song: songOf(i, s), i })));
+      if (!this.lyrKey) this.lyrKey = keys[0].k;
+      const cur = keys.find(x => x.k === this.lyrKey) || keys[0];
+      const sel = h("select", { id: "adm-lyr-song", class: "field field-sm", onchange: (e) => { this.lyrKey = e.target.value; this.renderLyrics(); } },
+        keys.map(x => h("option", { value: x.k, selected: x.k === cur.k }, (map[x.k] ? "✓ " : "· ") + pad(x.i + 1) + " " + SIDE[x.s].short + " · \u2068" + x.song.title + "\u2069")));
+      const ta = h("textarea", { id: "adm-lyr-text", class: "field lyr-text", rows: "10", dir: cur.song.hebrew ? "rtl" : "ltr", placeholder: "מדביקים כאן את מילות השיר. שורה ריקה = רווח בין בתים." });
+      ta.value = (map[cur.k] && map[cur.k].text) || "";
+      const msg = h("span", { class: "lyr-msg", role: "status" }, this.lyrMsg || ""); this.lyrMsg = "";
+      const save = async () => {
+        const text = ta.value.replace(/\r/g, "").trim().slice(0, 20000);
+        const m = text ? "נשמר ✓ הקהל רואה את המילים מעכשיו." : "המילים נמחקו.";
+        try { this.lyrMsg = m; await this.be.setLyrics(cur.k, text); msg.textContent = m; }
+        catch (e) { msg.textContent = "השמירה נכשלה: " + (e.message || e); }
+      };
+      const done = keys.filter(x => map[x.k]).length;
+      this.$lyrics.replaceChildren(
+        h("p", { class: "muted" }, "המילים מוצגות לקהל בתוך האפליקציה, בכפתור \"📝 מילים\" של כל שיר. יש מילים ל-" + done + " מתוך " + keys.length + " שירים."),
+        h("div", { class: "set-row" }, h("label", { for: "adm-lyr-song" }, "שיר"), sel), ta,
+        h("div", { class: "set-row" }, h("button", { class: "btn-primary", type: "button", onclick: save }, "שמירת המילים"), msg));
     }
     renderCrowd() {
       if (!this.crowd || !this.$crowd) return;
