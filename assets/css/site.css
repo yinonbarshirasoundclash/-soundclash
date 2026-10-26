@@ -49,6 +49,12 @@ body.theme-y2k{ /* Y2K — כרום, ציאן חשמלי וכסף */
   --side-a:#2a86b8; --side-b:#6b4ed6;
   --bg:#07090c; --bg-raised:#0d1218; --bg-card:#10161d;
 }
+body.theme-il{  /* הקרב הישראלי — כחול מול זהב חם */
+  --accent:#4a8dff; --accent-2:#f2b33d; --accent-3:#7fb2ff;
+  --accent-soft:rgba(74,141,255,.13); --accent-glow:rgba(74,141,255,.42);
+  --side-a:#2f63c4; --side-b:#c98a26;
+  --bg:#070a10; --bg-raised:#0d121b; --bg-card:#111824;
+}
 body.theme-screen{ /* סדרות נגד סרטים — זהב מקרן מול כחול מסך */
   --accent:#e8a33d; --accent-2:#f0d9a8; --accent-3:#5d8fd6;
   --accent-soft:rgba(232,163,61,.13); --accent-glow:rgba(232,163,61,.4);
@@ -301,6 +307,7 @@ section{padding:74px 0;}
 .f-90{--f-a:#e0493d; --f-b:#3c63b5;}
 .f-80{--f-a:#ff2e88; --f-b:#25e0e0;}
 .f-y2k{--f-a:#4ad8ff; --f-b:#8f6bff;}
+.f-il{--f-a:#4a8dff; --f-b:#f2b33d;}
 .f-screen{--f-a:#e8a33d; --f-b:#5d8fd6;}
 
 /* ===================== וידאו ===================== */
