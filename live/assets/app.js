@@ -763,7 +763,7 @@
       this.ctl = h("div", { class: "scr-ctl" },
         this.ctlResume, pickBtn, input, this.ctlCount,
         h("button", { class: "scr-ctl-btn", type: "button", onclick: full }, "⛶ מסך מלא"),
-        h("span", { class: "scr-ctl-hint" }, "שמות הקבצים לפי הקוד שבאדמין: ", h("bdi", { dir: "ltr" }, "03-tv.mp4"), " לסרטון, ", h("bdi", { dir: "ltr" }, "03-tv.jpg"), " לתמונה", canPick ? " · התיקייה נשמרת לפעם הבאה" : ""));
+        h("span", { class: "scr-ctl-hint" }, "שמות הקבצים לפי הקוד שבאדמין: ", h("bdi", { dir: "ltr" }, "03-tv.mp4"), " לסרטון, ", h("bdi", { dir: "ltr" }, "03-tv.jpg"), " לתמונה, ", h("bdi", { dir: "ltr" }, "06-tv-1.mp4 / 06-tv-2.mp4"), " למחרוזת בכמה חלקים", canPick ? " · התיקייה נשמרת לפעם הבאה" : ""));
       this.root.append(this.ctl);
       if (canPick) this.resumeDir(false);
       let t; const show = () => { this.ctl.classList.add("is-on"); this.root.classList.add("show-cursor"); clearTimeout(t); t = setTimeout(() => { if (this.ctl.classList.contains("needs-click")) return; this.ctl.classList.remove("is-on"); this.root.classList.remove("show-cursor"); }, 3500); };
@@ -1161,6 +1161,7 @@
       this.$now = h("div", { class: "now" });
       this.$next = h("button", { class: "btn-next", type: "button", onclick: () => this.next() }, "…");
       this.$back = h("button", { class: "btn-ghost", type: "button", onclick: () => this.back(), title: "קיצור: B" }, "→ צעד אחורה");
+      this.$part = h("button", { class: "btn-part", type: "button", hidden: true, onclick: () => this.goNextPart(), title: "קיצור: N" });
       this.$ctx = h("div", { class: "ctx" });
       this.$tally = h("div", { class: "tally" });
       this.$videos = h("div", { class: "vids" });
@@ -1179,7 +1180,8 @@
           h("section", { class: "adm-col adm-main", "aria-label": "שליטה" },
             this.$now,
             h("div", { class: "go-row" }, this.$next, this.$back),
-            h("p", { class: "kbd-hint" }, "רווח = הצעד הבא · V = נגן/עצור סרטון · B = אחורה"),
+            this.$part,
+            h("p", { class: "kbd-hint" }, "רווח = הצעד הבא · V = נגן/עצור סרטון · N = הסרטון הבא במחרוזת · B = אחורה"),
             this.$ctx, this.$tally, this.$promo, this.$settings),
           h("section", { class: "adm-col adm-side", "aria-label": "מסך ווידאו" },
             h("div", { class: "adm-h-row" }, h("h2", { class: "adm-h" }, "מה רואים על המסך"),
@@ -1250,16 +1252,36 @@
       const patch = Object.assign({}, m);
       if (patch.phase === "song1" || patch.phase === "song2") {
         const sd = sideOrder(st, patch.round == null ? r : patch.round)[patch.phase === "song1" ? 0 : 1];
-        patch.video = this.vid(videoKey(patch.round == null ? r : patch.round, sd), "play");
+        patch.video = this.vid(this.songVideo(videoKey(patch.round == null ? r : patch.round, sd)), "play");
       } else patch.video = this.vid("", "stop");
       this.set(patch);
     }
     vid(key, cmd) { const seq = ((this.st.video && this.st.video.seq) || 0) + 1; return { key, cmd, seq }; }
+    /* a song can have its video in parts (06-tv-1.mp4, 06-tv-2.mp4 …) for medleys; the admin moves between them by hand */
+    partsOf(key) {
+      const re = new RegExp("^" + key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "-(\\d+)$");
+      return ((this.screenMeta && this.screenMeta.videos) || []).filter(k => re.test(k)).sort((a, b) => +a.match(re)[1] - +b.match(re)[1]);
+    }
+    songVideo(key) { const p = this.partsOf(key); return p.length ? p[0] : key; }
+    nextPart() {
+      const v = (this.st && this.st.video) || {};
+      if (!v.key || v.cmd === "stop") return null;
+      const base = v.key.replace(/-\d+$/, ""), parts = this.partsOf(base), i = parts.indexOf(v.key);
+      if (!parts.length) return null;
+      return i + 1 < parts.length ? parts[i + 1] : null;
+    }
+    goNextPart() { const k = this.nextPart(); if (k) this.set({ video: this.vid(k, "play") }); }
+    renderPart() {
+      if (!this.$part) return;
+      const k = this.nextPart(), v = (this.st && this.st.video) || {};
+      this.$part.hidden = !k;
+      if (k) this.$part.replaceChildren("⏭ מעבר לסרטון הבא באמצע השיר ", h("bdi", { dir: "ltr" }, v.key + " → " + k));
+    }
     set(p) { return this.be.setState(p).catch(e => this.toast("השמירה נכשלה: " + (e.message || e))); }
     goIntro(r) { return this.set({ phase: "intro", round: r, votingEndsAt: 0, video: this.vid("", "stop") }); }
     goSong(ph) {
       const st = this.st, sd = sideOrder(st, st.round)[ph === "song1" ? 0 : 1];
-      return this.set({ phase: ph, video: this.vid(videoKey(st.round, sd), "play") });
+      return this.set({ phase: ph, video: this.vid(this.songVideo(videoKey(st.round, sd)), "play") });
     }
     openVoting() {
       /* the song-2 video keeps running under the voting graphics, so there is no black gap */
@@ -1301,6 +1323,7 @@
       if (/INPUT|TEXTAREA|SELECT/.test(tag)) return;
       if (e.code === "Space" || e.key === "ArrowLeft") { if (tag === "BUTTON" && e.code === "Space") return; e.preventDefault(); this.next(); }
       else if (e.key === "b" || e.key === "B" || e.key === "נ") this.back();
+      else if (e.key === "n" || e.key === "N" || e.key === "מ") this.goNextPart();
       else if (e.key === "v" || e.key === "V" || e.key === "ה") this.videoCmd(this.st.video && this.st.video.cmd === "play" ? "pause" : "play");
     }
     toast(msg) {
@@ -1334,6 +1357,7 @@
         this.stepStrip());
       this.$next.replaceChildren(a.label, a.song ? bdi(a.song) : ""); this.$next.disabled = !a.run;
       this.$back.disabled = st.phase === "lobby";
+      this.renderPart();
     }
     stepStrip() {
       const st = this.st, r = st.round;
@@ -1455,9 +1479,14 @@
           h("label", { class: "chk" }, h("input", { id: "adm-overlay", type: "checkbox", checked: overlayOn, onchange: (e) => this.set({ screen: Object.assign({}, st.screen, { overlay: e.target.checked }) }) }), "שם השיר מעל הסרטון")),
         h("p", { class: "vnow-meta" }, meta.at ? (have.size ? have.size + " סרטונים טעונים במחשב המסך" : meta.base ? "הסרטונים נטענים מכתובת" : "במחשב המסך עוד לא נטענה תיקיית סרטונים") : "מסך הבמה עוד לא מחובר"));
       const keys = [{ k: "lobby", t: "לופ לובי" }];
-      SET.forEach((d, i) => sideOrder(st, i).forEach(s => keys.push({ k: videoKey(i, s), t: songOf(i, s).title, s })));
+      SET.forEach((d, i) => sideOrder(st, i).forEach(s => {
+        const k = videoKey(i, s), parts = this.partsOf(k);
+        if (!parts.length || have.has(k)) keys.push({ k, t: songOf(i, s).title, s });
+        parts.forEach((p, j) => keys.push({ k: p, t: songOf(i, s).title + " · חלק " + (j + 1), s }));
+      }));
       if (SHOW.encores) ["tv", "film"].forEach(sd => keys.push({ k: videoKey("enc", sd), t: "הדרן · " + songOf("enc", sd).title, s: sd }));
       keys.push({ k: "final", t: "לופ סיום" });
+      this.renderPart();
       this.$videos.replaceChildren(...keys.map(x => h("button", {
         type: "button", class: "vid" + (v.key === x.k && v.cmd !== "stop" ? " is-on" : "") + (avail(x.k) ? " is-ok" : ""), onclick: () => this.videoCmd("play", x.k), title: avail(x.k) ? "זמין" : "חסר קובץ"
       }, h("span", { class: "vid-k" + (x.s ? " s-" + x.s : "") }, x.k), h("span", { class: "vid-t" }, bdi(x.t)))));

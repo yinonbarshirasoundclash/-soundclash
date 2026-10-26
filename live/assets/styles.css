@@ -637,6 +637,10 @@ html[data-view="screen"] .scr-viewport.show-cursor { cursor: default; }
 .now-title { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 38px; line-height: 1.1; text-wrap: balance; }
 .now-sub { margin: 0; color: var(--paper-2); }
 .go-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch; }
+.btn-part { width: 100%; margin-top: 10px; min-height: 56px; padding: 10px 18px; border-radius: 18px; font: inherit; font-size: 18px; font-weight: 800; text-align: start; cursor: pointer;
+  color: var(--ink); background: var(--cue); border: 0; box-shadow: 0 0 0 3px rgba(224, 73, 61, .25); }
+.btn-part[hidden] { display: none; }
+.btn-part bdi { font-family: var(--f-latin); letter-spacing: .04em; margin-inline-start: 6px; }
 .btn-next { flex: 1 1 280px; min-height: 76px; padding: 14px 22px; border-radius: 22px; text-align: start; font-size: 22px; font-weight: 800; line-height: 1.2;
   background: linear-gradient(180deg, var(--brand-hi), var(--brand)); color: #1b1206; box-shadow: 0 16px 40px -18px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,.5); }
 .btn-next:not(:disabled):active { transform: scale(.99); }
