@@ -57,6 +57,6 @@ window.SC_CONFIG = {
     site: "https://soundclash.co.il",
     instagram: "https://www.instagram.com/soundclash_rock_battle/",
     facebook: "https://www.facebook.com/profile.php?id=61589041324979",
-    youtube: "https://www.youtube.com/@SoundclashRockBattle"
+    youtube: "https://www.youtube.com/@SoundclashmusicBattle"
   }
 };

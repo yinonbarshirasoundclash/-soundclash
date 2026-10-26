@@ -903,7 +903,7 @@
         h("span", { class: "s-social-k" }, "עקבו אחרינו"),
         h("span", { class: "s-social-i" }, h("i", null, "📸"), "Instagram ", h("b", null, "@soundclash_rock_battle")),
         h("span", { class: "s-social-i" }, h("i", null, "👍"), "Facebook ", h("b", null, "Soundclash")),
-        h("span", { class: "s-social-i" }, h("i", null, "▶"), "YouTube ", h("b", null, "@SoundclashRockBattle")));
+        h("span", { class: "s-social-i" }, h("i", null, "▶"), "YouTube ", h("b", null, "@SoundclashmusicBattle")));
     }
     promoOverlay() {
       const C = CFG.CONTACT;
@@ -916,7 +916,7 @@
             h("div", { class: "s-promo-list" },
               h("span", null, h("i", null, "📸"), h("bdi", { dir: "ltr" }, "@soundclash_rock_battle")),
               h("span", null, h("i", null, "👍"), "Soundclash בפייסבוק"),
-              h("span", null, h("i", null, "▶"), h("bdi", { dir: "ltr" }, "@SoundclashRockBattle")))),
+              h("span", null, h("i", null, "▶"), h("bdi", { dir: "ltr" }, "@SoundclashmusicBattle")))),
           h("div", { class: "s-promo-qr" }, h("div", { class: "scr-qr-code", html: svg }), h("span", null, "סורקים לאינסטגרם"))));
     }
     fillPred() {

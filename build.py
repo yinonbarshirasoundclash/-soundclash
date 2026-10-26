@@ -26,7 +26,7 @@ CONTACTS = [
 
 # ריק = הכפתור פשוט לא מוצג. למלא ברגע שיש כתובות אמיתיות.
 SOCIAL = {
-    "youtube":   "https://www.youtube.com/@SoundclashRockBattle",
+    "youtube":   "https://www.youtube.com/@SoundclashmusicBattle",
     "facebook":  "https://www.facebook.com/profile.php?id=61589041324979",
     "instagram": "https://www.instagram.com/soundclash_rock_battle/",
 }
