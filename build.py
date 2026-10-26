@@ -28,7 +28,7 @@ CONTACTS = [
 SOCIAL = {
     "youtube":   "https://www.youtube.com/@SoundclashmusicBattle",
     "facebook":  "https://www.facebook.com/profile.php?id=61589041324979",
-    "instagram": "https://www.instagram.com/soundclash_rock_battle/",
+    "instagram": "https://www.instagram.com/soundclash_music_battles/",
 }
 
 # ============================================================================

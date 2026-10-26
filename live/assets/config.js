@@ -55,7 +55,7 @@ window.SC_CONFIG = {
     phoneNaama: "054-6589303",
     whatsapp: "https://wa.me/972546738192",
     site: "https://soundclash.co.il",
-    instagram: "https://www.instagram.com/soundclash_rock_battle/",
+    instagram: "https://www.instagram.com/soundclash_music_battles/",
     facebook: "https://www.facebook.com/profile.php?id=61589041324979",
     youtube: "https://www.youtube.com/@SoundclashmusicBattle"
   }

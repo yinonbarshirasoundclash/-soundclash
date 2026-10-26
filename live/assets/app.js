@@ -260,7 +260,7 @@
           h("a", { class: "follow-btn follow-" + n.toLowerCase(), href: u, target: "_blank", rel: "noopener" }, h("span", { class: "follow-ico", "aria-hidden": "true" }, ic), h("span", { class: "follow-n" }, n))));
       if (bare) return row;
       return h("div", { class: "follow" },
-        h("div", { class: "follow-head" }, h("span", { class: "follow-k" }, "עקבו אחרי Soundclash"), h("span", { class: "follow-h" }, "@soundclash_rock_battle")),
+        h("div", { class: "follow-head" }, h("span", { class: "follow-k" }, "עקבו אחרי Soundclash"), h("span", { class: "follow-h" }, "@soundclash_music_battles")),
         row);
     }
     /* -- join -- */
@@ -901,7 +901,7 @@
     socialStrip(cls) {
       return h("div", { class: "s-social " + (cls || "") },
         h("span", { class: "s-social-k" }, "עקבו אחרינו"),
-        h("span", { class: "s-social-i" }, h("i", null, "📸"), "Instagram ", h("b", null, "@soundclash_rock_battle")),
+        h("span", { class: "s-social-i" }, h("i", null, "📸"), "Instagram ", h("b", null, "@soundclash_music_battles")),
         h("span", { class: "s-social-i" }, h("i", null, "👍"), "Facebook ", h("b", null, "Soundclash")),
         h("span", { class: "s-social-i" }, h("i", null, "▶"), "YouTube ", h("b", null, "@SoundclashmusicBattle")));
     }
@@ -914,7 +914,7 @@
             h("div", { class: "s-promo-k" }, "רגע לפני שממשיכים"),
             h("div", { class: "s-promo-t" }, "עקבו אחרינו"),
             h("div", { class: "s-promo-list" },
-              h("span", null, h("i", null, "📸"), h("bdi", { dir: "ltr" }, "@soundclash_rock_battle")),
+              h("span", null, h("i", null, "📸"), h("bdi", { dir: "ltr" }, "@soundclash_music_battles")),
               h("span", null, h("i", null, "👍"), "Soundclash בפייסבוק"),
               h("span", null, h("i", null, "▶"), h("bdi", { dir: "ltr" }, "@SoundclashmusicBattle")))),
           h("div", { class: "s-promo-qr" }, h("div", { class: "scr-qr-code", html: svg }), h("span", null, "סורקים לאינסטגרם"))));
