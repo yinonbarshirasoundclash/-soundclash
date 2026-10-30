@@ -65,30 +65,30 @@ def ltr(t):
     return '<span class="ltr">%s</span>' % t
 
 FORMATS = [
-    dict(slug="90s", file="90s.html", theme="theme-90", css="f-90",
-         era="90's", name="Soundclash ניינטיז",
-         nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
-         name_html=ltr("Soundclash") + " ניינטיז",
-         tag="בהופעות עכשיו", live=True, logo="assets/img/logo-90s.svg", logo_alt="Soundclash ניינטיז",
-         short="הזירה שרצה היום. ארה״ב מול בריטניה, על עשור שלם של להיטים."),
-    dict(slug="80s", file="80s.html", theme="theme-80", css="f-80",
-         era="80's", name="Soundclash אייטיז",
-         nav='אייטיז ' + ltr("80's"), nav_plain="אייטיז 80's",
-         name_html=ltr("Soundclash") + " אייטיז",
-         tag="להזמנה", live=False,
-         short="ניאון מול איצטדיון. הסינת׳ הבריטי מול הלהיטים הגדולים של אמריקה."),
-    dict(slug="israel", file="israel.html", theme="theme-il", css="f-il",
-         era="80/90", name="Soundclash הקרב הישראלי",
-         nav="הקרב הישראלי", nav_plain="הקרב הישראלי",
-         name_html=ltr("Soundclash") + " הקרב הישראלי",
-         tag="להזמנה", live=False, logo="assets/img/logo-israeli-party.svg", logo_alt="Soundclash מסיבה ישראלית",
-         short="אייטיז נגד ניינטיז, בעברית. הלהיטים הישראליים של שני עשורים, ראש בראש."),
     dict(slug="screen", file="tv-vs-film.html", theme="theme-screen", css="f-screen",
          era="TV/FILM", name="Soundclash סדרות נגד סרטים",
          nav="סדרות נגד סרטים", nav_plain="סדרות נגד סרטים",
          name_html=ltr("Soundclash") + " סדרות נגד סרטים",
-         tag="להזמנה", live=False, logo="assets/img/logo-tv-vs-film.svg", logo_alt="Soundclash סדרות נגד סרטים",
-         short="ציר אחר לגמרי: השירים שכולם מכירים מסדרה אחת, מול השירים שכולם מכירים מסרט אחד."),
+         tag="המופע החדש", live=False, hot=True, logo="assets/img/logo-tv-vs-film.svg", logo_alt="Soundclash סדרות נגד סרטים",
+         short="שיר מסדרה מול שיר מסרט, 10 דו־קרבות, ומסך עם וידאו מקורי לכל שיר."),
+    dict(slug="90s", file="90s.html", theme="theme-90", css="f-90",
+         era="90's", name="Soundclash ניינטיז",
+         nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
+         name_html=ltr("Soundclash") + " ניינטיז",
+         tag="כבר ממלא אולמות", live=True, logo="assets/img/logo-90s.svg", logo_alt="Soundclash ניינטיז",
+         short="המופע שכבר ממלא אולמות: ארה״ב מול בריטניה."),
+    dict(slug="israel", file="israel.html", theme="theme-il", css="f-il",
+         era="80/90", name="Soundclash מסיבה ישראלית",
+         nav="מסיבה ישראלית", nav_plain="מסיבה ישראלית",
+         name_html=ltr("Soundclash") + " מסיבה ישראלית",
+         tag="להזמנה", live=False, logo="assets/img/logo-israeli-party.svg", logo_alt="Soundclash מסיבה ישראלית",
+         short="מסיבה ישראלית: אייטיז נגד ניינטיז, שירים שכל האולם שר, ורחבה מלאה עד הסוף."),
+    dict(slug="80s", file="80s.html", theme="theme-80", css="f-80",
+         era="80's", name="Soundclash אייטיז",
+         nav='אייטיז ' + ltr("80's"), nav_plain="אייטיז 80's",
+         name_html=ltr("Soundclash") + " אייטיז",
+         tag="לפי בקשה", live=False,
+         short="ניאון מול איצטדיון. הסינת׳ הבריטי מול הלהיטים הגדולים של אמריקה.")
 ]
 
 # ============================================================================
@@ -193,7 +193,6 @@ def footer(p=""):
           <li><a href="tel:{PHONE_TEL}">{PHONE_MAIN} · ינון</a></li>
           <li><a href="tel:0546589303">054-6589303 · נעמה</a></li>
           <li><a href="{wa_link()}" target="_blank" rel="noopener">וואטסאפ</a></li>
-          <li><a href="{wa_link()}" target="_blank" rel="noopener">וואטסאפ</a></li>
           <li><a href="{p}events.html">לאירועי חברה</a></li>
           <li><a href="{p}contact.html">טופס הזמנה</a></li>
         </ul>
@@ -254,7 +253,7 @@ def stats_bar(items):
 DEFAULT_STATS = [
     ("6", "נגנים על הבמה"),
     ("2", "סולן וסולנית"),
-    ("4", "זירות קרב"),
+    ("10", "דו־קרבות"),
     ("90", "דקות מופע"),
     ("APP", "אפליקציית הצבעה משלנו"),
 ]
@@ -295,6 +294,69 @@ def spec_block(rows, title="המפרט, בלי לחפש"):
       <h2>{title}</h2>
     </div>
     <dl class="spec reveal">{body}</dl>
+  </div>
+</section>"""
+
+ADDONS = [
+    ("טריוויה לפני המופע", "האורחים משחקים באפליקציה עוד לפני השיר הראשון"),
+    ("פופקורן של קולנוע", "עגלת פופקורן בכניסה, כמו בבכורה"),
+    ("שטיח אדום", "וצלם פפראצי שמחכה לאורחים"),
+    ("דמויות בהשראת המסך", "דמויות מקוריות שמסתובבות בין האורחים"),
+    ("הלוגו שלכם בפתיח", "ו״פוסטר הקרב״ עם התוצאות למחרת"),
+    ("דו־קרב משלכם", "לבחירתכם מהרשימה, או דו־קרב חדש שנבנה בשבילכם"),
+    ("עוד חצי שעה של מסיבה", "סט ריקודים חי אחרי ההכרזה על המנצח"),
+    ("פסלוני זהב", "לזוכי הטריוויה ולמצביעים המצטיינים"),
+]
+
+def addons_block(head="ערב שלם, לא רק הופעה", sub="הערב נגמר במסיבת ריקודים. רוצים יותר? בונים אותו מתוספות שאנחנו מביאים:", cta=True):
+    cards = "".join('<div class="addon reveal"><b>%s</b><span>%s</span></div>' % (h, t) for h, t in ADDONS)
+    btn = ('<div class="cta-row center mt-32"><a class="btn btn-outline" href="events.html#quote">לבניית הערב שלכם</a></div>' if cta else "")
+    return f"""<section id="addons">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">תוספות</div>
+      <h2>{head}</h2>
+      <p>{sub}</p>
+    </div>
+    <div class="addons">{cards}</div>
+    {btn}
+  </div>
+</section>"""
+
+DUELS_SECTION = """<section id="duels">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">מהרפרטואר</div>
+      <h2>ככה נראה דו־קרב</h2>
+      <p>כל דו־קרב בנוי סביב נושא משותף: שיר מסדרה מול שיר מסרט. ארבע דוגמאות מתוך עשרה.</p>
+    </div>
+    <div class="duel-list">
+      <div class="duel-row reveal">
+        <div class="theme">הריקוד</div>
+        <div class="side tv"><span class="who latin">TV</span><b>Fame</b><small>תהילה</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>Stayin' Alive</b><small>קדחת מוצאי שבת</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">להיות הכי טוב</div>
+        <div class="side tv"><span class="who latin">TV</span><b>פוקימון</b><small>שיר הפתיחה</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>Eye of the Tiger</b><small>רוקי 3</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">תל אביב מול תל אביב</div>
+        <div class="side tv"><span class="who latin">TV</span><b>מכה אפורה</b><small>פלורנטין</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>לגור איתו</b><small>דיזנגוף 99</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">הדרן: חברים</div>
+        <div class="side tv"><span class="who latin">TV</span><b>I'll Be There for You</b><small>חברים</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>I'm a Believer</b><small>שרק</small></div>
+      </div>
+    </div>
+    <p class="center mt-32" style="color:var(--text-dim)">הערב נגמר במסיבת ריקודים. על המסך רצים סרטוני אווירה מקוריים לכל שיר, ובין השירים עולות תוצאות ההצבעה.</p>
   </div>
 </section>"""
 
@@ -362,7 +424,7 @@ def gallery_section(imgs, head="תמונות מהבמה", eyebrow="גלריה", 
 def formats_index():
     cards = ""
     for f in FORMATS:
-        status_cls = "status" if f["live"] else "status neutral"
+        status_cls = "status" if (f["live"] or f.get("hot")) else "status neutral"
         cards += f"""<a class="format-card {f['css']} reveal" href="{f['file']}">
       <div class="{status_cls}">{f['tag']}</div>
       {('<img class="card-logo" src="' + f['logo'] + '" alt="' + f['logo_alt'] + '" loading="lazy">') if f.get('logo') else ('<div class="era latin">' + f['era'] + '</div>')}
@@ -374,8 +436,8 @@ def formats_index():
   <div class="wrap">
     <div class="section-head reveal">
       <div class="eyebrow">הזירות</div>
-      <h2>אותו מנגנון, ארבע זירות</h2>
-      <p>מופעי קרב לארבע זירות שונות: ניינטיז, אייטיז, הקרב הישראלי, וסדרות נגד סרטים. בוחרים את הזירה שמדברת לקהל שלכם.</p>
+      <h2>המופע החדש, והמופעים שכבר הוכיחו את עצמם</h2>
+      <p>אותו מנגנון בכל מופע: שיר מול שיר, והקהל מכריע מהטלפון. בוחרים את המופע שמדבר לקהל שלכם.</p>
     </div>
     <div class="formats-grid">{cards}</div>
   </div>
@@ -412,7 +474,7 @@ def audience_block():
 
 HOME_JSONLD = """<script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MusicGroup","name":"Soundclash","alternateName":"סאונדקלאש",
-"url":"%s","genre":["Rock","Tribute","Live Music"],"description":"מופע קרב מוזיקלי חי שבו הקהל מצביע ומכריע בין שני צדדים.",
+"url":"%s","genre":["Live Music","Pop","Interactive Show"],"description":"מופע קרב מוזיקלי חי שבו הקהל מצביע ומכריע בין שני צדדים.",
 "image":"%s","email":"%s","telephone":"+972-54-6738192",
 "address":{"@type":"PostalAddress","addressCountry":"IL"}}
 </script>""" % (SITE_URL, HERO_IMG, EMAIL)
@@ -427,20 +489,21 @@ home_body = f"""
   <div class="hero-inner">
     <div class="eyebrow">מופע חי · Live Show</div>
     <h1 class="split-fill latin">SOUNDCLASH</h1>
-    <h2>קרב מוזיקלי חי. שני צדדים, שיר מול שיר — והקהל מכריע.</h2>
+    <h2>לא עוד להקת קאברים. קרב שאתם מכריעים.</h2>
     <p class="lede">
-      Soundclash מציגה פורמט מופע שבו <b>הלהיטים הגדולים ביותר של העידן</b> עומדים זה מול זה,
-      <span class="b-side">שיר מול שיר, בביצוע חי</span> — וההכרעה בין שני הצדדים נמסרת לקהל,
-      בהצבעה מהטלפון בסוף כל סיבוב.
+      שיר מול שיר, <b>להיטים שכולם מכירים</b>, והקהל מכריע מהטלפון.
+      המופע החדש שלנו: <a class="inline" href="tv-vs-film.html"><span class="b-side">סדרות נגד סרטים</span></a>.
     </p>
+    <div class="proofs"><span>אתם מכריעים</span><span>מופע עם מסך</span><span>ערב שלם</span></div>
     <div class="hero-video">
       <iframe src="https://www.youtube.com/embed/{TRAILER}?rel=0" title="Soundclash — טריילר"
         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
     <div class="cta-row center">
-      <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
+      <a class="btn btn-solid" href="tv-vs-film.html">לסדרות נגד סרטים</a>
+      <a class="btn btn-outline" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
       <a class="btn btn-wa" href="{wa_link()}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
-      <a class="btn btn-outline" href="#formats">לארבע הזירות</a>
+      <a class="btn btn-outline" href="events.html">לאירועי חברה</a>
     </div>
   </div>
 </section>
@@ -448,6 +511,7 @@ home_body = f"""
 {stats_bar(DEFAULT_STATS)}
 {mechanism_block()}
 {formats_index()}
+{addons_block()}
 {video_section(VIDEOS, head="צפו בקרב מקרוב", sub="ביצועים חיים, ותגובות הקהל בזמן ההצבעה.", limit=3)}
 {audience_block()}
 {gallery_section(IMAGES[:6], head="תמונות מהבמה")}
@@ -459,7 +523,7 @@ home_body = f"""
 
 page("index.html",
      "Soundclash — מופע קרב מוזיקלי חי שבו הקהל מכריע",
-     "מופע קרב מוזיקלי חי בשישה נגנים: שני צדדים, שיר מול שיר, והקהל מצביע ומכריע מהטלפון. ארבע זירות — ניינטיז, אייטיז, הקרב הישראלי וסדרות נגד סרטים. להזמנות: 054-6738192.",
+     "לא עוד להקת קאברים: מופע קרב מוזיקלי חי בשישה נגנים, שיר מול שיר, והקהל מכריע מהטלפון. המופע החדש: סדרות נגד סרטים. וגם ניינטיז, מסיבה ישראלית ואייטיז. להזמנות: 054-6738192.",
      home_body, "home", theme="theme-90", jsonld=HOME_JSONLD)
 
 
@@ -472,8 +536,8 @@ FORMAT_PAGES = {
    desc="מופע קרב חי על להיטי שנות ה-90: גראנג׳ וגלאם אמריקאי מול בריטפופ ואינדי בריטי, שיר מול שיר, והקהל מכריע בהצבעה מהטלפון. להזמנות 054-6738192.",
    sub="הקרב הגדול על השליטה בניינטיז",
    arc="מהגראנג׳ של סיאטל ועד ל<em>בריטפופ</em> של מנצ׳סטר, מהגלאם האמריקאי ועד לאינדי הבריטי — עשור אחד, ושני צדדים של האוקיינוס שלא הסכימו על כלום.",
-   lede=("בצד אחד <b>הסאונד המלוכלך של הגראנג׳ וההפקה הגדולה של הרוק האמריקאי</b>. "
-         "בצד השני <span class='b-side'>החוצפה, המלודיות והסטייל של הרוק הבריטי</span>. "
+   lede=("בצד אחד <b>הסאונד המלוכלך של הגראנג׳ והלהיטים הגדולים של אמריקה</b>. "
+         "בצד השני <span class='b-side'>החוצפה, המלודיות והסטייל של בריטניה</span>. "
          "שיר מול שיר, סיבוב מול סיבוב — והקהל מכריע."),
    side_a=("TEAM USA", "הצד האמריקאי", "העוצמה, הריף והגיטרה המעוותת — העשור שבו אמריקה כתבה את הרוק הכבד של הרדיו.",
            ["גראנג׳", "גלאם רוק", "רוק אלטרנטיבי אמריקאי", "פוסט-גראנג׳"]),
@@ -488,7 +552,7 @@ FORMAT_PAGES = {
    arc="מהסינת׳-פופ הבריטי ועד ל<em>סטדיום רוק</em> אמריקאי, מהניו-רומנטיקס ועד לגלאם מטאל — העשור שבו כל שיר נשמע כמו נבואה על העתיד.",
    lede=("בצד אחד <b>הגיטרות הגדולות, הבלדות והסטדיונים של אמריקה</b>. "
          "בצד השני <span class='b-side'>הסינתסייזרים, הניאון והסטייל של הגל הבריטי החדש</span>. "
-         "העשור הכי מלוטש שהיה לרוק, בשני נוסחים שאי אפשר לבלבל ביניהם."),
+         "העשור הכי מלוטש של הלהיטים, בשני נוסחים שאי אפשר לבלבל ביניהם."),
    side_a=("TEAM USA", "הצד האמריקאי", "העשור שבו הרוק האמריקאי גדל לגודל של אצטדיון — סולואים, בלדות והרמוניות שנבנו כדי למלא אולם.",
            ["סטדיום רוק", "גלאם מטאל", "הארט רוק", "פופ אמריקאי של MTV"]),
    side_b=("TEAM UK", "הצד הבריטי", "העשור שבו בריטניה החליפה את הגיטרה בסינתסייזר, ואת החולצה במעיל — וכבשה את המצעדים.",
@@ -496,32 +560,31 @@ FORMAT_PAGES = {
    avail="זירת האייטיז זמינה להזמנה. ספרו לנו על התאריך, ונבנה את הערב לפי האולם והקהל."),
 
  "israel": dict(
-   title="Soundclash הקרב הישראלי — אייטיז נגד ניינטיז",
-   desc="מופע קרב חי על הלהיטים הישראליים: שנות ה-80 מול שנות ה-90, שיר מול שיר, והקהל מכריע בהצבעה חיה מהטלפון. להזמנות 054-6738192.",
-   sub="אייטיז נגד ניינטיז, בעברית",
-   arc="מהלהקות הגדולות של שנות ה-80 ועד ל<em>קולות החדשים</em> של שנות ה-90 — שני עשורים של שירים שכל הארץ שרה, ולראשונה ראש בראש.",
-   lede=("בצד אחד <b>שנות ה-80</b>: הלהקות, הבלדות הגדולות והשירים שגדלנו עליהם ברדיו. "
+   title="Soundclash מסיבה ישראלית — אייטיז נגד ניינטיז",
+   desc="מסיבה ישראלית: קרב חי על הלהיטים הישראליים של שנות ה-80 מול שנות ה-90, שיר מול שיר, הקהל מכריע מהטלפון, והערב נגמר על הרחבה. להזמנות 054-6738192.",
+   sub="מסיבה ישראלית. אייטיז נגד ניינטיז.",
+   arc="מהלהקות הגדולות של שנות ה-80 ועד ל<em>קולות החדשים</em> של שנות ה-90 — שני עשורים של שירים שכל הארץ שרה, ועכשיו גם רוקדת.",
+   lede=("בצד אחד <b>שנות ה-80</b>: הלהקות והלהיטים שכל האולם שר בעל פה. "
          "בצד השני <span class='b-side'>שנות ה-90</span>: העשור שבו קולות חדשים מילאו את הרדיו והמועדונים. "
-         "שיר מול שיר, והקהל מכריע."),
-   side_a=("TEAM 80s", "צד האייטיז", "העשור של הלהקות הגדולות, של הבלדות שכולם יודעים בעל פה ושל השירים שנכנסו לפסקול של המדינה.",
-           ["להקות האייטיז", "בלדות גדולות", "פופ ישראלי", "שירי רדיו"]),
+         "שיר מול שיר, כל האולם שר, והערב נגמר על הרחבה."),
+   side_a=("TEAM 80s", "צד האייטיז", "העשור של הלהקות הגדולות ושל הלהיטים ששרים בקולי קולות.",
+           ["להקות האייטיז", "להיטים שכולם שרים", "פופ ישראלי", "שירי רדיו"]),
    side_b=("TEAM 90s", "צד הניינטיז", "העשור שבו הגיטרות חזרו, הפופ התחדש וזמרות וזמרים חדשים הגדירו דור.",
-           ["להקות הניינטיז", "זמרות גדולות", "הפופ החדש", "להיטי רדיו"]),
-   avail="זירת הקרב הישראלי זמינה להזמנה. ספרו לנו על התאריך, ונבנה את הערב לפי האולם והקהל."),
+           ["להקות הניינטיז", "זמרות גדולות", "הפופ החדש", "להיטי רחבה"]),
+   avail="מסיבה ישראלית זמינה להזמנה. ספרו לנו על התאריך, ונבנה את הערב לפי האולם והקהל."),
 
  "screen": dict(
    title="Soundclash סדרות נגד סרטים — קרב השירים של המסך",
    desc="מופע קרב חי על מוזיקת המסך: השירים הגדולים מתוך סדרות טלוויזיה מול השירים הגדולים מתוך סרטי קולנוע, שיר מול שיר, והקהל מכריע בהצבעה חיה. להזמנות 054-6738192.",
-   sub="שני מסכים, קרב אחד",
-   arc="מהשירים שכולם מזהים מהסלון, מהרגע שהפתיחה עולה — ועד ל<em>שירים</em> שכולם מזהים מסצנה אחת בקולנוע שאי אפשר לשכוח — הפעם הקרב אינו בין שתי מדינות, אלא בין שני מסכים.",
-   lede=("בצד אחד <b>הסדרות</b> — השירים שנכנסו לסלון פעם בשבוע, שנה אחרי שנה, עד שכולם ידעו אותם בעל פה. "
-         "בצד השני <span class='b-side'>הקולנוע</span> — השירים שנצרבו יחד עם סצנה אחת גדולה. "
-         "בשני הצדדים מדובר בשירים אמיתיים עם מילים, לא במוזיקת רקע תזמורתית — זירה שלא דורשת מהקהל להכיר להקה, רק לזכור איפה הוא שמע את זה."),
+   sub="סדרות נגד סרטים. הקהל מכריע.",
+   arc="על המסך: <em>וידאו מקורי לכל שיר</em>, וכל שיר מצד הסדרות נפתח בפתיח מקורי בסגנון העשור שלו.",
+   lede=("10 דו־קרבות ו-20 להיטים שכולם מכירים: <b>שיר מסדרה</b> מול <span class='b-side'>שיר מסרט</span>, סביב נושא משותף. "
+         "מצביעים מהטלפון, והתוצאה עולה למסך הגדול."),
    side_a=("TEAM TV", "צד הסדרות", "השירים שליוו סדרה שלמה — משיר הפתיחה שכולם שרים בעל פה ועד לרגע שהשיר הנכון עלה בדיוק בזמן.",
            ["שירי פתיחה מוכרים", "רגעי מפתח מהעונה", "סדרות פולחן", "השירים שכולם מזהים"]),
    side_b=("TEAM FILM", "צד הסרטים", "השירים שנצרבו יחד עם סצנה אחת גדולה — לא הפסקול התזמורתי, אלא השיר שכולם מזהים מהשנייה הראשונה.",
            ["שירים מסצנות איקוניות", "הלהיט שכולם מכירים מהסרט", "קולנוע פולחן", "הסצנה שכולם זוכרים"]),
-   avail="זירת הסדרות והסרטים זמינה להזמנה. ספרו לנו על התאריך, ונבנה את הערב לפי האולם והקהל."),
+   avail="זמין להזמנה למועדונים ולאירועי חברה. יש גם גרסה של 45 דקות."),
 }
 
 def duel_block(a, b):
@@ -557,7 +620,7 @@ for f in FORMATS:
                              sub="ביצועים חיים מזירת הניינטיז, ותגובות הקהל בזמן ההצבעה.", limit=3)
     else:
         vids = video_section(VIDEOS, head="ככה נראה קרב Soundclash", eyebrow="המנגנון בעיניים",
-                             sub="הסרטונים צולמו בזירת הניינטיז — הזירה שרצה היום. המנגנון, ההצבעה והמבנה זהים בכל הזירות; מה שמשתנה הוא הרפרטואר.",
+                             sub="הסרטונים צולמו בניינטיז, המופע שכבר ממלא אולמות. המנגנון וההצבעה זהים.",
                              limit=3)
 
     body = f"""
@@ -585,6 +648,7 @@ for f in FORMATS:
 {stats_bar(DEFAULT_STATS)}
 {duel_block(d['side_a'], d['side_b'])}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרעת הזירה", sub="ההצבעה אינה גימיק שמתלווה למופע — היא המבנה שלו. כל סיבוב נסגר בהכרעה של הקהל.")}
+{(DUELS_SECTION + addons_block()) if f["slug"] == "screen" else ""}
 {vids}
 {gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
 {spec_block(spec, title="המפרט של הזירה הזו")}
@@ -691,8 +755,8 @@ about_body = f"""
     <ul class="lineup">{lineup_html}</ul>
 
     <h3>הזירות</h3>
-    <p>אותו מנגנון מוגש בארבע זירות: ניינטיז, אייטיז, הקרב הישראלי, וסדרות נגד סרטים. זירת הניינטיז רצה היום במועדונים,
-    ושאר הזירות זמינות להזמנה בתיאום מראש. גודל ההרכב ומבנה הסיבובים מאפשרים התאמה
+    <p>אותו מנגנון מוגש בכמה מופעים: סדרות נגד סרטים, המופע החדש; ניינטיז, שכבר ממלא אולמות; מסיבה ישראלית; ואייטיז לפי בקשה.
+    כל המופעים זמינים להזמנה בתיאום מראש. גודל ההרכב ומבנה הסיבובים מאפשרים התאמה
     לסוג האירוע, לכמות האורחים ולמשך ההופעה.</p>
 
     <h3>מי עומד מאחורי זה</h3>
@@ -842,12 +906,13 @@ events_body = r"""<section class="hero hero-corp">
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
-    <div class="eyebrow">לאירועי חברה · ערבי גיבוש · כנסים</div>
-    <div class="era-mark latin">TV/FILM</div>
+    <div class="eyebrow">לא עוד להקת קאברים · לאירועי חברה</div>
+    <img class="hero-logo" src="assets/img/logo-tv-vs-film.svg" alt="Soundclash סדרות נגד סרטים">
     <h2>סדרות נגד סרטים. והעובדים מכריעים.</h2>
-    <p class="lede">מופע קרב מוזיקלי חי: שישה נגנים, סולן וסולנית, <b>השירים מהסדרות</b> מול <span class="b-side">השירים מהסרטים</span> שכולם בחדר גדלו עליהם. כל עובד מצביע מהטלפון, התוצאה עולה למסך בזמן אמת, ובסוף הערב מוכרז מנצח.</p>
+    <p class="lede">מופע קרב מוזיקלי חי: שישה נגנים, סולן וסולנית, <b>השירים מהסדרות</b> מול <span class="b-side">השירים מהסרטים</span> שכולם בחדר גדלו עליהם. כל עובד מצביע מהטלפון, התוצאה עולה למסך בזמן אמת, ובסוף הערב מוכרז מנצח. וזה לא רק הופעה, זה ערב שלם, עם תוספות שאנחנו מביאים.</p>
     <div class="cta-row center">
       <a class="btn btn-solid" href="#quote">לקבלת הצעת מחיר</a>
+      <a class="btn btn-outline" href="#addons">לבניית הערב</a>
       <a class="btn btn-wa" href="{CORP_WA}" target="_blank" rel="noopener">{WA} וואטסאפ</a>
       <a class="btn btn-outline" href="tel:0546738192">{PH} 054-6738192</a>
     </div>
@@ -872,42 +937,7 @@ events_body = r"""<section class="hero hero-corp">
   </div>
 </section>
 
-<section id="duels">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">מהרפרטואר</div>
-      <h2>ככה נראה דו־קרב</h2>
-      <p>כל דו־קרב בנוי סביב נושא משותף: שיר מסדרה מול שיר מסרט. ארבע דוגמאות מתוך עשרה.</p>
-    </div>
-    <div class="duel-list">
-      <div class="duel-row reveal">
-        <div class="theme">הריקוד</div>
-        <div class="side tv"><span class="who latin">TV</span><b>Fame</b><small>תהילה</small></div>
-        <div class="mini-vs latin">VS</div>
-        <div class="side film"><span class="who latin">FILM</span><b>Stayin' Alive</b><small>קדחת מוצאי שבת</small></div>
-      </div>
-      <div class="duel-row reveal">
-        <div class="theme">להיות הכי טוב</div>
-        <div class="side tv"><span class="who latin">TV</span><b>פוקימון</b><small>שיר הפתיחה</small></div>
-        <div class="mini-vs latin">VS</div>
-        <div class="side film"><span class="who latin">FILM</span><b>Eye of the Tiger</b><small>רוקי 3</small></div>
-      </div>
-      <div class="duel-row reveal">
-        <div class="theme">תל אביב מול תל אביב</div>
-        <div class="side tv"><span class="who latin">TV</span><b>מכה אפורה</b><small>פלורנטין</small></div>
-        <div class="mini-vs latin">VS</div>
-        <div class="side film"><span class="who latin">FILM</span><b>לגור איתו</b><small>דיזנגוף 99</small></div>
-      </div>
-      <div class="duel-row reveal">
-        <div class="theme">הדרן: חברים</div>
-        <div class="side tv"><span class="who latin">TV</span><b>I'll Be There for You</b><small>חברים</small></div>
-        <div class="mini-vs latin">VS</div>
-        <div class="side film"><span class="who latin">FILM</span><b>I'm a Believer</b><small>שרק</small></div>
-      </div>
-    </div>
-    <p class="center mt-32" style="color:var(--text-dim)">הערב נגמר במסיבת ריקודים. על המסך רצים סרטוני אווירה מקוריים לכל שיר, ובין השירים עולות תוצאות ההצבעה.</p>
-  </div>
-</section>
+{DUELS}
 
 <section id="flow">
   <div class="wrap">
@@ -929,12 +959,12 @@ events_body = r"""<section class="hero hero-corp">
     <div class="section-head reveal">
       <div class="eyebrow">חבילות</div>
       <h2>שלוש דרכים להזמין</h2>
-      <p>המחיר נקבע לפי האולם, גודל הקהל והציוד שכבר קיים במקום. ספרו לנו על האירוע ותקבלו הצעת מחיר תוך 24 שעות.</p>
+      <p>ההצעה נבנית לפי האולם, גודל הקהל והתוספות שתבחרו. ספרו לנו על האירוע ותקבלו הצעת מחיר תוך 24 שעות.</p>
     </div>
     <div class="packages">
       <article class="pkg reveal">
         <div class="pkg-tag latin">SET</div>
-        <h3>סט קצר</h3>
+        <h3>גרסה של 45 דקות</h3>
         <p class="pkg-for">להרמת כוסית, כנס או ערב עם תוכנית נוספת</p>
         <ul>
           <li>כ-45 דקות</li>
@@ -961,15 +991,17 @@ events_body = r"""<section class="hero hero-corp">
         <p class="pkg-for">אירוע שנתי, השקה או חגיגה שרוצים שתיזכר</p>
         <ul>
           <li>כל מה שבמופע המלא</li>
-          <li>לוגו החברה על מסך ההצבעה</li>
-          <li>התאמת הרפרטואר לקהל</li>
+          <li>הלוגו שלכם בפתיח, ו״פוסטר הקרב״ למחרת</li>
+          <li>דו־קרב לבחירתכם, או דו־קרב חדש שנבנה בשבילכם</li>
           <li>תיאום טכני מלא מול האולם</li>
         </ul>
       </article>
     </div>
-    <p class="center mt-32" style="color:var(--text-dim)">לא מחפשים סדרות וסרטים? אותו מנגנון רץ גם בזירות <a class="inline" href="90s.html">ניינטיז</a>, <a class="inline" href="80s.html">אייטיז</a> ו<a class="inline" href="israel.html">הקרב הישראלי</a>.</p>
+    <p class="center mt-32" style="color:var(--text-dim)">לא מחפשים סדרות וסרטים? אותו מנגנון רץ גם ב<a class="inline" href="90s.html">ניינטיז</a> (המופע שכבר ממלא אולמות) וב<a class="inline" href="israel.html">מסיבה הישראלית</a>. <a class="inline" href="80s.html">אייטיז</a> לפי בקשה.</p>
   </div>
 </section>
+
+{ADDONS}
 
 <section id="proof">
   <div class="wrap">
@@ -980,7 +1012,7 @@ events_body = r"""<section class="hero hero-corp">
     <div class="proof-grid">
       <div class="proof-main reveal">
         <div class="proof-num latin">200</div>
-        <h3>המועצה האזורית אלפי מנשה</h3>
+        <h3>קהילת אלפא, אלפי מנשה</h3>
         <p>הזמינה את Soundclash לערב קהילתי באלפא פאב, עם כ-200 משתתפים.</p>
         <blockquote class="quote">
           <p>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים. תמסור לצוות שלך תודה רבה מקהילת אלפא, ואתם מוזמנים תמיד.״</p>
@@ -1025,7 +1057,8 @@ events_body = r"""<section class="hero hero-corp">
       <details class="reveal"><summary>העובדים צריכים להוריד אפליקציה?</summary><p>לא. סורקים קוד מהמסך ומצביעים מהדפדפן בטלפון, בלי הורדה ובלי הרשמה.</p></details>
       <details class="reveal"><summary>לכמה עובדים זה מתאים?</summary><p>מעשרות עובדים ועד אירועים גדולים. ההגברה, המסך והמשך מותאמים לגודל האירוע ולמבנה הערב.</p></details>
       <details class="reveal"><summary>באיזו שפה המופע?</summary><p>ההגשה בעברית, והשירים בשפת המקור. בדרך יש גם רגעים בעברית שכל האולם שר.</p></details>
-      <details class="reveal"><summary>אפשר לשלב את המופע בתוך ערב עם נאומים, ארוחה או הענקת פרסים?</summary><p>כן. הסט הקצר נבנה בדיוק בשביל זה, ואת המופע המלא אפשר לחלק לשני חלקים סביב התוכנית שלכם.</p></details>
+      <details class="reveal"><summary>אפשר לשלב את המופע בתוך ערב עם נאומים, ארוחה או הענקת פרסים?</summary><p>כן. הגרסה של 45 דקות נבנתה בדיוק בשביל זה, ואת המופע המלא אפשר לחלק לשני חלקים סביב התוכנית שלכם.</p></details>
+      <details class="reveal"><summary>אפשר להפוך את זה לערב שלם?</summary><p>כן: טריוויה לפני המופע, שטיח אדום, פופקורן, דמויות, פסלוני זהב ועוד. בוחרים מה מתאים, ואנחנו מביאים ומפעילים.</p></details>
       <details class="reveal"><summary>כמה זמן מראש צריך להזמין?</summary><p>מומלץ 4–6 שבועות לפני התאריך, כדי לתאם את הרפרטואר והצד הטכני מול האולם.</p></details>
     </div>
   </div>
@@ -1037,7 +1070,7 @@ events_body = r"""<section class="hero hero-corp">
       <div class="eyebrow">מפרט</div>
       <h2>המפרט, בלי לחפש</h2>
     </div>
-    <dl class="spec reveal"><div class="spec-row"><dt>הרכב</dt><dd>ינון בר שירה – שירה וגיטרה אקוסטית | סולנית – שירה | ולאד פוזיילוב – גיטרה מובילה וקולות | חן ירמיצקי – קלידים | עומר מתתיהו – בס | תומר כהן – תופים</dd></div><div class="spec-row"><dt>אורך</dt><dd>סט קצר של כ-45 דקות, או מופע מלא של כ-90 דקות</dd></div><div class="spec-row"><dt>קהל</dt><dd>מעשרות עובדים ועד אירועים גדולים. ההגברה והמסך מותאמים לגודל האירוע</dd></div><div class="spec-row"><dt>מה אנחנו מביאים</dt><dd>אפליקציית ההצבעה, מסך התוצאות וההפעלה מול הקהל</dd></div><div class="spec-row"><dt>מה נדרש במקום</dt><dd>הגברה ותאורה סטנדרטיות, מסך או מקרן להצגת התוצאות (אם אין, נכלול אותו בהצעת המחיר), וקליטה סלולרית או Wi-Fi לעובדים</dd></div><div class="spec-row"><dt>מתאים ל</dt><dd>ערבי גיבוש, מסיבות חברה, הרמות כוסית, כנסים ואירועים שנתיים</dd></div></dl>
+    <dl class="spec reveal"><div class="spec-row"><dt>הרכב</dt><dd>ינון בר שירה – שירה וגיטרה אקוסטית | סולנית – שירה | ולאד פוזיילוב – גיטרה מובילה וקולות | חן ירמיצקי – קלידים | עומר מתתיהו – בס | תומר כהן – תופים</dd></div><div class="spec-row"><dt>אורך</dt><dd>גרסה של כ-45 דקות, או מופע מלא של כ-90 דקות</dd></div><div class="spec-row"><dt>קהל</dt><dd>מעשרות עובדים ועד אירועים גדולים. ההגברה והמסך מותאמים לגודל האירוע</dd></div><div class="spec-row"><dt>מה אנחנו מביאים</dt><dd>אפליקציית ההצבעה, מסך התוצאות וההפעלה מול הקהל</dd></div><div class="spec-row"><dt>מה נדרש במקום</dt><dd>הגברה ותאורה סטנדרטיות, מסך או מקרן להצגת התוצאות (אם אין, נכלול אותו בהצעת המחיר), וקליטה סלולרית או Wi-Fi לעובדים</dd></div><div class="spec-row"><dt>מתאים ל</dt><dd>ערבי גיבוש, מסיבות חברה, הרמות כוסית, כנסים ואירועים שנתיים</dd></div></dl>
   </div>
 </section>
 
@@ -1057,6 +1090,8 @@ events_body = r"""<section class="hero hero-corp">
   </div>
 </section>"""
 events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["phone"])
+               .replace("{DUELS}", DUELS_SECTION)
+               .replace("{ADDONS}", addons_block(head="ערב שלם, לא רק הופעה: אנחנו מביאים את כל זה", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
                .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))
 page("events.html", "Soundclash לאירועי חברה — קרב מוזיקלי שהעובדים מכריעים",
      "מופע קרב מוזיקלי חי לאירועי חברה וערבי גיבוש: סדרות נגד סרטים, שישה נגנים, סולן וסולנית, והעובדים מצביעים מהטלפון ומכריעים. הצעת מחיר תוך 24 שעות: 054-6738192.",
