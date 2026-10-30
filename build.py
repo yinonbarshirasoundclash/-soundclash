@@ -308,7 +308,7 @@ ADDONS = [
     ("פסלוני זהב", "לזוכי החידון ולמצביעים המצטיינים"),
 ]
 
-def addons_block(head="ערב שלם, לא רק הופעה", sub="כל הסט בנוי מלהיטים מקפיצים שמרימים את כל האולם. רוצים יותר? בונים את הערב מתוספות שאנחנו מביאים:", cta=True):
+def addons_block(head="ערב שלם, לא רק הופעה", sub="להיטים מקפיצים ומרקידים שמרימים את כל האולם. רוצים יותר? בונים את הערב מתוספות שאנחנו מביאים:", cta=True):
     cards = "".join('<div class="addon reveal"><b>%s</b><span>%s</span></div>' % (h, t) for h, t in ADDONS)
     btn = ('<div class="cta-row center mt-32"><a class="btn btn-outline" href="events.html#quote">לבניית הערב שלכם</a></div>' if cta else "")
     return f"""<section id="addons">
@@ -356,7 +356,7 @@ DUELS_SECTION = """<section id="duels">
         <div class="side film"><span class="who latin">FILM</span><b>I'm a Believer</b><small>שרק</small></div>
       </div>
     </div>
-    <p class="center mt-32" style="color:var(--text-dim)">כל הסט מקפיץ ומרקיד. על המסך רצים סרטוני אווירה מקוריים לכל שיר, ובין השירים עולות תוצאות ההצבעה.</p>
+    <p class="center mt-32" style="color:var(--text-dim)">להיטים מקפיצים ומרקידים. על המסך רצים סרטוני אווירה מקוריים לכל שיר, ובין השירים עולות תוצאות ההצבעה.</p>
   </div>
 </section>"""
 
@@ -983,7 +983,7 @@ events_body = r"""<section class="hero hero-corp">
           <li>10 דו־קרבות</li>
           <li>הצבעה חיה ומסך תוצאות</li>
           <li>הגרלת פרסים בין המצביעים</li>
-          <li>סט שכולו להיטים מקפיצים</li>
+          <li>להיטים מקפיצים ומרקידים</li>
         </ul>
       </article>
       <article class="pkg reveal">
