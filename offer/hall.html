@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Soundclash להיכלי תרבות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karantina:wght@400;700&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a darkened auditorium. Configurator reads like a running order on the right; a ticket-stub receipt stays pinned on the left (bottom bar on phones). TV side = phosphor cyan, film side = tungsten amber. */
+:root{
+  --bg:#0d0e14;
+  --surface:#161823;
+  --surface-2:#1d2030;
+  --line:#2b2f43;
+  --fg:#f2efe7;
+  --muted:#9b9db0;
+  --tv:#62d9e6;
+  --film:#f2b03a;
+  --ok:#7fd99a;
+  --ticket:#f3ead6;
+  --ticket-ink:#221d14;
+  --ticket-line:#d6c7a6;
+  --display:"Karantina","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans Hebrew","Segoe UI",Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 140px}
+.num{font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{display:grid;gap:14px;padding-block:18px 30px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.eyebrow{font-size:13px;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.marquee{font-family:var(--display);font-weight:700;line-height:.86;font-size:clamp(64px,13vw,150px);margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:.12em .22em;text-wrap:balance}
+.marquee .tv{color:var(--tv);text-shadow:0 0 18px color-mix(in srgb,var(--tv) 45%,transparent)}
+.marquee .vs{font-size:.42em;color:var(--muted);font-weight:400}
+.marquee .film{color:var(--film);text-shadow:0 0 18px color-mix(in srgb,var(--film) 40%,transparent)}
+.lede{max-width:62ch;font-size:18px;color:var(--fg);margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 0;padding:0;list-style:none}
+.facts li{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;color:var(--muted)}
+.facts b{color:var(--fg);font-weight:600}
+.launch{display:inline-flex;flex-wrap:wrap;align-items:center;gap:10px;background:color-mix(in srgb,var(--film) 12%,transparent);border:1px solid color-mix(in srgb,var(--film) 45%,transparent);color:var(--fg);padding:8px 14px;border-radius:10px;font-size:15px;width:fit-content;max-width:100%}
+.launch strong{color:var(--film);font-family:var(--display);font-size:24px;line-height:1;letter-spacing:.02em}
+.duels{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:6px}
+.duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;background:var(--surface);border-radius:10px;padding:10px 12px;font-size:14px}
+.duel .t{color:var(--tv)} .duel .f{color:var(--film);text-align:left}
+.duel .x{font-family:var(--display);color:var(--muted);font-size:18px}
+
+/* main grid */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.steps{display:grid;gap:34px;min-width:0}
+.step h2{font-family:var(--display);font-weight:700;font-size:40px;line-height:1;margin:0 0 4px;display:flex;align-items:baseline;gap:12px;text-wrap:balance}
+.step h2 .n{font-size:18px;color:var(--bg);background:var(--fg);border-radius:6px;padding:2px 8px;line-height:1.3;font-family:var(--body);font-weight:700}
+.step>p{color:var(--muted);margin:0 0 14px;max-width:62ch}
+.opts{display:grid;gap:10px}
+.opt{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover{border-color:color-mix(in srgb,var(--fg) 30%,var(--line))}
+.opt.on{border-color:var(--film);background:color-mix(in srgb,var(--film) 7%,var(--surface))}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt:focus-within{outline:2px solid var(--tv);outline-offset:2px}
+.mark{width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);display:grid;place-items:center;flex:none}
+.radio .mark{border-radius:50%}
+.opt.on .mark{border-color:var(--film);background:var(--film)}
+.opt.on .mark::after{content:"";width:8px;height:8px;border-radius:2px;background:var(--bg)}
+.radio.on .mark::after{border-radius:50%}
+.otext{min-width:0}
+.otitle{font-weight:600;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.osub{color:var(--muted);font-size:14px;margin-top:2px}
+.price{text-align:left;white-space:nowrap;font-weight:600}
+.price s{display:block;color:var(--muted);font-weight:400;font-size:13px}
+.price .free{color:var(--ok)}
+.tag{font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid currentColor}
+.tag.rec{color:var(--tv)} .tag.gift{color:var(--ok)} .tag.ask{color:var(--muted)}
+.group-label{font-size:13px;letter-spacing:.06em;color:var(--muted);font-weight:600;margin:6px 0 -2px}
+.stepper{display:inline-flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.stepper button{all:unset;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;font-size:20px;color:var(--fg)}
+.stepper button:hover{background:var(--line)}
+.stepper button:focus-visible{outline:2px solid var(--tv);outline-offset:-2px}
+.stepper output{min-width:34px;text-align:center;font-weight:700}
+.opt.stepopt{cursor:default}
+.field{display:grid;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.field label{font-weight:600}
+.range{display:flex;align-items:center;gap:14px}
+.range input{flex:1;accent-color:var(--film);min-width:0}
+.range output{font-family:var(--display);font-size:34px;line-height:1;color:var(--film);min-width:3ch;text-align:center}
+.hint{font-size:14px;color:var(--muted)}
+.bundle{border:1px dashed color-mix(in srgb,var(--tv) 60%,transparent);color:var(--fg);border-radius:12px;padding:12px 14px;font-size:15px}
+.bundle b{color:var(--tv)}
+
+/* ticket */
+.ticket{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--ticket);color:var(--ticket-ink);border-radius:14px;padding:22px 22px 18px;
+  -webkit-mask:radial-gradient(circle 10px at 0 64%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 10px at 100% 64%,#0000 98%,#000) right/51% 100% no-repeat;
+          mask:radial-gradient(circle 10px at 0 64%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 10px at 100% 64%,#0000 98%,#000) right/51% 100% no-repeat}
+.ticket h3{font-family:var(--display);font-size:34px;line-height:1;margin:0 0 2px}
+.ticket .tsub{font-size:13px;color:#6b5f48;margin-bottom:12px}
+.lines{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14px;max-height:38vh;overflow:auto}
+.lines li{display:flex;justify-content:space-between;gap:12px}
+.lines li span:first-child{min-width:0}
+.lines .g{color:#2f7a45}
+.perf{border:0;border-top:2px dashed var(--ticket-line);margin:14px -22px}
+.tot{display:grid;gap:4px;font-size:14px}
+.tot div{display:flex;justify-content:space-between;gap:12px}
+.tot .big{font-family:var(--display);font-size:44px;line-height:1;margin-top:6px}
+.tot .was{color:#6b5f48}
+.tot .was s{color:#6b5f48}
+.save{background:#221d14;color:var(--ticket);border-radius:8px;padding:6px 10px;font-size:13px;margin-top:8px;text-align:center}
+.cta{display:grid;gap:8px;margin-top:14px}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;border-radius:10px;padding:12px 14px;font-weight:700;font-size:15px}
+.btn.primary{background:#221d14;color:var(--ticket)}
+.btn.ghost{border:1.5px solid #221d14;color:#221d14}
+.btn:focus-visible{outline:2px solid var(--tv);outline-offset:2px}
+.contact{font-size:13px;color:#6b5f48;text-align:center;user-select:all}
+.copied{font-size:13px;color:#2f7a45;text-align:center;min-height:1.2em}
+
+/* phone bar */
+.bar{display:none}
+@media (max-width:900px){
+  .ticket{position:static}
+  .bar{display:flex;position:fixed;inset:auto 0 0 0;z-index:5;background:var(--ticket);color:var(--ticket-ink);align-items:center;justify-content:space-between;gap:12px;
+    padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-shadow:0 -8px 24px #0008}
+  .bar .bt{font-family:var(--display);font-size:32px;line-height:1}
+  .bar small{display:block;font-size:12px;color:#6b5f48}
+  .bar a{color:var(--ticket-ink);font-weight:700;font-size:14px;border:1.5px solid var(--ticket-ink);border-radius:8px;padding:8px 12px;text-decoration:none}
+}
+
+.foot{margin-top:46px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:14px;display:grid;gap:6px;max-width:80ch}
+.foot b{color:var(--fg)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap" dir="rtl" lang="he">
+  <header class="hero">
+    <div class="eyebrow">SOUNDCLASH · להיכלי תרבות ומחלקות תרבות</div>
+    <h1 class="marquee"><span class="tv">סדרות</span><span class="vs">נגד</span><span class="film">סרטים</span></h1>
+    <p class="lede">ערב שבו הקהל לא רק צופה: שיר מסדרה מול שיר מסרט, ובסוף כל סיבוב האולם מכריע מהטלפון. להיטים שכולם מכירים, לקהל בני 30 עד 60 ולמשפחות.</p>
+    <ul class="facts">
+      <li><b>6</b> נגנים על הבמה</li>
+      <li><b>10</b> דו־קרבות, <b>20</b> להיטים</li>
+      <li>הקהל מצביע מהטלפון, <b>בלי להוריד אפליקציה</b></li>
+      <li>סרטוני וידאו מקוריים לכל שיר</li>
+    </ul>
+    <div class="duels" aria-label="דוגמאות לדו־קרבות">
+      <div class="duel"><span class="t" dir="auto">I'll Be There for You</span><span class="x">VS</span><span class="f" dir="auto">I'm a Believer</span></div>
+      <div class="duel"><span class="t" dir="auto">500 Miles</span><span class="x">VS</span><span class="f" dir="auto">Mamma Mia</span></div>
+      <div class="duel"><span class="t" dir="auto">פוקימון, בעברית</span><span class="x">VS</span><span class="f" dir="auto">Eye of the Tiger</span></div>
+    </div>
+    <div class="launch"><strong>מחיר השקה</strong><span>לעונת הבכורה 2027 · ל-10 ההזמנות הראשונות או עד 31.3.2027</span></div>
+  </header>
+
+  <div class="grid">
+    <main class="steps" id="steps"></main>
+    <aside class="ticket" aria-live="polite">
+      <h3>ההצעה להיכל שלכם</h3>
+      <div class="tsub">כל המחירים בשקלים, לפני מע"מ, אלא אם כתוב אחרת</div>
+      <ul class="lines num" id="lines"></ul>
+      <hr class="perf">
+      <div class="tot num" id="tot"></div>
+      <div class="cta">
+        <a class="btn primary" id="wa" href="#" target="_blank" rel="noopener">שליחת הבחירה בוואטסאפ</a>
+        <button class="btn ghost" id="copy" type="button">העתקת סיכום ההצעה</button>
+        <div class="copied" id="copied"></div>
+        <div class="contact">ינון בר שירה · 054-6738192</div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="foot">
+    <div><b>מה כלול תמיד:</b> שישה נגנים, אפליקציית ההצבעה שלנו והפעלתה מהבמה, סרטוני הווידאו המקוריים, הקמה ופירוק, ונסיעה עד 60 ק"מ.</div><div><b>מה ההיכל מספק:</b> הגברה, תאורה ובמה (או שנביא, לפי הסימון), מקרן או מסך של לפחות 5,000 לומן, וקליטה סלולרית סבירה באולם.</div><div><b>אקו"ם:</b> באחריות ההיכל.</div><div><b>חשבונית:</b> מופקת על ידי שחר חוויות חינוכיות בע"מ.</div><div><b>במחיר ההשקה</b> אנחנו מבקשים לשלב את המופע בחוברת העונה עם שם הלהקה, ורשות לצלם.</div><div>המחירים בתוקף להזמנות שייחתמו עד 31.3.2027.</div>
+  </footer>
+</div>
+<div class="bar" dir="rtl"><div><small>סה"כ לפני מע"מ</small><span class="bt num" id="barTotal"></span></div><a href="#lines" id="barLink">לפירוט</a></div>
+
+<script>
+const CFG = {"kind": "היכל תרבות", "vat": 0.18, "peakItem": "peak", "peakPct": 0.1, "paTiers": [{"max": 200, "price": 4200}, {"max": 400, "price": 7000}, {"max": 600, "price": 11500}], "perLabel": "למושב, כולל מע\"מ", "guests": {"label": "כמה מקומות יש באולם?", "min": 100, "max": 1200, "step": 50, "default": 400, "hint": "משמש רק לחישוב העלות למושב, כדי לתמחר כרטיס.", "short": "מקומות באולם"}, "steps": [{"title": "המופע", "guests": true, "items": [{"id": "show", "type": "radio", "role": "show", "default": "full", "options": [{"id": "full", "label": "המופע המלא, 90 דקות", "sub": "10 דו־קרבות, ומסיבת ריקודים בסוף. בלי תוכן בעייתי, מתאים לכל המשפחה", "price": 10500, "list": 12000, "short": "המופע המלא (90 דק׳)"}]}, {"id": "peak", "type": "toggle", "role": "flag", "default": false, "label": "המופע בעונת חגים (חנוכה, פורים)", "sub": "תוספת של 10% על המופע", "priceText": "+10%"}, {"id": "ext", "type": "toggle", "role": "other", "default": false, "price": 2500, "label": "עוד חצי שעה של מסיבת ריקודים", "short": "הארכת מסיבה (30 דק׳)"}]}, {"title": "הטכניקה", "intro": "רוב ההיכלים מצוידים בהגברה, תאורה ובמה. סמנו רק את מה שחסר.", "items": [{"id": "eng", "type": "toggle", "role": "tech", "default": true, "price": 1500, "rec": true, "label": "איש סאונד שלנו", "sub": "מכיר את המופע ומאזן שישה נגנים ושתי שירות", "short": "איש סאונד"}, {"id": "pa", "type": "toggle", "role": "tech", "auto": true, "label": "הגברה ברמת להקה", "sub": "הרמה מותאמת אוטומטית למספר האנשים", "short": "הגברה", "default": false}, {"id": "lights", "type": "radio", "role": "tech", "label": "תאורה", "options": [{"id": "venue", "label": "תאורה של המקום", "price": 0}, {"id": "basic", "label": "תאורה בסיסית", "price": 1500, "short": "תאורה בסיסית"}, {"id": "full", "label": "תאורת במה מלאה", "price": 3000, "short": "תאורת במה מלאה"}], "default": "venue"}, {"id": "stage", "type": "radio", "role": "tech", "label": "במה", "options": [{"id": "venue", "label": "יש במה במקום", "price": 0}, {"id": "city", "label": "במה 6×4 מ׳, בתוך העיר", "price": 2700, "short": "במה 6×4"}, {"id": "out", "label": "במה 6×4 מ׳, מחוץ לעיר", "price": 3900, "short": "במה 6×4 (מחוץ לעיר)"}], "default": "venue"}, {"id": "screen", "type": "radio", "role": "tech", "label": "מסך לסרטונים ולתוצאות ההצבעה", "options": [{"id": "venue", "label": "המקרן או המסך של ההיכל", "sub": "לפחות 5,000 לומן. נבדוק מראש עם הטכנאי שלכם", "price": 0}, {"id": "p5", "label": "מקרן 5,000 לומן ומסך 3 מ׳", "sub": "עד כ-250 איש", "price": 1200, "short": "מקרן 5,000 לומן ומסך"}, {"id": "p10", "label": "מקרן 10,000 לומן ומסך 4–5 מ׳", "sub": "לאולמות גדולים", "price": 3500, "short": "מקרן 10,000 לומן ומסך"}, {"id": "led32", "label": "מסך לד 3×2 מ׳", "sub": "הכי חד מול תאורת במה. כולל טכנאי", "price": 4200, "rec": "הכי מרשים", "short": "מסך לד 3×2"}, {"id": "led425", "label": "מסך לד 4×2.5 מ׳", "sub": "לקהל גדול. כולל טכנאי", "price": 7000, "short": "מסך לד 4×2.5"}], "default": "venue"}]}, {"title": "במתנה בעונת ההשקה", "intro": "שני דברים שעוזרים למלא את האולם, ובונוס לקהל.", "items": [{"id": "promo", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 1000, "label": "ערכת קידום למכירת כרטיסים", "sub": "סרטון של 30 שניות, פוסטר, ושלושה פוסטים מוכנים לרשתות", "short": "ערכת קידום"}, {"id": "lobby", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 2500, "label": "טריוויית סדרות וסרטים בלובי", "sub": "הקהל משחק מהטלפון לפני שנכנס לאולם", "short": "טריוויה בלובי"}, {"id": "bench", "type": "stepper", "role": "exp", "default": 0, "price": 1500, "max": 3, "unit": "לדו־קרב", "label": "דו־קרב לבחירתכם", "sub": "אתם בוחרים זוג שירים מתוך הרשימה שלנו", "short": "דו־קרב לבחירתכם"}, {"id": "newduel", "type": "stepper", "role": "exp", "default": 0, "price": 3500, "max": 2, "unit": "לדו־קרב", "label": "דו־קרב בהתאמה לקהל שלכם", "sub": "למשל שיר שקשור ליישוב או לאירוע. שלושה שבועות מראש", "short": "דו־קרב בהתאמה"}]}, {"title": "הגעה", "items": [{"id": "travel", "type": "radio", "role": "other", "label": "מרחק מהמרכז", "options": [{"id": "near", "label": "עד 60 ק\"מ", "price": 0}, {"id": "mid", "label": "60–150 ק\"מ", "price": 1500, "short": "נסיעה 60–150 ק\"מ"}, {"id": "far", "label": "מעל 150 ק\"מ", "sub": "ולינה לפי עלות, אם המופע נגמר אחרי 23:00", "price": 3000, "short": "נסיעה מעל 150 ק\"מ"}], "default": "near"}]}]};
+const fmt = n => Math.round(n).toLocaleString('he-IL') + ' ₪';
+const state = {};
+const $ = id => document.getElementById(id);
+
+function init(){
+  CFG.steps.forEach(st => st.items.forEach(it => { state[it.id] = it.default; }));
+  state.guests = CFG.guests.default;
+  render(); calc();
+}
+
+function itemPrice(it, v){
+  const g = state.guests;
+  if (it.type === 'toggle') return v ? (it.auto ? autoPA(g) : it.price) : 0;
+  if (it.type === 'radio'){ const o = it.options.find(o=>o.id===v); return o ? optPrice(o) : 0; }
+  if (it.type === 'stepper') return v * it.price;
+  return 0;
+}
+function optPrice(o){
+  if (o.perGuest) return Math.max(o.min||0, o.perGuest*state.guests);
+  return o.price||0;
+}
+function autoPA(g){ for (const t of CFG.paTiers){ if (g<=t.max) return t.price; } return null; }
+
+function render(){
+  const root = $('steps'); root.innerHTML='';
+  CFG.steps.forEach((st, si) => {
+    const sec = document.createElement('section'); sec.className='step';
+    sec.innerHTML = `<h2><span class="n">${si+1}</span>${st.title}</h2>${st.intro?`<p>${st.intro}</p>`:''}`;
+    const box = document.createElement('div'); box.className='opts';
+    if (st.guests){
+      const f = document.createElement('div'); f.className='field';
+      f.innerHTML = `<label for="guests">${CFG.guests.label}</label>
+        <div class="range"><input id="guests" type="range" min="${CFG.guests.min}" max="${CFG.guests.max}" step="${CFG.guests.step}" value="${state.guests}"><output id="gOut" class="num">${state.guests}</output></div>
+        <div class="hint">${CFG.guests.hint}</div>`;
+      box.appendChild(f);
+      f.querySelector('input').addEventListener('input', e => { state.guests=+e.target.value; $('gOut').textContent=state.guests; refreshPrices(); calc(); });
+    }
+    st.items.forEach(it => box.appendChild(renderItem(it)));
+    if (st.bundleNote){ const b=document.createElement('div'); b.className='bundle'; b.id='bundle'; box.appendChild(b); }
+    sec.appendChild(box); root.appendChild(sec);
+  });
+}
+
+function priceHTML(it, p, listP){
+  if (it.priceText) return `<span>${it.priceText}</span>`;
+  if (it.gift) return `<span class="free">במתנה</span><s>${fmt(it.giftValue)}</s>`;
+  if (p===null) return `<span>נתאם</span>`;
+  if (it.ask) return `<span>${it.askPrice||'בהצעה'}</span>`;
+  const s = (listP && listP>p) ? `<s>${fmt(listP)}</s>` : '';
+  return `${p? '+'+fmt(p) : 'כלול'}${s}`;
+}
+
+function renderItem(it){
+  if (it.type === 'radio'){
+    const wrap = document.createElement('div'); wrap.className='opts';
+    if (it.label){ const l=document.createElement('div'); l.className='group-label'; l.textContent=it.label; wrap.appendChild(l); }
+    it.options.forEach(o => {
+      const lab = document.createElement('label'); lab.className='opt radio'+(state[it.id]===o.id?' on':'');
+      lab.dataset.item=it.id; lab.dataset.opt=o.id;
+      lab.innerHTML = `<input type="radio" name="${it.id}" id="${it.id}-${o.id}" ${state[it.id]===o.id?'checked':''}>
+        <span class="mark" aria-hidden="true"></span>
+        <span class="otext"><span class="otitle">${o.label}${tags(o)}</span>${o.sub?`<div class="osub">${o.sub}</div>`:''}</span>
+        <span class="price num" data-price></span>`;
+      lab.querySelector('input').addEventListener('change', () => { state[it.id]=o.id; syncRadio(it); calc(); });
+      wrap.appendChild(lab);
+    });
+    setTimeout(()=>refreshPrices(),0);
+    return wrap;
+  }
+  if (it.type === 'stepper'){
+    const d = document.createElement('div'); d.className='opt stepopt'+(state[it.id]>0?' on':''); d.dataset.item=it.id;
+    d.innerHTML = `<span class="mark" aria-hidden="true"></span>
+      <span class="otext"><span class="otitle">${it.label}${tags(it)}</span>${it.sub?`<div class="osub">${it.sub}</div>`:''}
+      <div style="margin-top:8px"><span class="stepper"><button type="button" aria-label="פחות" data-d="-1">−</button><output class="num" id="${it.id}">${state[it.id]}</output><button type="button" aria-label="עוד" data-d="1">+</button></span></div></span>
+      <span class="price num" data-price></span>`;
+    d.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      let v = state[it.id] + (+b.dataset.d)*(it.step||1);
+      if (it.minIfAny && v>0 && v<it.minIfAny) v = (+b.dataset.d>0) ? it.minIfAny : 0;
+      v = Math.max(0, Math.min(it.max, v));
+      state[it.id]=v; d.querySelector('output').textContent=v; d.classList.toggle('on', v>0); refreshPrices(); calc();
+    }));
+    return d;
+  }
+  // toggle
+  const lab = document.createElement('label'); lab.className='opt'+(state[it.id]?' on':''); lab.dataset.item=it.id;
+  lab.innerHTML = `<input type="checkbox" id="${it.id}" ${state[it.id]?'checked':''} ${it.gift?'':''}>
+    <span class="mark" aria-hidden="true"></span>
+    <span class="otext"><span class="otitle">${it.label}${tags(it)}</span>${it.sub?`<div class="osub">${it.sub}</div>`:''}</span>
+    <span class="price num" data-price></span>`;
+  lab.querySelector('input').addEventListener('change', e => { state[it.id]=e.target.checked; lab.classList.toggle('on', e.target.checked); refreshPrices(); calc(); });
+  return lab;
+}
+function tags(o){
+  let t='';
+  if (o.rec) t+=`<span class="tag rec">${o.rec===true?'מומלץ':o.rec}</span>`;
+  if (o.gift) t+=`<span class="tag gift">מתנת השקה</span>`;
+  if (o.ask) t+=`<span class="tag ask">בתיאום</span>`;
+  return t;
+}
+function syncRadio(it){
+  document.querySelectorAll(`[data-item="${it.id}"]`).forEach(el => el.classList.toggle('on', el.dataset.opt===state[it.id]));
+}
+function refreshPrices(){
+  CFG.steps.forEach(st => st.items.forEach(it => {
+    if (it.type==='radio'){
+      it.options.forEach(o => {
+        const el = document.querySelector(`[data-item="${it.id}"][data-opt="${o.id}"] [data-price]`);
+        if (el) el.innerHTML = priceHTML(o, optPrice(o), o.list);
+      });
+    } else {
+      const el = document.querySelector(`[data-item="${it.id}"] [data-price]`);
+      if (!el) return;
+      if (it.type==='stepper') el.innerHTML = it.ask ? priceHTML(it) : `${fmt(it.price)}<s style="text-decoration:none">${it.unit}</s>`;
+      else el.innerHTML = priceHTML(it, it.auto? autoPA(state.guests): it.price, it.list);
+    }
+  }));
+}
+
+function calc(){
+  const g = state.guests;
+  const lines = []; let listExtra=0, show=0, showList=0, tech=0, exp=0, expCount=0, other=0, giftVal=0, techUnknown=false;
+  const peak = CFG.peakItem && state[CFG.peakItem] ? CFG.peakPct : 0;
+  CFG.steps.forEach(st => st.items.forEach(it => {
+    const v = state[it.id];
+    if (it.type==='radio'){
+      const o = it.options.find(o=>o.id===v); if (!o) return;
+      let p = optPrice(o);
+      if (it.role==='show'){ show = p*(1+peak); showList = (o.list||p)*(1+peak); lines.push([o.short||o.label, show]); return; }
+      if (o.gift){ giftVal+=o.giftValue; lines.push([o.short||o.label, 0, 'מתנה']); return; }
+      if (o.list && o.list>p) listExtra += o.list-p;
+      if (!p && !o.ask) return;
+      if (o.ask){ lines.push([o.short||o.label, null, o.askPrice||'בתיאום']); return; }
+      if (it.role==='tech') tech+=p; else if (it.role==='exp'){ exp+=p; expCount++; } else other+=p;
+      lines.push([o.short||o.label, p]);
+    } else if (it.type==='stepper'){
+      if (!v) return; const p=v*it.price;
+      if (it.role==='exp'){ exp+=p; expCount++; } else other+=p;
+      lines.push([`${it.short||it.label} × ${v}`, p]);
+    } else {
+      if (!v || it.role==='flag') return;
+      if (it.gift){ giftVal+=it.giftValue; lines.push([it.short||it.label, 0, 'מתנה']); return; }
+      if (it.ask){ lines.push([it.short||it.label, null, it.askPrice||'בתיאום']); return; }
+      let p = it.auto ? autoPA(g) : it.price;
+      if (it.perActorOf){ p = it.price * (state[it.perActorOf]||0); if (!p) return; }
+      if (p===null){ techUnknown=true; lines.push([it.short||it.label, null, 'נתאם']); return; }
+      if (it.role==='tech') tech+=p; else if (it.role==='exp'){ exp+=p; if(!it.noCount) expCount++; } else other+=p;
+      lines.push([it.short||it.label, p]);
+    }
+  }));
+  let disc = 0, rate = 0;
+  if (CFG.bundle){ for (const b of CFG.bundle){ if (expCount>=b.count) rate=b.rate; } disc = exp*rate; }
+  const pre = show+tech+exp-disc+other;
+  const vat = pre*CFG.vat, total = pre+vat;
+  const listTotal = showList+tech+exp+other+giftVal+listExtra;
+  const saving = listTotal-pre;
+
+  $('lines').innerHTML = lines.map(([n,p,t]) => `<li><span>${n}</span><span class="${t==='מתנה'?'g':''}">${t ? t : fmt(p)}</span></li>`).join('')
+    + (disc? `<li><span>הנחת חבילה ${Math.round(rate*100)}% על התוספות</span><span class="g">−${fmt(disc)}</span></li>`:'');
+  const per = CFG.perLabel ? `<div><span>${CFG.perLabel}</span><span>${(total/g).toLocaleString('he-IL',{maximumFractionDigits:0})} ₪</span></div>` : '';
+  $('tot').innerHTML = `
+    <div class="was"><span>לפי המחירון</span><s>${fmt(listTotal)}</s></div>
+    <div><span>לפני מע"מ</span><span>${fmt(pre)}</span></div>
+    <div><span>מע"מ ${Math.round(CFG.vat*100)}%</span><span>${fmt(vat)}</span></div>
+    <div class="big"><span>סה"כ</span><span>${fmt(total)}</span></div>
+    ${per}
+    ${saving>0?`<div class="save">במחיר ההשקה אתם חוסכים ${fmt(saving)}</div>`:''}
+    ${techUnknown?'<div class="hint" style="color:#6b5f48">מעל 600 איש: הגברה בהצעה נפרדת</div>':''}`;
+  $('barTotal').textContent = fmt(pre);
+
+  const b = $('bundle');
+  if (b && CFG.bundle){
+    const next = CFG.bundle.find(x => expCount < x.count);
+    b.innerHTML = rate
+      ? `בחרתם ${expCount} תוספות: <b>${Math.round(rate*100)}% הנחה</b> על כל התוספות.${next?` עוד ${next.count-expCount} ותקבלו <b>${Math.round(next.rate*100)}%</b>.`:''}`
+      : `בוחרים ${CFG.bundle[0].count} תוספות בתשלום או יותר ומקבלים <b>${Math.round(CFG.bundle[0].rate*100)}% הנחה</b> על כולן, ומ-${CFG.bundle[1].count} תוספות <b>${Math.round(CFG.bundle[1].rate*100)}%</b>.${expCount?` חסרות ${next.count-expCount}.`:''}`;
+  }
+
+  const text = `שלום ינון, זו הבחירה שלנו ל"סדרות נגד סרטים" (${CFG.kind}):\n${CFG.guests.short}: ${g}\n` +
+    lines.map(([n,p,t]) => `• ${n}: ${t ? t : fmt(p)}`).join('\n') +
+    (disc? `\n• הנחת חבילה: −${fmt(disc)}`:'') +
+    `\nסה"כ לפני מע"מ: ${fmt(pre)}\nסה"כ כולל מע"מ: ${fmt(total)}`;
+  state._text = text;
+  $('wa').href = 'https://wa.me/972546738192?text=' + encodeURIComponent(text);
+}
+
+$('copy').addEventListener('click', () => {
+  const done = m => { $('copied').textContent = m; };
+  const fallback = () => {
+    const ta = document.createElement('textarea'); ta.value = state._text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy') ? done('הסיכום הועתק') : done('סמנו והעתיקו את הפירוט ידנית'); } catch(e){ done('סמנו והעתיקו את הפירוט ידנית'); }
+    ta.remove();
+  };
+  try { navigator.clipboard.writeText(state._text).then(()=>done('הסיכום הועתק'), fallback); } catch(e){ fallback(); }
+});
+init();
+</script>
+
+</body>
+</html>
