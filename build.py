@@ -213,7 +213,9 @@ def page(filename, title, description, body, active, theme="theme-90", og_img=HE
 <title>{title}</title>
 <meta name="description" content="{description}">
 <link rel="canonical" href="{SITE_URL}/{filename}">
-<link rel="icon" href="{FAVICON}">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/icon-32.png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Soundclash">
 <meta property="og:locale" content="he_IL">
