@@ -509,9 +509,9 @@ home_body = f"""
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{mechanism_block()}
 {formats_index()}
 {addons_block()}
+{mechanism_block()}
 {video_section(VIDEOS, head="צפו בקרב מקרוב", sub="ביצועים חיים, ותגובות הקהל בזמן ההצבעה.", limit=3)}
 {audience_block()}
 {gallery_section(IMAGES[:6], head="תמונות מהבמה")}
@@ -646,9 +646,8 @@ for f in FORMATS:
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{duel_block(d['side_a'], d['side_b'])}
+{(DUELS_SECTION + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b'])}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרעת הזירה", sub="ההצבעה אינה גימיק שמתלווה למופע — היא המבנה שלו. כל סיבוב נסגר בהכרעה של הקהל.")}
-{(DUELS_SECTION + addons_block()) if f["slug"] == "screen" else ""}
 {vids}
 {gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
 {spec_block(spec, title="המפרט של הזירה הזו")}
@@ -939,6 +938,8 @@ events_body = r"""<section class="hero hero-corp">
 
 {DUELS}
 
+{ADDONS}
+
 <section id="flow">
   <div class="wrap">
     <div class="section-head reveal">
@@ -1000,8 +1001,6 @@ events_body = r"""<section class="hero hero-corp">
     <p class="center mt-32" style="color:var(--text-dim)">לא מחפשים סדרות וסרטים? אותו מנגנון רץ גם ב<a class="inline" href="90s.html">ניינטיז</a> (המופע שכבר ממלא אולמות) וב<a class="inline" href="israel.html">מסיבה הישראלית</a>. <a class="inline" href="80s.html">אייטיז</a> לפי בקשה.</p>
   </div>
 </section>
-
-{ADDONS}
 
 <section id="proof">
   <div class="wrap">
