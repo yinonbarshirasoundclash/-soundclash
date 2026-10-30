@@ -70,7 +70,7 @@ FORMATS = [
          nav="סדרות נגד סרטים", nav_plain="סדרות נגד סרטים",
          name_html=ltr("Soundclash") + " סדרות נגד סרטים",
          tag="המופע החדש", live=False, hot=True, logo="assets/img/logo-tv-vs-film.svg", logo_alt="Soundclash סדרות נגד סרטים",
-         short="שיר מסדרה מול שיר מסרט, 10 דו־קרבות, ומסך עם וידאו מקורי לכל שיר."),
+         short="שיר מסדרה מול שיר מסרט, 10 סיבובים, ומסך עם וידאו מקורי לכל שיר."),
     dict(slug="90s", file="90s.html", theme="theme-90", css="f-90",
          era="90's", name="Soundclash ניינטיז",
          nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
@@ -253,7 +253,7 @@ def stats_bar(items):
 DEFAULT_STATS = [
     ("6", "נגנים על הבמה"),
     ("2", "סולן וסולנית"),
-    ("10", "דו־קרבות"),
+    ("10", "סיבובים"),
     ("90", "דקות מופע"),
     ("APP", "אפליקציית הצבעה משלנו"),
 ]
@@ -303,7 +303,7 @@ ADDONS = [
     ("שטיח אדום", "וצלם פפראצי שמחכה לאורחים"),
     ("דמויות בהשראת המסך", "דמויות מקוריות שמסתובבות בין האורחים"),
     ("הלוגו שלכם בפתיח", "ו״פוסטר הקרב״ עם התוצאות למחרת"),
-    ("דו־קרב משלכם", "לבחירתכם מהרשימה, או דו־קרב חדש שנבנה בשבילכם"),
+    ("זוג שירים משלכם", "לבחירתכם מהרשימה, או סיבוב חדש שנבנה בשבילכם"),
     ("עוד חצי שעה של ריקודים", "הלהקה ממשיכה לנגן להיטי רחבה אחרי ההכרזה על המנצח"),
     ("פסלוני זהב", "לזוכי החידון ולמצביעים המצטיינים"),
 ]
@@ -578,7 +578,7 @@ FORMAT_PAGES = {
    desc="מופע קרב חי על מוזיקת המסך: השירים הגדולים מתוך סדרות טלוויזיה מול השירים הגדולים מתוך סרטי קולנוע, שיר מול שיר, והקהל מכריע בהצבעה חיה. להזמנות 054-6738192.",
    sub="סדרות נגד סרטים. הקהל מכריע.",
    arc="על המסך: <em>וידאו מקורי לכל שיר</em>, וכל שיר מצד הסדרות נפתח בפתיח מקורי בסגנון העשור שלו.",
-   lede=("10 דו־קרבות ו-20 להיטים שכולם מכירים: <b>שיר מסדרה</b> מול <span class='b-side'>שיר מסרט</span>, סביב נושא משותף. "
+   lede=("10 סיבובים ו-20 להיטים שכולם מכירים: <b>שיר מסדרה</b> מול <span class='b-side'>שיר מסרט</span>, סביב נושא משותף. "
          "מצביעים מהטלפון, והתוצאה עולה למסך הגדול."),
    side_a=("TEAM TV", "צד הסדרות", "השירים שליוו סדרה שלמה — משיר הפתיחה שכולם שרים בעל פה ועד לרגע שהשיר הנכון עלה בדיוק בזמן.",
            ["שירי פתיחה מוכרים", "רגעי מפתח מהעונה", "סדרות פולחן", "השירים שכולם מזהים"]),
@@ -918,7 +918,7 @@ events_body = r"""<section class="hero hero-corp">
   </div>
 </section>
 
-<div class="stats"><div class="wrap"><div class="stat"><div class="num latin">6</div><div class="lbl">נגנים על הבמה</div></div><div class="stat"><div class="num latin">2</div><div class="lbl">סולן וסולנית</div></div><div class="stat"><div class="num latin">10</div><div class="lbl">דו־קרבות</div></div><div class="stat"><div class="num latin">20</div><div class="lbl">להיטים שכולם מכירים</div></div><div class="stat"><div class="num latin">APP</div><div class="lbl">הצבעה מהטלפון</div></div></div></div>
+<div class="stats"><div class="wrap"><div class="stat"><div class="num latin">6</div><div class="lbl">נגנים על הבמה</div></div><div class="stat"><div class="num latin">2</div><div class="lbl">סולן וסולנית</div></div><div class="stat"><div class="num latin">10</div><div class="lbl">סיבובים</div></div><div class="stat"><div class="num latin">20</div><div class="lbl">להיטים שכולם מכירים</div></div><div class="stat"><div class="num latin">APP</div><div class="lbl">הצבעה מהטלפון</div></div></div></div>
 
 <section id="why">
   <div class="wrap">
@@ -969,7 +969,7 @@ events_body = r"""<section class="hero hero-corp">
         <p class="pkg-for">להרמת כוסית, כנס או ערב עם תוכנית נוספת</p>
         <ul>
           <li>כ-45 דקות</li>
-          <li>5 דו־קרבות</li>
+          <li>5 סיבובים</li>
           <li>הצבעה חיה ומסך תוצאות</li>
           <li>הכרזת מנצח</li>
         </ul>
@@ -980,7 +980,7 @@ events_body = r"""<section class="hero hero-corp">
         <p class="pkg-for">ערב גיבוש או מסיבת חברה שהמופע הוא הלב שלה</p>
         <ul>
           <li>כ-90 דקות</li>
-          <li>10 דו־קרבות</li>
+          <li>10 סיבובים</li>
           <li>הצבעה חיה ומסך תוצאות</li>
           <li>הגרלת פרסים בין המצביעים</li>
           <li>להיטים מקפיצים ומרקידים</li>
@@ -993,7 +993,7 @@ events_body = r"""<section class="hero hero-corp">
         <ul>
           <li>כל מה שבמופע המלא</li>
           <li>הלוגו שלכם בפתיח, ו״פוסטר הקרב״ למחרת</li>
-          <li>דו־קרב לבחירתכם, או דו־קרב חדש שנבנה בשבילכם</li>
+          <li>זוג שירים לבחירתכם, או סיבוב חדש שנבנה בשבילכם</li>
           <li>תיאום טכני מלא מול האולם</li>
         </ul>
       </article>

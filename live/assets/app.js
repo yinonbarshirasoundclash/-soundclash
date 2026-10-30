@@ -489,7 +489,7 @@
         p ? h("p", { class: "verdict" + (p === c ? " is-good" : "") }, p === c ? "ניחשת נכון מההתחלה. כל הכבוד!" : "ניחשת " + SIDE[p].team + ". הקהל חשב אחרת.") : null,
         h("div", { class: "card meter" },
           h("h3", { class: "aud-h3" }, "מד הטעם שלך"),
-          tm.voted ? h("p", null, "הצבעת עם הרוב ב-", h("b", null, tm.withCrowd), " מתוך ", h("b", null, tm.voted), " דו־קרבות") : h("p", null, "לא הצבעת הערב."),
+          tm.voted ? h("p", null, "הצבעת עם הרוב ב-", h("b", null, tm.withCrowd), " מתוך ", h("b", null, tm.voted), " סיבובים") : h("p", null, "לא הצבעת הערב."),
           h("div", { class: "meter-bar" }, h("i", { style: { width: tm.p + "%" } })),
           h("p", { class: "muted" }, tm.p >= 70 ? "יש לך אוזן של קהל. מסכים איתך כמעט תמיד." : tm.p >= 40 ? "טעם עצמאי עם נגיעות מיינסטרים." : tm.voted ? "מורד אמיתי. הולך עם הלב." : "")),
         h("p", { class: "aud-note" }, "עוד רגע ההגרלה. הכרטיס שלך: ", h("b", null, "#" + this.me.ticket)),
@@ -1402,7 +1402,7 @@
       if (st.phase === "lobby" && shows.length > 1) kids.push(h("div", { class: "ctx-shows" },
         h("p", null, "איזה מופע הערב? ", h("small", null, "הקהל והמסך נכנסים אוטומטית למופע שבחרת")),
         h("div", { class: "ctx-btns" }, shows.map(x => h("button", { type: "button", class: "show-choice" + (x.id === SHOW.id ? " is-on" : ""), "aria-pressed": String(x.id === SHOW.id),
-          onclick: () => this.switchShow(x.id) }, h("b", null, x.title), h("small", null, x.id === SHOW.id ? "✓ פעיל עכשיו" : x.setlist.length + " דו־קרבות"))))));
+          onclick: () => this.switchShow(x.id) }, h("b", null, x.title), h("small", null, x.id === SHOW.id ? "✓ פעיל עכשיו" : x.setlist.length + " סיבובים"))))));
       if (st.phase === "reveal" && (st.results || {})[r]) {
         const x = st.results[r];
         kids.push(h("div", { class: "ctx-awards" },
