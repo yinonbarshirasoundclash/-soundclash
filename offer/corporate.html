@@ -50,6 +50,8 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
 .duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;background:var(--surface);border-radius:10px;padding:10px 12px;font-size:14px}
 .duel .t{color:var(--tv)} .duel .f{color:var(--film);text-align:left}
 .duel .x{font-family:var(--display);color:var(--muted);font-size:18px}
+.duel b{display:block;font-weight:600}
+.duel small{display:block;color:var(--fg);font-size:13px;font-weight:500;opacity:.85}
 
 /* main grid */
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;align-items:start}
@@ -148,9 +150,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
       <li>סרטוני וידאו מקוריים לכל שיר</li>
     </ul>
     <div class="duels" aria-label="דוגמאות לדו־קרבות">
-      <div class="duel"><span class="t" dir="auto">I'll Be There for You</span><span class="x">VS</span><span class="f" dir="auto">I'm a Believer</span></div>
-      <div class="duel"><span class="t" dir="auto">Fame</span><span class="x">VS</span><span class="f" dir="auto">Stayin' Alive</span></div>
-      <div class="duel"><span class="t" dir="auto">פוקימון</span><span class="x">VS</span><span class="f" dir="auto">Eye of the Tiger</span></div>
+      <div class="duel"><span class="t"><b dir="auto">I'll Be There for You</b><small>חברים</small></span><span class="x">VS</span><span class="f"><b dir="auto">I'm a Believer</b><small>שרק</small></span></div>
+      <div class="duel"><span class="t"><b dir="auto">Fame</b><small>תהילה</small></span><span class="x">VS</span><span class="f"><b dir="auto">Stayin' Alive</b><small>קדחת מוצאי שבת</small></span></div>
+      <div class="duel"><span class="t"><b dir="auto">פוקימון</b><small>שיר הפתיחה</small></span><span class="x">VS</span><span class="f"><b dir="auto">Eye of the Tiger</b><small>רוקי 3</small></span></div>
     </div>
     <div class="launch"><strong>מחיר השקה</strong><span>לעונת הבכורה 2027 · ל-10 ההזמנות הראשונות או עד 31.3.2027</span></div>
   </header>
