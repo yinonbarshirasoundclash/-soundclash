@@ -69,7 +69,7 @@ FORMATS = [
          era="90's", name="Soundclash ניינטיז",
          nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
          name_html=ltr("Soundclash") + " ניינטיז",
-         tag="בהופעות עכשיו", live=True,
+         tag="בהופעות עכשיו", live=True, logo="assets/img/logo-90s.svg", logo_alt="Soundclash ניינטיז",
          short="הזירה שרצה היום. ארה״ב מול בריטניה, על עשור שלם של להיטים."),
     dict(slug="80s", file="80s.html", theme="theme-80", css="f-80",
          era="80's", name="Soundclash אייטיז",
@@ -81,13 +81,13 @@ FORMATS = [
          era="80/90", name="Soundclash הקרב הישראלי",
          nav="הקרב הישראלי", nav_plain="הקרב הישראלי",
          name_html=ltr("Soundclash") + " הקרב הישראלי",
-         tag="להזמנה", live=False,
+         tag="להזמנה", live=False, logo="assets/img/logo-israeli-party.svg", logo_alt="Soundclash מסיבה ישראלית",
          short="אייטיז נגד ניינטיז, בעברית. הלהיטים הישראליים של שני עשורים, ראש בראש."),
     dict(slug="screen", file="tv-vs-film.html", theme="theme-screen", css="f-screen",
          era="TV/FILM", name="Soundclash סדרות נגד סרטים",
          nav="סדרות נגד סרטים", nav_plain="סדרות נגד סרטים",
          name_html=ltr("Soundclash") + " סדרות נגד סרטים",
-         tag="להזמנה", live=False,
+         tag="להזמנה", live=False, logo="assets/img/logo-tv-vs-film.svg", logo_alt="Soundclash סדרות נגד סרטים",
          short="ציר אחר לגמרי: השירים שכולם מכירים מסדרה אחת, מול השירים שכולם מכירים מסרט אחד."),
 ]
 
@@ -365,7 +365,7 @@ def formats_index():
         status_cls = "status" if f["live"] else "status neutral"
         cards += f"""<a class="format-card {f['css']} reveal" href="{f['file']}">
       <div class="{status_cls}">{f['tag']}</div>
-      <div class="era latin">{f['era']}</div>
+      {('<img class="card-logo" src="' + f['logo'] + '" alt="' + f['logo_alt'] + '" loading="lazy">') if f.get('logo') else ('<div class="era latin">' + f['era'] + '</div>')}
       <h3>{f['name_html']}</h3>
       <p>{f['short']}</p>
       <span class="go">לדף הזירה ←</span>
@@ -567,7 +567,7 @@ for f in FORMATS:
   <div class="hero-seam"></div>
   <div class="hero-inner">
     <div class="eyebrow">{f['tag']} · Soundclash</div>
-    <div class="era-mark latin">{f['era']}</div>
+    {('<img class="hero-logo" src="' + f['logo'] + '" alt="' + f['logo_alt'] + '">') if f.get('logo') else ('<div class="era-mark latin">' + f['era'] + '</div>')}
     <h2>{d['sub']}</h2>
     <p class="lede">{d['lede']}</p>
     <div class="cta-row center">
