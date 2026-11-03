@@ -1735,6 +1735,9 @@
       }
     }
 
+    /* short web copies of the AI videos live next to the page (live/media/demo);
+       a folder picked on the screen still wins, so the booth laptop can play the full-quality files */
+    if (!CFG.VIDEO_BASE_URL) CFG.VIDEO_BASE_URL = "media/demo";
     (async () => {
       await be.resetShow();
       const keys = []; SET.forEach((d, i) => ["tv", "film"].forEach(sd => keys.push(videoKey(i, sd))));
