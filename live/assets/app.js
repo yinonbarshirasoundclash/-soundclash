@@ -1663,15 +1663,106 @@
     new AdminView(adminBox, be, { crowd });
   }
 
+  /* =========================================================================
+     BOOTH — the stage screen and a phone side by side, running the show by
+     itself in a loop (conference booth screen, promo recordings).
+     booth.html            → endless loop, three rounds per lap
+     booth.html?rec        → one tight round for a ~1 minute recording
+     booth.html?rec&r=3    → the same, on round 4
+     ========================================================================= */
+  function BoothView(root, be) {
+    const qs = new URLSearchParams(location.search), rec = qs.has("rec");
+    root.classList.add("booth"); root.setAttribute("dir", "rtl");
+    const screenBox = h("div", { class: "booth-screen" }), phone = h("div", { class: "phone booth-phone" });
+    const cap = h("p", { class: "booth-cap", "aria-live": "polite" });
+    root.append(
+      h("header", { class: "booth-head" },
+        h("div", { class: "booth-brand" }, h("span", { class: "brand-word" }, "SOUND", h("b", null, "CLASH")), h("span", { class: "booth-title" }, SHOW.title)),
+        h("p", { class: "booth-tag" }, "לא עוד להקת קאברים. קרב שאתם מכריעים.")),
+      h("div", { class: "booth-grid" },
+        h("figure", { class: "booth-fig booth-fig-screen" }, screenBox, h("figcaption", null, "המסך הגדול באולם")),
+        h("figure", { class: "booth-fig booth-fig-phone" }, phone, h("figcaption", null, "הטלפון של כל אחד בקהל"))),
+      cap);
+    const say = (t) => { if (cap.textContent !== t) { cap.classList.remove("is-in"); void cap.offsetWidth; cap.textContent = t; cap.classList.add("is-in"); } };
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    const $ = (sel) => phone.querySelector(sel);
+    const tap = (el) => { if (el) { el.classList.add("booth-tap"); setTimeout(() => el.classList.remove("booth-tap"), 260); el.click(); } };
+    const closeSheet = () => tap($(".sheet-x"));
+    const pkey = "sc_me_" + CFG.SHOW_ID + "_demo";
+    const ME = { ticket: "2027", name: "דנה", prediction: null, votes: {} };
+    let crowd = null, admin = null, aud = null;
+
+    /* the app never ships song lyrics; the demo shows where they appear */
+    const LYR = "כאן מופיעות המילים המלאות של השיר.\nכל מי שבאולם רואה אותן בטלפון שלו,\nושר יחד עם הלהקה.\n\nבהדגמה מוצג טקסט לדוגמה.";
+    const rxBurst = async (n) => { for (let i = 0; i < n; i++) { const b = phone.querySelectorAll(".rx"); tap(b[Math.floor(Math.random() * b.length)]); await sleep(260 + Math.random() * 260); } };
+
+    async function lap(rounds) {
+      await be.resetShow();
+      await be.setState({ voteSeconds: rec ? 10 : 12, voteDuringSongs: true, liveBars: true });
+      safeStore.set(pkey, Object.assign({}, ME, { votes: {} }));
+      if (aud) { aud.me = Object.assign({}, ME, { votes: {} }); aud.myVotes = {}; aud._key = null; aud.render(); }
+      await be.join({ ticket: ME.ticket, name: ME.name, prediction: null });
+      crowd.reset(); crowd.start(rec ? 120 : 160);
+      say("הקהל סורק QR ונכנס לזירה מהטלפון. בלי להוריד אפליקציה.");
+      await sleep(rec ? 2500 : 4000);
+      tap($(".pick-tv")); say("כל אחד מנחש מי ינצח הערב: צד הסדרות או צד הסרטים.");
+      await sleep(rec ? 2500 : 4000);
+      for (const r of rounds) {
+        await admin.goIntro(r);
+        say("סיבוב " + (r + 1) + ": " + SET[r].theme + ". שני להיטים, אחד מכל צד.");
+        await sleep(1500);
+        tap($(".tile-fact")); say("💡 בטלפון: מאיזו סדרה או סרט השיר, הסצנה, ועובדה שלא ידעתם.");
+        await sleep(rec ? 3500 : 4500); closeSheet(); await sleep(500);
+        await admin.goSong("song1");
+        say("השיר הראשון: הלהקה מנגנת, והקהל שולח תגובות שעפות על המסך הגדול.");
+        await sleep(800); await rxBurst(6); await sleep(1200);
+        const links = phone.querySelectorAll(".song-links .tile-fact"); tap(links[1]);
+        say("📝 המילים בטלפון, וכל האולם שר יחד.");
+        await sleep(rec ? 3000 : 4000); closeSheet(); await sleep(rec ? 1000 : 2500);
+        await admin.goSong("song2");
+        say("השיר השני. אפשר להצביע כבר תוך כדי.");
+        await sleep(1200); await rxBurst(4); await sleep(rec ? 2000 : 4000);
+        await admin.openVoting();
+        say("ההצבעה פתוחה: כל האולם מצביע, והגרף זז בזמן אמת.");
+        await sleep(2500);
+        const st = admin.st, ord = sideOrder(st, r);
+        aud.castVote(r, ord[Math.random() < 0.5 ? 0 : 1]);
+        const left = (st.votingEndsAt || Date.now()) - Date.now();
+        await sleep(Math.max(0, left) + 900);
+        if (admin.st.phase === "voting") await admin.closeVoting();
+        say("הקהל הכריע. התוצאה עולה למסך, והקרב ממשיך.");
+        await sleep(rec ? 6000 : 8000);
+      }
+    }
+
+    (async () => {
+      await be.resetShow();
+      const keys = []; SET.forEach((d, i) => ["tv", "film"].forEach(sd => keys.push(videoKey(i, sd))));
+      for (const k of keys) await be.setLyrics(k, LYR);
+      safeStore.set(pkey, Object.assign({}, ME, { votes: {} }));
+      new ScreenView(screenBox, be, {});
+      aud = new AudienceView(phone, be, { demo: true });
+      admin = new AdminView(h("div"), be, {});
+      crowd = new VirtualCrowd(be);
+      be.onState(st => crowd.onState(st));
+      await sleep(300);
+      if (rec) { const r = Math.min(N - 1, Math.max(0, (+qs.get("r") || 4) - 1)); await lap([r]); say(""); return; }
+      const order = SET.map((d, i) => i);
+      for (let k = 0; ; k = (k + 3) % N) {
+        await lap([0, 1, 2].map(j => order[(k + j) % N]));
+      }
+    })().catch(e => console.error("booth", e));
+  }
+
   /* ---------------- boot ---------------- */
   async function boot() {
     const root = document.getElementById("app");
     const qs = new URLSearchParams(location.search);
-    const VIEWS = ["audience", "screen", "admin", "demo"], hv = location.hash.replace("#", "");
+    const VIEWS = ["audience", "screen", "admin", "demo", "booth"], hv = location.hash.replace("#", "");
     const view = (VIEWS.includes(hv) ? hv : null) || window.SC_VIEW || qs.get("view") || "audience";
     document.documentElement.dataset.view = view;
     /* the demo page (all three screens together) always runs locally, never against the live show */
-    const be = window.SCBackend.create(CFG, view === "demo" || new URLSearchParams(location.search).has("demo"));
+    const be = window.SCBackend.create(CFG, view === "demo" || view === "booth" || new URLSearchParams(location.search).has("demo"));
     try { await be.init(); }
     catch (e) {
       root.replaceChildren(h("div", { class: "fatal" }, h("h1", null, "אין חיבור לשרת ההצבעות"), h("p", null, "בדקו את החיבור לאינטרנט ורעננו את הדף."), h("p", { class: "muted" }, String(e.message || e))));
@@ -1679,16 +1770,18 @@
     }
     let active = null;
     try { active = await be.getActiveShow(); } catch (e) { active = null; }
-    useShow(active || CFG.DEFAULT_SHOW);
+    /* the booth always runs the new show unless another one is asked for in the address */
+    useShow(view === "booth" ? (qs.get("show") || CFG.DEFAULT_SHOW) : (active || CFG.DEFAULT_SHOW));
     be.bindShow(SHOW.id);
     /* when the admin switches show, every phone and screen reloads into it */
-    be.onActiveShow(id => { if (id && id !== SHOW.id && (window.SC_SHOWS || {})[id]) location.reload(); });
+    if (view !== "booth") be.onActiveShow(id => { if (id && id !== SHOW.id && (window.SC_SHOWS || {})[id]) location.reload(); });
     be.on("error", (e) => console.warn("backend", e));
     if (be.onFactsList) be.onFactsList(m => { FACTS = m || {}; });
     root.replaceChildren();
     if (view === "screen") new ScreenView(root, be, {});
     else if (view === "admin") { const crowd = be.isLive() ? null : new VirtualCrowd(be); new AdminView(root, be, { crowd }); }
     else if (view === "demo") DemoView(root, be);
+    else if (view === "booth") BoothView(root, be);
     else new AudienceView(root, be, {});
   }
   window.SC = { boot, AudienceView, ScreenView, AdminView, VirtualCrowd, _test: { tally, scoreboard, champion, sideOrder, videoKey } };
