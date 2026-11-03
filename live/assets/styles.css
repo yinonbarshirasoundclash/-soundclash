@@ -919,7 +919,7 @@ html[data-view="booth"], html[data-view="booth"] body { height: 100%; overflow: 
 .booth-fig { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 1.2vh; min-width: 0; }
 .booth-fig figcaption { font-size: clamp(13px, 1.1vw, 20px); letter-spacing: .12em; color: var(--paper-3); font-weight: 800; }
 .booth-screen { width: min(100%, calc(68vh * 16 / 9)); aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; border: 1px solid var(--line-2); box-shadow: 0 40px 90px -40px #000; position: relative; }
-.booth .phone.booth-phone { width: calc(min(70vh, 820px) * .49); height: min(70vh, 820px); max-height: none; }
+.booth .phone.booth-phone { width: max(330px, calc(min(70vh, 820px) * .49)); height: min(70vh, 820px); max-height: none; }
 .booth .scr-ctl { opacity: 0; transition: opacity .3s; }
 .booth .booth-screen:hover .scr-ctl { opacity: 1; }
 .booth-cap { margin: 0; text-align: center; font-size: clamp(18px, 1.7vw, 32px); font-weight: 800; color: var(--paper); min-height: 1.4em; }
