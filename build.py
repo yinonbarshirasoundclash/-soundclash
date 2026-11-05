@@ -587,6 +587,36 @@ FORMAT_PAGES = {
    avail="זמין להזמנה למועדונים ולאירועי חברה. יש גם גרסה של 45 דקות."),
 }
 
+ISRAEL_DUELS_SECTION = """<section id="duels">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">מהרפרטואר</div>
+      <h2>ככה נראה סיבוב</h2>
+      <p>בכל סיבוב להיט מהאייטיז מול להיט מהניינטיז, באותו וייב. שלוש דוגמאות מתוך הערב.</p>
+    </div>
+    <div class="duel-list">
+      <div class="duel-row reveal">
+        <div class="theme">קרב הלהקות</div>
+        <div class="side tv"><span class="who latin">80s</span><b>רכבת לילה לקהיר</b><small>משינה</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">90s</span><b>ג׳סיקה</b><small>אתניקס</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">נשים עם עוצמה</div>
+        <div class="side tv"><span class="who latin">80s</span><b>דם חם</b><small>שרי</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">90s</span><b>עד העונג הבא</b><small>המכשפות</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">מסיבת שישי</div>
+        <div class="side tv"><span class="who latin">80s</span><b>יום שישי</b><small>בנזין</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">90s</span><b>שוב הדיסקו כאן</b><small>הדורבנים</small></div>
+      </div>
+    </div>
+  </div>
+</section>"""
+
 def duel_block(a, b):
     def card(side, cls):
         tag, h, p, chips = side
@@ -646,7 +676,7 @@ for f in FORMATS:
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{(DUELS_SECTION + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b'])}
+{(DUELS_SECTION + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b']) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרעת הזירה", sub="ההצבעה אינה גימיק שמתלווה למופע — היא המבנה שלו. כל סיבוב נסגר בהכרעה של הקהל.")}
 {vids}
 {gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
