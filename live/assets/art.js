@@ -360,7 +360,284 @@
       c.strokeStyle = "rgba(244,239,230,.25)"; c.lineWidth = 3;
       for (let i = 0; i < 9; i++) { c.beginPath(); c.moveTo(W * .1 + i * 26, H); c.lineTo(W * .1 + i * 26 + 160, 0); c.stroke(); }
       for (let i = 0; i < 5; i++) { c.fillStyle = "rgba(255,255,255," + (.04 + r() * .05) + ")"; c.beginPath(); c.ellipse(r() * W, H * (.6 + r() * .4), 260, 50, 0, 0, 7); c.fill(); }
-    }
+    },
+    /* ================= מסיבה ישראלית · אייטיז נגד ניינטיז ================= */
+    /* 01 · רכבת לילה לקהיר — a night train crossing the desert, pyramids under the moon */
+    il_train(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#070b22"], [.55, "#24204a"], [.7, "#6b3d4a"], [1, "#1a1210"]]));
+      stars(c, r, 160, "#fff", H * .55);
+      glow(c, W * .78, H * .2, 120, "rgba(255,240,200,.35)"); c.fillStyle = "#fff4d6"; c.beginPath(); c.arc(W * .78, H * .2, 34, 0, 7); c.fill();
+      c.fillStyle = "#3a2630"; [[W * .18, 150], [W * .32, 110], [W * .44, 70]].forEach(([x, h]) => poly(c, [[x - h * 1.1, H * .66], [x, H * .66 - h], [x + h * 1.1, H * .66]], "#3a2630"));
+      c.fillStyle = "rgba(255,200,150,.12)"; [[W * .18, 150], [W * .32, 110]].forEach(([x, h]) => poly(c, [[x, H * .66 - h], [x + h * 1.1, H * .66], [x + h * .2, H * .66]], "rgba(255,200,150,.12)"));
+      c.fillStyle = lin(c, 0, H * .66, 0, H, [[0, "#4a2f2a"], [1, "#120c0a"]]); c.fillRect(0, H * .66, W, H);
+      c.fillStyle = "#1b1416"; c.fillRect(0, H * .745, W, 6);
+      for (let x = 0; x < W; x += 22) c.fillRect(x, H * .755, 12, 4);
+      // the train: carriages with lit windows, engine headlight beaming left
+      const ty = H * .66;
+      for (let k = 0; k < 6; k++) {
+        const x = W * .3 + k * 112; c.fillStyle = "#14101a"; c.fillRect(x, ty, 104, 52);
+        for (let w = 0; w < 5; w++) { c.fillStyle = r() < .85 ? "#ffcf7a" : "#3a2a1a"; c.fillRect(x + 8 + w * 19, ty + 12, 13, 14); glow(c, x + 14 + w * 19, ty + 19, 18, "rgba(255,200,110,.35)"); }
+      }
+      c.fillStyle = "#14101a"; c.beginPath(); c.moveTo(W * .3, ty); c.lineTo(W * .3 - 50, ty + 20); c.lineTo(W * .3 - 50, ty + 52); c.lineTo(W * .3, ty + 52); c.fill();
+      beam(c, W * .3 - 50, ty + 30, Math.PI + .05, .09, 360, "#fff2c8", .55); glow(c, W * .3 - 50, ty + 30, 30, "rgba(255,240,200,.9)");
+      for (let i = 0; i < 10; i++) { c.fillStyle = "rgba(220,210,230," + (.06 + i * .01) + ")"; c.beginPath(); c.ellipse(W * .3 - 20 + i * 30, ty - 20 - i * 9, 22 + i * 4, 12 + i * 2, 0, 0, 7); c.fill(); }
+    },
+    /* 02 · ג'סיקה — kibbutz at golden hour: water tower, cypresses, orchard rows */
+    il_kibbutz(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#3c6aa8"], [.5, "#f2a35e"], [.62, "#ffd28a"], [1, "#2f3a1e"]]));
+      glow(c, W * .3, H * .55, 260, "rgba(255,210,140,.8)"); c.fillStyle = "#fff0c8"; c.beginPath(); c.arc(W * .3, H * .56, 40, 0, 7); c.fill();
+      c.fillStyle = lin(c, 0, H * .6, 0, H, [[0, "#6b7a34"], [1, "#1d2410"]]); c.fillRect(0, H * .6, W, H);
+      for (let row = 0; row < 7; row++) { const y = H * .62 + row * row * 6 + row * 10; for (let x = -20 + (row % 2) * 20; x < W + 20; x += 34 + row * 10) { c.fillStyle = row < 2 ? "#3c4a1c" : "#2a3412"; c.beginPath(); c.arc(x, y, 8 + row * 3, 0, 7); c.fill(); if (r() < .4) { c.fillStyle = "#ff9a2e"; c.beginPath(); c.arc(x + (r() - .5) * 8, y + (r() - .5) * 6, 2 + row * .5, 0, 7); c.fill(); } } }
+      c.fillStyle = "#2a2018"; const tx = W * .72; c.fillRect(tx - 6, H * .3, 12, H * .3); c.fillRect(tx - 34, H * .3, 4, H * .3); c.fillRect(tx + 30, H * .3, 4, H * .3);
+      c.fillRect(tx - 44, H * .18, 88, H * .13); c.fillStyle = "#3a2c20"; c.fillRect(tx - 48, H * .17, 96, 8);
+      for (let i = 0; i < 4; i++) { const x = W * .52 + i * 22 + (i > 1 ? W * .3 : 0); c.fillStyle = "#1a2410"; c.beginPath(); c.ellipse(x, H * .5, 9, 60, 0, 0, 7); c.fill(); }
+      for (let i = 0; i < 6; i++) { c.fillStyle = "rgba(255,240,200," + (.2 + r() * .3) + ")"; c.fillRect(W * .05 + r() * W * .9, H * .2 + r() * H * .25, 30 + r() * 60, 2); }
+    },
+    /* 03 · שביל הבריחה — 80s TV stage: a yellow spotlight and a neon road escaping into the horizon */
+    il_escape(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#0b0618"], [.55, "#3a0f4a"], [.58, "#ff4fa0"], [.6, "#1a0a26"], [1, "#05030a"]]));
+      for (let i = 0; i < 9; i++) { c.fillStyle = "rgba(255,120,190," + (.5 - i * .05) + ")"; c.fillRect(0, H * .45 + i * 8, W, 3); }
+      c.strokeStyle = "rgba(80,220,255,.55)"; c.lineWidth = 2;
+      for (let i = -10; i <= 10; i++) { c.beginPath(); c.moveTo(W / 2, H * .59); c.lineTo(W / 2 + i * 120, H); c.stroke(); }
+      for (let k = 1; k < 12; k++) { const y = H * .59 + Math.pow(k / 12, 2) * H * .41; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+      poly(c, [[W / 2 - 4, H * .59], [W / 2 + 4, H * .59], [W / 2 + 120, H], [W / 2 - 120, H]], "rgba(255,230,60,.55)");
+      beam(c, W * .5, -30, Math.PI / 2, .18, 520, "#ffe23a", .55); glow(c, W * .5, H * .42, 90, "rgba(255,230,60,.6)");
+      // a bright yellow jacket on a hanger, floating in the spotlight
+      c.fillStyle = "#ffe23a"; poly(c, [[W * .5 - 70, H * .27], [W * .5 - 20, H * .22], [W * .5, H * .3], [W * .5 + 20, H * .22], [W * .5 + 70, H * .27], [W * .5 + 90, H * .45], [W * .5 + 58, H * .47], [W * .5 + 52, H * .36], [W * .5 + 50, H * .55], [W * .5 - 50, H * .55], [W * .5 - 52, H * .36], [W * .5 - 58, H * .47], [W * .5 - 90, H * .45]], "#ffe23a");
+      c.strokeStyle = "#c9a400"; c.lineWidth = 3; c.beginPath(); c.moveTo(W * .5, H * .3); c.lineTo(W * .5, H * .55); c.stroke();
+      c.strokeStyle = "#ddd"; c.lineWidth = 3; c.beginPath(); c.moveTo(W * .5 - 50, H * .23); c.lineTo(W * .5, H * .17); c.lineTo(W * .5 + 50, H * .23); c.stroke(); c.beginPath(); c.arc(W * .5, H * .15, 7, Math.PI * .9, Math.PI * 2.2); c.stroke();
+      stars(c, r, 50, "#ffd6f0", H * .4);
+    },
+    /* 04 · חזקה מהרוח — a lone tree on a hill, bent but standing in a storm wind */
+    il_wind(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#1c2440"], [.6, "#5a6a8a"], [1, "#2a2f3a"]]));
+      glow(c, W * .25, H * .3, 220, "rgba(255,210,150,.45)");
+      c.strokeStyle = "rgba(230,236,255,.35)"; c.lineWidth = 2;
+      for (let i = 0; i < 26; i++) { const y = r() * H * .8, x = r() * W; c.beginPath(); c.moveTo(x, y); c.bezierCurveTo(x + 80, y - 20, x + 160, y + 20, x + 240 + r() * 120, y - 10); c.stroke(); }
+      c.fillStyle = "#151a24"; c.beginPath(); c.moveTo(0, H); c.quadraticCurveTo(W * .55, H * .55, W, H * .82); c.lineTo(W, H); c.fill();
+      // trunk bending with the wind, canopy streaming to the right
+      c.strokeStyle = "#0e1118"; c.lineCap = "round"; c.lineWidth = 22; c.beginPath(); c.moveTo(W * .55, H * .72); c.quadraticCurveTo(W * .52, H * .5, W * .62, H * .36); c.stroke();
+      c.lineWidth = 8; [[.62, .36, .78, .3], [.6, .42, .74, .44], [.58, .48, .7, .55]].forEach(([a, b, x, y]) => { c.beginPath(); c.moveTo(W * a, H * b); c.lineTo(W * x, H * y); c.stroke(); });
+      for (let i = 0; i < 60; i++) { c.fillStyle = "rgba(30,60,40," + (.5 + r() * .5) + ")"; c.beginPath(); c.ellipse(W * (.6 + r() * .25), H * (.26 + r() * .26), 22 + r() * 24, 10 + r() * 10, -.3, 0, 7); c.fill(); }
+      for (let i = 0; i < 40; i++) { c.fillStyle = "rgba(120,180,110,.7)"; c.save(); c.translate(W * (.7 + r() * .3), H * (.15 + r() * .5)); c.rotate(r() * 6); c.fillRect(-5, -2, 10, 4); c.restore(); }
+    },
+    /* 05 · שירו של שפשף — a film within a film: projector beam, clapperboard, film strip */
+    il_film(c, r) {
+      fill(c, "#0c0a0e");
+      beam(c, W * .92, H * .3, Math.PI + .12, .16, 900, "#fff1d0", .45);
+      for (let i = 0; i < 80; i++) { c.fillStyle = "rgba(255,240,210," + r() * .5 + ")"; c.fillRect(W * (.1 + r() * .8), H * (.1 + r() * .6), 2, 2); }
+      c.fillStyle = "#1c1820"; c.fillRect(W * .86, H * .22, 90, 70); c.beginPath(); c.arc(W * .86 + 20, H * .2, 26, 0, 7); c.arc(W * .86 + 70, H * .2, 26, 0, 7); c.fill();
+      // film strip ribbon
+      c.save(); c.translate(W * .4, H * .72); c.rotate(-.12);
+      c.fillStyle = "#1a1612"; c.fillRect(-W * .5, -45, W * 1.1, 90);
+      for (let x = -W * .5; x < W * .6; x += 24) { c.fillStyle = "#c9b48a"; c.fillRect(x, -40, 12, 9); c.fillRect(x, 31, 12, 9); }
+      for (let x = -W * .5 + 10; x < W * .6; x += 110) { c.fillStyle = "rgba(255,200,120," + (.25 + r() * .35) + ")"; c.fillRect(x, -26, 96, 52); }
+      c.restore();
+      // clapperboard
+      c.save(); c.translate(W * .3, H * .35); c.rotate(-.06);
+      c.fillStyle = "#111"; c.fillRect(-130, -20, 260, 150); c.fillStyle = "#f2efe6"; c.fillRect(-122, 10, 244, 2); c.fillRect(-122, 60, 244, 2);
+      c.save(); c.translate(-130, -20); c.rotate(-.22); c.fillStyle = "#111"; c.fillRect(0, -40, 260, 40); for (let i = 0; i < 6; i++) poly(c, [[i * 46, -40], [i * 46 + 22, -40], [i * 46 + 44, 0], [i * 46 + 22, 0]], "#f2efe6"); c.restore();
+      c.restore();
+    },
+    /* 06 · מתי נתנשק — a neon sign of two lips above a wet night street */
+    il_kiss(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#0a0614"], [1, "#160818"]]));
+      skyline(c, r, H * .62, 80, 220, "#110a18", "rgba(255,140,200,.35)", .2);
+      c.fillStyle = lin(c, 0, H * .62, 0, H, [[0, "#1c0c22"], [1, "#06030a"]]); c.fillRect(0, H * .62, W, H);
+      const lips = (dy, a, flip) => { c.save(); c.globalAlpha = a; c.translate(W / 2, H * .34 + dy); if (flip) c.scale(1, -1);
+        c.lineWidth = 9; c.strokeStyle = "#ff3d8a"; c.shadowColor = "#ff3d8a"; c.shadowBlur = 40;
+        c.beginPath(); c.moveTo(-130, 0); c.bezierCurveTo(-90, -60, -30, -70, 0, -38); c.bezierCurveTo(30, -70, 90, -60, 130, 0); c.bezierCurveTo(80, 70, -80, 70, -130, 0); c.stroke();
+        c.beginPath(); c.moveTo(-122, 2); c.bezierCurveTo(-60, 16, 60, 16, 122, 2); c.stroke(); c.restore(); };
+      lips(0, 1, false); lips(H * .56, .25, true);
+      for (let i = 0; i < 70; i++) { c.strokeStyle = "rgba(200,180,255,.18)"; c.lineWidth = 1; const x = r() * W, y = r() * H; c.beginPath(); c.moveTo(x, y); c.lineTo(x - 6, y + 22); c.stroke(); }
+      [[W * .18, "#3dd6ff"], [W * .82, "#ffd23d"]].forEach(([x, col]) => { c.fillStyle = col; c.fillRect(x - 3, H * .2, 6, H * .42); glow(c, x, H * .2, 60, "rgba(255,255,255,.35)"); });
+    },
+    /* 07 · באה מאהבה — a wedding canopy under string lights, petals in the air */
+    il_chuppah(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#140c22"], [.6, "#3a1f3a"], [1, "#1a1018"]]));
+      for (let k = 0; k < 4; k++) for (let i = 0; i <= 30; i++) { const t = i / 30, x = W * t, y = H * (.08 + k * .07) + Math.sin(t * Math.PI) * 40; glow(c, x, y, 14, "rgba(255,214,150,.8)"); c.fillStyle = "#fff4d8"; c.beginPath(); c.arc(x, y, 2.4, 0, 7); c.fill(); }
+      c.fillStyle = "#e9dcc8"; [W * .3, W * .7].forEach(x => c.fillRect(x - 5, H * .38, 10, H * .5));
+      c.fillStyle = "rgba(245,236,224,.92)"; c.beginPath(); c.moveTo(W * .26, H * .38); c.quadraticCurveTo(W * .5, H * .3, W * .74, H * .38); c.lineTo(W * .72, H * .48); c.quadraticCurveTo(W * .5, H * .44, W * .28, H * .48); c.fill();
+      for (let i = 0; i < 18; i++) { const x = W * (.28 + i * .025); c.fillStyle = i % 2 ? "#e8a0b4" : "#fff"; c.beginPath(); c.arc(x, H * .38 + Math.sin(i) * 4, 9, 0, 7); c.fill(); }
+      glow(c, W * .5, H * .7, 220, "rgba(255,200,170,.35)");
+      for (let i = 0; i < 70; i++) { c.save(); c.translate(r() * W, r() * H); c.rotate(r() * 6); c.fillStyle = r() < .5 ? "rgba(255,170,190,.85)" : "rgba(255,240,240,.8)"; c.beginPath(); c.ellipse(0, 0, 6, 3, 0, 0, 7); c.fill(); c.restore(); }
+      c.fillStyle = "#130b14"; c.fillRect(0, H * .88, W, H * .12);
+    },
+    /* 08 · קח אותי — a childhood home at night in the rain, one warm window */
+    il_home(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#0b1220"], [1, "#1b2434"]]));
+      c.fillStyle = "#0e141e"; poly(c, [[W * .3, H * .45], [W * .5, H * .22], [W * .7, H * .45]], "#0e141e"); c.fillRect(W * .32, H * .45, W * .36, H * .45);
+      c.fillStyle = "#ffcf7a"; c.fillRect(W * .38, H * .53, 90, 70); glow(c, W * .38 + 45, H * .53 + 35, 160, "rgba(255,190,110,.45)");
+      c.fillStyle = "#3a2a1a"; c.fillRect(W * .38 + 43, H * .53, 4, 70); c.fillRect(W * .38, H * .53 + 33, 90, 4);
+      c.fillStyle = "#1a2230"; c.fillRect(W * .58, H * .6, 50, H * .3); c.fillStyle = "rgba(255,190,110,.6)"; c.fillRect(W * .58 + 4, H * .6 + 4, 6, H * .3 - 8);
+      c.fillStyle = "#121a26"; c.fillRect(0, H * .9, W, H * .1);
+      c.strokeStyle = "rgba(170,200,255,.35)"; c.lineWidth = 1.2;
+      for (let i = 0; i < 260; i++) { const x = r() * W, y = r() * H; c.beginPath(); c.moveTo(x, y); c.lineTo(x - 5, y + 18); c.stroke(); }
+      for (let i = 0; i < 12; i++) { c.fillStyle = "rgba(255,190,110," + (.08 + r() * .1) + ")"; c.fillRect(W * .32 + r() * W * .3, H * .91 + r() * 20, 40 + r() * 60, 2); }
+    },
+    /* 09 · זמנך עבר — an old school classroom: chalkboard, clock, Purim masks and confetti */
+    il_school(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#2a2a22"], [1, "#16150f"]]));
+      c.fillStyle = "#5a3e22"; c.fillRect(W * .12, H * .16, W * .58, H * .48); c.fillStyle = "#1f3a2c"; c.fillRect(W * .13, H * .18, W * .56, H * .44);
+      c.strokeStyle = "rgba(240,240,230,.55)"; c.lineWidth = 3;
+      for (let i = 0; i < 5; i++) { c.beginPath(); const y = H * (.26 + i * .07); c.moveTo(W * .18, y); for (let x = W * .18; x < W * (.3 + r() * .35); x += 14) c.lineTo(x, y + (r() - .5) * 6); c.stroke(); }
+      const cx = W * .82, cy = H * .26; c.fillStyle = "#f2efe6"; c.beginPath(); c.arc(cx, cy, 52, 0, 7); c.fill(); c.strokeStyle = "#222"; c.lineWidth = 5; c.beginPath(); c.arc(cx, cy, 52, 0, 7); c.stroke();
+      c.lineWidth = 4; c.beginPath(); c.moveTo(cx, cy); c.lineTo(cx + 26, cy - 18); c.moveTo(cx, cy); c.lineTo(cx - 6, cy - 38); c.stroke();
+      for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283; c.fillStyle = "#222"; c.fillRect(cx + Math.cos(a) * 44 - 2, cy + Math.sin(a) * 44 - 2, 4, 4); }
+      // a carnival mask on the desk
+      c.fillStyle = "#3a2716"; c.fillRect(0, H * .76, W, H * .24);
+      c.save(); c.translate(W * .78, H * .72); c.fillStyle = "#d8a63a"; c.beginPath(); c.ellipse(-36, 0, 40, 26, -.2, 0, 7); c.ellipse(36, 0, 40, 26, .2, 0, 7); c.fill();
+      c.fillStyle = "#16150f"; c.beginPath(); c.ellipse(-34, 0, 16, 9, -.2, 0, 7); c.ellipse(34, 0, 16, 9, .2, 0, 7); c.fill(); c.restore();
+      const cols = ["#ff5a5a", "#ffd23d", "#3dd6ff", "#a04dff", "#5dff9a"];
+      for (let i = 0; i < 90; i++) { c.fillStyle = cols[i % 5]; c.globalAlpha = .7; c.fillRect(r() * W, r() * H, 5, 9); } c.globalAlpha = 1;
+    },
+    /* 10 · אין קץ לילדות — a dreamy playground at high noon: swings and a slide */
+    il_playground(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#6ab0e0"], [.62, "#d9ecf2"], [.63, "#e8c88a"], [1, "#a0783e"]]));
+      glow(c, W * .5, H * .05, 300, "rgba(255,255,230,.9)");
+      c.strokeStyle = "#c0392b"; c.lineWidth = 10; c.lineCap = "round";
+      c.beginPath(); c.moveTo(W * .1, H * .75); c.lineTo(W * .2, H * .28); c.lineTo(W * .3, H * .75); c.moveTo(W * .5, H * .75); c.lineTo(W * .4, H * .28); c.lineTo(W * .3, H * .75); c.stroke();
+      c.beginPath(); c.moveTo(W * .2, H * .28); c.lineTo(W * .4, H * .28); c.stroke();
+      c.strokeStyle = "#555"; c.lineWidth = 2; [[.25, .08], [.35, -.12]].forEach(([x, sw]) => { const bx = W * x + sw * 120, by = H * .62; c.beginPath(); c.moveTo(W * x - 14, H * .28); c.lineTo(bx - 14, by); c.moveTo(W * x + 14, H * .28); c.lineTo(bx + 14, by); c.stroke(); c.fillStyle = "#f2b33d"; c.fillRect(bx - 20, by, 40, 7); });
+      c.fillStyle = "#2f63c4"; poly(c, [[W * .62, H * .35], [W * .66, H * .35], [W * .92, H * .75], [W * .84, H * .75]], "#2f63c4");
+      c.strokeStyle = "#888"; c.lineWidth = 6; c.beginPath(); c.moveTo(W * .6, H * .75); c.lineTo(W * .6, H * .35); c.lineTo(W * .66, H * .35); c.stroke();
+      for (let y = H * .42; y < H * .74; y += 26) { c.beginPath(); c.moveTo(W * .6, y); c.lineTo(W * .64, y); c.stroke(); }
+      c.fillStyle = "rgba(255,255,255,.25)"; for (let i = 0; i < 5; i++) { c.beginPath(); c.ellipse(r() * W, H * (.1 + r() * .2), 90, 22, 0, 0, 7); c.fill(); }
+      c.fillStyle = "rgba(255,250,235,.18)"; c.fillRect(0, 0, W, H);
+    },
+    /* 11 · דם חם — a red-hot pulse: flames rising into a heartbeat */
+    il_hotblood(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#14020a"], [.6, "#4a0612"], [1, "#9a1a0c"]]));
+      for (let i = 0; i < 40; i++) { const x = r() * W, h = 80 + r() * 220; c.fillStyle = lin(c, 0, H, 0, H - h, [[0, "rgba(255,150,40,.7)"], [.6, "rgba(255,60,40,.4)"], [1, "rgba(255,40,60,0)"]]); c.beginPath(); c.moveTo(x - 30, H); c.quadraticCurveTo(x + (r() - .5) * 60, H - h * .6, x, H - h); c.quadraticCurveTo(x + 10, H - h * .5, x + 30, H); c.fill(); }
+      c.save(); c.globalCompositeOperation = "lighter";
+      const line = (lw, col) => { c.strokeStyle = col; c.lineWidth = lw; c.beginPath(); let x = 0; c.moveTo(0, H * .42);
+        while (x < W) { c.lineTo(x += 110, H * .42); c.lineTo(x += 14, H * .2); c.lineTo(x += 18, H * .62); c.lineTo(x += 12, H * .42); } c.stroke(); };
+      line(20, "rgba(255,60,80,.18)"); line(8, "rgba(255,80,90,.4)"); line(3, "#ffd0d0"); c.restore();
+      heart(c, W * .5, H * .1, 120, "rgba(255,40,70,.85)"); glow(c, W * .5, H * .2, 160, "rgba(255,60,80,.5)");
+    },
+    /* 12 · עד העונג הבא — witches' night: full moon, a broom streak, an electric guitar silhouette */
+    il_witches(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#0c0520"], [.7, "#3a1258"], [1, "#12061e"]]));
+      stars(c, r, 140, "#e8d8ff", H * .7);
+      glow(c, W * .66, H * .3, 220, "rgba(210,170,255,.45)"); c.fillStyle = "#efe4ff"; c.beginPath(); c.arc(W * .66, H * .3, 92, 0, 7); c.fill();
+      c.fillStyle = "rgba(160,120,200,.25)"; [[-20, -18, 18], [24, 20, 12], [-30, 30, 10]].forEach(([dx, dy, rr]) => { c.beginPath(); c.arc(W * .66 + dx, H * .3 + dy, rr, 0, 7); c.fill(); });
+      // broom silhouette crossing the moon
+      c.save(); c.translate(W * .6, H * .32); c.rotate(-.25); c.fillStyle = "#0c0418"; c.fillRect(-150, -4, 230, 8); poly(c, [[80, -14], [140, -30], [150, 0], [140, 30], [80, 14]], "#0c0418"); c.restore();
+      for (let i = 0; i < 30; i++) { c.fillStyle = "rgba(220,180,255," + (.6 - i * .02) + ")"; c.beginPath(); c.arc(W * .6 - 160 - i * 14, H * .32 + 40 + i * 3, 3 - i * .08, 0, 7); c.fill(); }
+      // forest + an electric guitar standing in the foreground
+      for (let x = -20; x < W + 20; x += 40) { const h = 90 + r() * 120; poly(c, [[x - 30, H], [x, H - h], [x + 30, H]], "#08030f"); }
+      c.save(); c.translate(W * .2, H * .55); c.rotate(-.3); c.fillStyle = "#a01a5a"; c.beginPath(); c.ellipse(0, 70, 54, 64, 0, 0, 7); c.ellipse(0, 10, 40, 40, 0, 0, 7); c.fill();
+      c.fillStyle = "#1a0a14"; c.fillRect(-7, -170, 14, 190); c.fillRect(-12, -200, 24, 34); c.fillStyle = "#e8d8ff"; c.fillRect(-30, 60, 60, 8); c.restore();
+    },
+    /* 13 · יום שישי — Friday at dusk over the city rooftops: boilers, solar heaters, a cassette */
+    il_friday(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#1d2a5a"], [.5, "#e0704a"], [.7, "#f5b46a"], [1, "#2a1a1a"]]));
+      glow(c, W * .2, H * .62, 200, "rgba(255,180,100,.8)");
+      skyline(c, r, H * .8, 60, 180, "#2a1c22", "rgba(255,210,140,.6)", .35);
+      for (let i = 0; i < 9; i++) { const x = W * (.05 + i * .11), y = H * .8 - 90 - r() * 80; c.fillStyle = "#1a1216"; c.fillRect(x, y - 30, 26, 30); c.beginPath(); c.ellipse(x + 13, y - 30, 13, 6, 0, 0, 7); c.fill(); c.save(); c.translate(x + 30, y); c.rotate(-.5); c.fillStyle = "#3a4a6a"; c.fillRect(0, -26, 44, 26); c.restore(); }
+      c.fillStyle = "#140c10"; c.fillRect(0, H * .8, W, H * .2);
+      // a cassette tape in the foreground
+      c.save(); c.translate(W * .7, H * .78); c.rotate(-.08); c.fillStyle = "#e8e2d4"; c.fillRect(-120, -70, 240, 140); c.fillStyle = "#e0703a"; c.fillRect(-110, -60, 220, 46);
+      c.fillStyle = "#2a2226"; c.fillRect(-80, -6, 160, 40); c.fillStyle = "#e8e2d4"; [[-46, 14], [46, 14]].forEach(([x, y]) => { c.beginPath(); c.arc(x, y, 14, 0, 7); c.fill(); });
+      c.fillStyle = "#2a2226"; for (let k = 0; k < 6; k++) { c.fillRect(-49 + (k % 2) * 92, 11 + 0, 6, 6); } c.restore();
+    },
+    /* 14 · שוב הדיסקו כאן — mirror ball over a crowded light-up floor, in late-90s colours */
+    il_disco90(c, r) {
+      fill(c, "#0a0414");
+      const cols = ["#ff3dd0", "#3dffe0", "#ffe23d", "#7a4dff"];
+      for (let row = 0; row < 8; row++) for (let col = -7; col < 8; col++) {
+        const z0 = 1 + row * .6, z1 = z0 + .6, y0 = H * .5 + 220 / z0 - 30, y1 = H * .5 + 220 / z1 - 30;
+        c.globalAlpha = .3 + r() * .6 * (1 - row / 9); poly(c, [[W / 2 + col * 130 / z0, y0], [W / 2 + (col + 1) * 130 / z0, y0], [W / 2 + (col + 1) * 130 / z1, y1], [W / 2 + col * 130 / z1, y1]], cols[(row + col + 20) % 4]);
+      }
+      c.globalAlpha = 1;
+      for (let i = 0; i < 18; i++) { const x = r() * W, y = H * (.55 + r() * .15), s = .6 + r() * .6; c.fillStyle = "#06020c"; c.beginPath(); c.arc(x, y - 60 * s, 14 * s, 0, 7); c.fill(); c.fillRect(x - 16 * s, y - 46 * s, 32 * s, 60 * s); c.save(); c.translate(x, y - 40 * s); c.rotate(-1 - r()); c.fillRect(0, -4 * s, 46 * s, 8 * s); c.restore(); }
+      const bx = W * .5, by = H * .18, br = 64;
+      c.fillStyle = "#c9c9d6"; c.beginPath(); c.arc(bx, by, br, 0, 7); c.fill();
+      for (let i = 0; i < 140; i++) { const a = r() * 7, d = Math.sqrt(r()) * br * .95; c.fillStyle = r() < .25 ? "#fff" : "rgba(80,80,110," + r() + ")"; c.fillRect(bx + Math.cos(a) * d - 4, by + Math.sin(a) * d - 4, 8, 8); }
+      c.fillStyle = "#888"; c.fillRect(bx - 1, 0, 2, by - br);
+      for (let i = 0; i < 16; i++) beam(c, bx, by, r() * Math.PI * 2, .02, 640, cols[i % 4], .3);
+    },
+    /* 15 · חללית — a flying saucer landing on a balcony, a single chair waiting */
+    il_ufo(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#04061a"], [1, "#16204a"]]));
+      stars(c, r, 220, "#fff", H);
+      const ux = W * .55, uy = H * .28;
+      beam(c, ux, uy + 20, Math.PI / 2, .3, 380, "#9dfff0", .35);
+      c.fillStyle = "#b8c4d8"; c.beginPath(); c.ellipse(ux, uy, 150, 34, 0, 0, 7); c.fill();
+      c.fillStyle = "rgba(160,255,240,.75)"; c.beginPath(); c.ellipse(ux, uy - 22, 62, 44, 0, Math.PI, 0); c.fill();
+      for (let i = 0; i < 9; i++) { const x = ux - 120 + i * 30; glow(c, x, uy + 6, 18, "rgba(255,220,120,.9)"); c.fillStyle = "#ffe08a"; c.beginPath(); c.arc(x, uy + 6, 4, 0, 7); c.fill(); }
+      // the balcony: rail, a tiled floor and a plastic chair
+      c.fillStyle = "#1a1e2e"; c.fillRect(0, H * .72, W, H * .28);
+      c.strokeStyle = "#2c3350"; c.lineWidth = 6; c.beginPath(); c.moveTo(0, H * .6); c.lineTo(W, H * .6); c.stroke();
+      for (let x = 10; x < W; x += 34) { c.lineWidth = 3; c.beginPath(); c.moveTo(x, H * .6); c.lineTo(x, H * .72); c.stroke(); }
+      c.fillStyle = "#e8e2d4"; c.fillRect(W * .2, H * .78, 70, 10); c.fillRect(W * .2, H * .66, 10, 60); c.fillRect(W * .2 + 4, H * .79, 6, 50); c.fillRect(W * .2 + 62, H * .79, 6, 50);
+      glow(c, ux, H * .74, 200, "rgba(150,255,240,.35)");
+    },
+    /* 16 · על הרצפה — terrazzo floor seen from above, with sneakers kicked up and scattered light */
+    il_floor(c, r) {
+      fill(c, "#2a2622");
+      for (let y = 0; y < H; y += 120) for (let x = 0; x < W; x += 120) { c.fillStyle = (x / 120 + y / 120) % 2 ? "#3a342e" : "#332e29"; c.fillRect(x, y, 118, 118); }
+      for (let i = 0; i < 1600; i++) { c.fillStyle = ["#d8cfc0", "#7a6a58", "#b85a3a", "#e8e2d4", "#4a4038"][i % 5]; c.globalAlpha = .55; c.fillRect(r() * W, r() * H, 2 + r() * 4, 2 + r() * 3); } c.globalAlpha = 1;
+      beam(c, W * .1, -40, Math.PI * .32, .25, 900, "#ffd27a", .25);
+      // two sneakers pointing up, soles to the viewer
+      [[W * .58, H * .42, -.15], [W * .7, H * .4, .12]].forEach(([x, y, a]) => { c.save(); c.translate(x, y); c.rotate(a);
+        c.fillStyle = "#f2efe6"; c.beginPath(); c.ellipse(0, 0, 38, 90, 0, 0, 7); c.fill();
+        c.fillStyle = "#c0392b"; c.beginPath(); c.ellipse(0, 0, 30, 80, 0, 0, 7); c.fill();
+        c.strokeStyle = "rgba(0,0,0,.35)"; c.lineWidth = 3; for (let k = -60; k < 70; k += 16) { c.beginPath(); c.moveTo(-24, k); c.lineTo(24, k + 6); c.stroke(); } c.restore(); });
+      c.strokeStyle = "rgba(255,255,255,.5)"; c.lineWidth = 3; for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * .25; c.beginPath(); c.moveTo(W * .64 + Math.cos(a) * 150, H * .4 + Math.sin(a) * 150); c.lineTo(W * .64 + Math.cos(a) * 190, H * .4 + Math.sin(a) * 190); c.stroke(); }
+    },
+    /* 17 · אלף כבאים — a city on fire at night: flames, sirens, ladders reaching up */
+    il_fire(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#0a0408"], [.6, "#3a0c08"], [1, "#120604"]]));
+      skyline(c, r, H * .78, 120, 300, "#0e0608", "rgba(255,170,80,.5)", .3);
+      for (let i = 0; i < 46; i++) { const x = r() * W, h = 60 + r() * 260; c.fillStyle = lin(c, 0, H * .78, 0, H * .78 - h, [[0, "rgba(255,190,60,.8)"], [.5, "rgba(255,80,20,.5)"], [1, "rgba(255,40,0,0)"]]); c.beginPath(); c.moveTo(x - 26, H * .78); c.quadraticCurveTo(x + (r() - .5) * 50, H * .78 - h * .6, x, H * .78 - h); c.quadraticCurveTo(x + 8, H * .78 - h * .5, x + 26, H * .78); c.fill(); }
+      c.fillStyle = "#0a0405"; c.fillRect(0, H * .78, W, H * .22);
+      // fire-truck ladders reaching into the smoke
+      [[W * .15, -.8], [W * .82, -2.35]].forEach(([x, a]) => { c.save(); c.translate(x, H * .86); c.rotate(a); c.strokeStyle = "#d8d0c0"; c.lineWidth = 5; c.beginPath(); c.moveTo(0, -10); c.lineTo(360, -10); c.moveTo(0, 10); c.lineTo(360, 10); c.stroke(); for (let k = 10; k < 360; k += 24) { c.lineWidth = 3; c.beginPath(); c.moveTo(k, -10); c.lineTo(k, 10); c.stroke(); } c.restore(); });
+      [[W * .08, "#ff2a2a"], [W * .12, "#2a7aff"], [W * .88, "#ff2a2a"], [W * .92, "#2a7aff"]].forEach(([x, col]) => { glow(c, x, H * .86, 70, col === "#ff2a2a" ? "rgba(255,40,40,.7)" : "rgba(40,120,255,.7)"); c.fillStyle = col; c.fillRect(x - 8, H * .85, 16, 8); });
+      for (let i = 0; i < 80; i++) { c.fillStyle = "rgba(255,200,120," + r() + ")"; c.fillRect(r() * W, r() * H * .7, 2, 2); }
+    },
+    /* 18 · היא לא יודעת מה עובר עליי — night drive: a windshield, a city in the rain, a song on the radio */
+    il_drive(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#0a0c18"], [1, "#1a1424"]]));
+      for (let i = 0; i < 60; i++) { const x = r() * W, y = H * (.2 + r() * .35); glow(c, x, y, 20 + r() * 40, ["rgba(255,190,90,.5)", "rgba(255,80,80,.45)", "rgba(120,180,255,.4)"][i % 3]); }
+      c.fillStyle = "#151020"; c.beginPath(); c.moveTo(0, H * .58); c.lineTo(W * .45, H * .48); c.lineTo(W * .55, H * .48); c.lineTo(W, H * .58); c.lineTo(W, H); c.lineTo(0, H); c.fill();
+      c.strokeStyle = "rgba(255,230,160,.7)"; c.lineWidth = 4; c.setLineDash([30, 26]); c.beginPath(); c.moveTo(W * .5, H * .5); c.lineTo(W * .5, H); c.stroke(); c.setLineDash([]);
+      for (let i = 0; i < 90; i++) { c.fillStyle = "rgba(200,220,255," + (.15 + r() * .35) + ")"; c.beginPath(); c.arc(r() * W, r() * H * .7, 1 + r() * 3, 0, 7); c.fill(); }
+      // dashboard + steering wheel silhouette + a glowing radio
+      c.fillStyle = "#07050c"; c.beginPath(); c.moveTo(0, H * .74); c.quadraticCurveTo(W / 2, H * .66, W, H * .74); c.lineTo(W, H); c.lineTo(0, H); c.fill();
+      c.strokeStyle = "#07050c"; c.lineWidth = 26; c.beginPath(); c.arc(W * .3, H * .98, 130, Math.PI * 1.05, Math.PI * 1.95); c.stroke();
+      c.fillStyle = "#0e2a3a"; c.fillRect(W * .58, H * .8, 150, 40); c.fillStyle = "#5dffd6"; c.font = "bold 24px monospace"; c.fillText("96.0 FM", W * .58 + 18, H * .8 + 28); glow(c, W * .58 + 75, H * .8 + 20, 80, "rgba(90,255,214,.35)");
+      c.strokeStyle = "rgba(0,0,0,.6)"; c.lineWidth = 5; c.beginPath(); c.moveTo(W * .2, 0); c.lineTo(W * .62, H * .66); c.stroke();
+    },
+    /* 19 · הרקדן האוטומטי — a wind-up dancer's key and a seventies stage of mirrored stripes */
+    il_automaton(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#1a0820"], [1, "#2a1006"]]));
+      const cols = ["#ff6a3d", "#ffb23d", "#ffd96a", "#d94a8a", "#7a3dff"];
+      for (let i = 0; i < 5; i++) { c.fillStyle = cols[i]; c.beginPath(); c.moveTo(0, H * (.62 + i * .06)); c.bezierCurveTo(W * .3, H * (.4 + i * .06), W * .6, H * (.8 + i * .05), W, H * (.5 + i * .06)); c.lineTo(W, H * (.56 + i * .06)); c.bezierCurveTo(W * .6, H * (.86 + i * .05), W * .3, H * (.46 + i * .06), 0, H * (.68 + i * .06)); c.fill(); }
+      beam(c, W * .5, -40, Math.PI / 2, .2, 600, "#ffe8c0", .4);
+      // a music-box drum and a big wind-up key
+      const cx = W * .5, cy = H * .42; c.fillStyle = "#c9a24a"; c.fillRect(cx - 110, cy - 30, 220, 60); c.fillStyle = "#e8c86a"; for (let x = cx - 104; x < cx + 104; x += 12) c.fillRect(x, cy - 30 + (Math.floor(r() * 5)) * 12, 4, 4);
+      c.fillStyle = "#8a6a2a"; c.beginPath(); c.ellipse(cx - 110, cy, 14, 30, 0, 0, 7); c.ellipse(cx + 110, cy, 14, 30, 0, 0, 7); c.fill();
+      c.fillStyle = "#d8b45a"; c.fillRect(cx + 120, cy - 6, 70, 12);
+      c.beginPath(); c.ellipse(cx + 214, cy - 34, 30, 40, .3, 0, 7); c.ellipse(cx + 214, cy + 34, 30, 40, -.3, 0, 7); c.fill();
+      c.fillStyle = "#1a0820"; c.beginPath(); c.ellipse(cx + 214, cy - 34, 12, 18, .3, 0, 7); c.ellipse(cx + 214, cy + 34, 12, 18, -.3, 0, 7); c.fill();
+      for (let i = 0; i < 6; i++) { c.fillStyle = "#ffe8c0"; c.font = "bold 40px serif"; c.globalAlpha = .6; c.fillText("\u266A", cx - 220 + i * 70, cy - 90 - Math.sin(i) * 40); } c.globalAlpha = 1;
+    },
+    /* 20 · דיווה — the big Eurovision stage: feathers, a crown of lights, a sea of flags */
+    il_diva(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#0a0418"], [.7, "#2a0a3a"], [1, "#05020a"]]));
+      for (let i = 0; i < 12; i++) beam(c, W * (.05 + i * .082), -30, Math.PI / 2 + (i - 5.5) * .05, .05, 700, i % 2 ? "#ff3dd0" : "#3dc4ff", .25);
+      const cx = W * .5, cy = H * .5;
+      for (let i = 0; i < 26; i++) { const a = Math.PI + (i / 25) * Math.PI; c.save(); c.translate(cx, cy); c.rotate(a + Math.PI / 2); c.fillStyle = i % 2 ? "rgba(255,255,255,.85)" : "rgba(240,220,255,.75)"; c.beginPath(); c.ellipse(0, -150, 18, 120, 0, 0, 7); c.fill();
+        c.strokeStyle = "rgba(180,150,220,.6)"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(0, -40); c.lineTo(0, -260); c.stroke(); c.restore(); }
+      glow(c, cx, cy - 40, 200, "rgba(255,230,255,.55)");
+      c.fillStyle = "#ffd23d"; poly(c, [[cx - 70, cy - 100], [cx - 70, cy - 150], [cx - 40, cy - 120], [cx, cy - 170], [cx + 40, cy - 120], [cx + 70, cy - 150], [cx + 70, cy - 100]], "#ffd23d");
+      [[-70, -150], [0, -170], [70, -150]].forEach(([dx, dy]) => { glow(c, cx + dx, cy + dy, 24, "rgba(255,255,255,.9)"); });
+      c.fillStyle = "#0a0410"; c.fillRect(0, H * .8, W, H * .2);
+      for (let i = 0; i < 60; i++) { const x = r() * W, y = H * (.78 + r() * .2); c.fillStyle = "#0a0410"; c.fillRect(x, y - 40, 2, 40); c.fillStyle = ["#ffffff", "#2f63c4", "#ff3d3d", "#ffd23d", "#3dd67a"][i % 5]; c.fillRect(x + 2, y - 40, 22, 14); }
+      for (let i = 0; i < 120; i++) { c.fillStyle = "rgba(255,240,255," + r() + ")"; c.fillRect(r() * W, r() * H * .75, 2, 2); }
+    },
   };
 
   function artNameFor(key) {
