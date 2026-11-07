@@ -1703,6 +1703,7 @@
       if (aud) { aud.me = Object.assign({}, ME, { votes: {} }); aud.myVotes = {}; aud._key = null; aud.render(); }
       await be.join({ ticket: ME.ticket, name: ME.name, prediction: null });
       crowd.reset(); crowd.start(rec ? 120 : 160);
+      await admin.set({ video: admin.vid("lobby", "play") });
       say("הקהל סורק QR ונכנס לזירה מהטלפון. בלי להוריד אפליקציה.");
       await sleep(rec ? 2500 : 4000);
       tap($(".pick-tv")); say("כל אחד מנחש מי ינצח הערב: צד הסדרות או צד הסרטים.");

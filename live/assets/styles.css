@@ -926,3 +926,7 @@ html[data-view="booth"], html[data-view="booth"] body { height: 100%; overflow: 
 .booth-cap.is-in { animation: boothCap .5s ease-out; }
 @keyframes boothCap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .booth .booth-tap { outline: 3px solid var(--brand-hi); outline-offset: 2px; transform: scale(.94); transition: transform .12s; }
+
+/* lobby / final loop behind the text: darken so the title, QR and predictions stay readable */
+.scr-stage.has-video .s-lobby,
+.scr-stage.has-video .s-final { background: radial-gradient(ellipse at center, rgba(11,10,9,.5) 0%, rgba(11,10,9,.78) 100%); }
