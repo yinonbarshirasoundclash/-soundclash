@@ -903,6 +903,56 @@ html.show-nineties {
 .show-nineties .s-hero-film .s-hero-media { padding: 0; }
 .show-nineties .s-hero-film .s-hero-media::before, .show-nineties .s-hero-film .s-hero-media::after { display: none; }
 .show-nineties .s-hero-tv .s-hero-media::after { background: radial-gradient(120% 100% at 50% 30%, transparent 55%, rgba(0,0,0,.5)); }
+/* =========================================================================
+   THEME · ISRAELI PARTY (80s vs 90s) — the 90s stage layout,
+   80s blue against 90s gold (as on israel.html), silver for the brand and the VS seam.
+   ========================================================================= */
+html.show-israeli {
+  --tv: #4a8dff;  --tv-hi: #a9c8ff;  --tv-deep: #12264d;  --tv-glow: rgba(74, 141, 255, .45);  --tv-rgb: 74,141,255;
+  --film: #f2b33d; --film-hi: #ffd98a; --film-deep: #4a330c; --film-glow: rgba(242, 179, 61, .45); --film-rgb: 242,179,61;
+  --brand: #dfe6f0; --brand-hi: #ffffff; --brand-deep: #262c36; --brand-glow: rgba(223, 230, 240, .4);
+  --brand-rgb: 223,230,240; --brand-hi-rgb: 255,255,255;
+  --cue: #dfe6f0;
+}
+.show-israeli .s-vs span { color: #1b1206; }
+.show-israeli .split-tv { color: #fff; } .show-israeli .split-film { color: #1f1405; }
+.show-israeli .s-lower-tv .s-lower-badge { color: #fff; }
+.show-israeli .tile.is-playing.tile-tv { background: linear-gradient(160deg, #1a3a78, #0a1530); }
+.show-israeli .tile.is-playing.tile-film { background: linear-gradient(160deg, #7a5514, #2a1c06); }
+.show-israeli .vbtn-tv.is-on { background: linear-gradient(160deg, #1d428a, #0a1533); }
+.show-israeli .vbtn-film.is-on { background: linear-gradient(160deg, #8a6018, #2a1c06); }
+.show-israeli .winner-tv { background: radial-gradient(120% 120% at 50% 0%, #2453a8, #08122a); }
+.show-israeli .winner-film { background: radial-gradient(120% 120% at 50% 0%, #9a6c1c, #241804); }
+.show-israeli .s-song-tv { background: radial-gradient(90% 90% at 70% 50%, rgba(40,96,200,.5), transparent 70%); }
+.show-israeli .s-song-film { background: radial-gradient(90% 90% at 30% 50%, rgba(190,130,30,.5), transparent 70%); }
+/* stage cards: two lit panels with a speaker-grille edge */
+.show-israeli .scard-tv .scard-frame, .show-israeli .scard-film .scard-frame { border-radius: 34px; padding-block: 40px; }
+.show-israeli .scard-tv .scard-frame { background: radial-gradient(120% 110% at 50% 10%, #2453a8, #08122a 78%);
+  box-shadow: 0 0 0 10px #17110f, 0 0 0 12px rgba(244,239,230,.12), 0 0 110px -10px var(--tv-glow); }
+.show-israeli .scard-film .scard-frame { background: radial-gradient(120% 110% at 50% 10%, #9a6c1c, #201503 78%);
+  box-shadow: 0 0 0 10px #17110f, 0 0 0 12px rgba(244,239,230,.12), 0 0 110px -10px var(--film-glow); }
+.show-israeli .scard-tv .scard-frame::before, .show-israeli .scard-film .scard-frame::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 22px; top: 0;
+  background: radial-gradient(circle, rgba(0,0,0,.55) 2px, transparent 2.5px) 0 0 / 12px 12px; opacity: .7; pointer-events: none; }
+.show-israeli .scard-tv .scard-frame::after, .show-israeli .scard-film .scard-frame::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 22px; bottom: 0; transform: none;
+  background: radial-gradient(circle, rgba(0,0,0,.55) 2px, transparent 2.5px) 0 0 / 12px 12px; opacity: .7; pointer-events: none; }
+/* hero: a lit square panel (USA) and a spinning record (UK) */
+.show-israeli .s-hero-tv .s-hero-media { border-radius: 40px; background: #0a1530; background-image: none; animation: none;
+  box-shadow: 0 0 0 14px #17110f, 0 0 0 16px rgba(244,239,230,.12), 0 0 160px -10px var(--tv-glow); }
+.show-israeli .s-hero-film .s-hero-media { border-radius: 40px; background: #2a1c06; animation: none;
+  box-shadow: 0 0 0 14px #17110f, 0 0 0 16px rgba(244,239,230,.12), 0 0 160px -10px var(--film-glow); }
+.show-israeli .tile-tv::before, .show-israeli .tile-film::before, .show-israeli .tile-film::after { display: none; }
+.show-israeli .tile-tv, .show-israeli .tile-film { border-radius: 22px; }
+.show-israeli .tile.is-playing.tile-film { padding-block: 16px 14px; }
+.show-israeli .champ-tv { background: radial-gradient(120% 120% at 50% 0%, #2453a8, #08122a); }
+.show-israeli .champ-film { background: radial-gradient(120% 120% at 50% 0%, #9a6c1c, #241804); }
+.show-israeli .winner-tie, .show-israeli .champ-tie { background: linear-gradient(90deg, #12264d, #4a330c); }
+.show-israeli .vbtn-live:not(.is-done) { color: #1b1206; }
+.show-israeli .s-hero-film .s-hero-media { padding: 0; }
+.show-israeli .s-hero-film .s-hero-media::before, .show-israeli .s-hero-film .s-hero-media::after { display: none; }
+.show-israeli .s-hero-tv .s-hero-media::after { background: radial-gradient(120% 100% at 50% 30%, transparent 55%, rgba(0,0,0,.5)); }
+
 .s-theme.is-long { font-size: 92px; }
 
 /* =========================================================================

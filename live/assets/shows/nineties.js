@@ -15,6 +15,8 @@ window.SC_SHOWS["nineties"] = {
   howPair: "הלהקה מנגנת שיר אמריקאי ושיר בריטי מהניינטיז.",
   lobbySub: "שמונה סיבובים. אמריקה מול בריטניה. אתם מכריעים.",
   factLabel: "💡 על השיר",
+  /* קונפטי בצבעי הצדדים: ארה״ב אדום, בריטניה כחול */
+  confetti: { tv: ["#e5484d", "#ffa3a3", "#a8282c", "#f4efe6"], film: ["#4f86e8", "#a9c8ff", "#2a5bb8", "#f4efe6"], tie: ["#e5484d", "#4f86e8", "#f2c230"] },
   sides: {
     tv:   { slug: "usa", he: "ארה״ב",  team: "צד ארה״ב",   latin: "USA", short: "אמריקאי", badge: "סיבוב", sceneLabel: "" },
     film: { slug: "uk",  he: "בריטניה", team: "צד בריטניה", latin: "UK",  short: "בריטי",   badge: "סיבוב", sceneLabel: "" }

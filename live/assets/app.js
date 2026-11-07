@@ -166,7 +166,9 @@
     })();
     return () => cancelAnimationFrame(raf);
   }
-  const SIDE_COLORS = { tv: ["#5d8fd6", "#9cc0f2", "#2f5a99", "#f4efe6"], film: ["#e8a33d", "#f6cf86", "#b8792a", "#f4efe6"], tie: ["#e8a33d", "#5d8fd6", "#f4efe6"] };
+  /* confetti colours per side; a show file can set its own (confetti: { tv, film, tie }) */
+  const SIDE_COLORS_DEFAULT = { tv: ["#5d8fd6", "#9cc0f2", "#2f5a99", "#f4efe6"], film: ["#e8a33d", "#f6cf86", "#b8792a", "#f4efe6"], tie: ["#e8a33d", "#5d8fd6", "#f4efe6"] };
+  const SIDE_COLORS = new Proxy({}, { get: (o, k) => ((SHOW && SHOW.confetti) || SIDE_COLORS_DEFAULT)[k] });
 
   /* ---------------- film-leader countdown ---------------- */
   function leader(cls) {
@@ -782,7 +784,7 @@
         const ambient = !this.stage.classList.contains("has-video") && (ph === "lobby" || ph === "final" || ph === "raffle" || ph === "encore" || ph === "intro");
         c.style.opacity = ambient ? 1 : 0.35;
         if (reduceMotion() && this._bgDrawn) return; this._bgDrawn = true;
-        if (SHOW.theme === "nineties") { this.bg90(ctx, t, dust); return; }
+        if (SHOW.theme !== "screens") { this.bg90(ctx, t, dust); return; }
         // right half (RTL: TV side) — blue CRT static
         const d = noise.data;
         for (let i = 0; i < d.length; i += 4) { const g = Math.random() * 60; d[i] = g * 0.35; d[i + 1] = g * 0.55; d[i + 2] = g; d[i + 3] = 255; }
@@ -799,8 +801,10 @@
       };
       this._bgRaf = requestAnimationFrame(loop);
     }
-    /* 90s stage: two moving spotlights (red right / blue left) through haze, gold dust */
+    /* stage shows (90s, Israeli party): two moving spotlights per side through haze, with dust.
+       colours come from the show file (beams: { tv, film, dust }); default = 90s red right / blue left, gold dust */
     bg90(ctx, t, dust) {
+      const B = SHOW.beams || { tv: "rgba(229,72,77,A)", film: "rgba(79,134,232,A)", dust: "rgba(255,227,140,.55)" };
       ctx.fillStyle = "#07060a"; ctx.fillRect(0, 0, 480, 270);
       const beam = (x0, ang, col) => {
         const len = 340, w = 0.2, x1 = x0 + Math.cos(ang - w) * len, y1 = Math.sin(ang - w) * len, x2 = x0 + Math.cos(ang + w) * len, y2 = Math.sin(ang + w) * len;
@@ -809,14 +813,14 @@
       };
       const s = t / 2600;
       ctx.globalCompositeOperation = "lighter";
-      beam(400, Math.PI / 2 + 0.45 * Math.sin(s), "rgba(229,72,77,A)");
-      beam(330, Math.PI / 2 + 0.35 * Math.sin(s * 1.3 + 2), "rgba(229,72,77,A)");
-      beam(80, Math.PI / 2 + 0.45 * Math.sin(s + 3.1), "rgba(79,134,232,A)");
-      beam(150, Math.PI / 2 + 0.35 * Math.sin(s * 1.2 + 1), "rgba(79,134,232,A)");
+      beam(400, Math.PI / 2 + 0.45 * Math.sin(s), B.tv);
+      beam(330, Math.PI / 2 + 0.35 * Math.sin(s * 1.3 + 2), B.tv);
+      beam(80, Math.PI / 2 + 0.45 * Math.sin(s + 3.1), B.film);
+      beam(150, Math.PI / 2 + 0.35 * Math.sin(s * 1.2 + 1), B.film);
       ctx.globalCompositeOperation = "source-over";
       const fog = ctx.createLinearGradient(0, 170, 0, 270); fog.addColorStop(0, "rgba(255,255,255,0)"); fog.addColorStop(1, "rgba(255,240,220,.08)");
       ctx.fillStyle = fog; ctx.fillRect(0, 170, 480, 100);
-      ctx.fillStyle = "rgba(255,227,140,.55)";
+      ctx.fillStyle = B.dust;
       dust.forEach(p => { p.y -= p.v; p.x += Math.sin((t / 900) + p.y) * 0.15; if (p.y < 0) { p.y = 270; p.x = Math.random() * 240; } ctx.fillRect(p.x * 2, p.y, p.r, p.r); });
     }
     /* -- reactions -- */
@@ -1350,11 +1354,12 @@
     }
     renderNow() {
       const st = this.st, t = phaseTitle(st), a = this.nextAction();
-      this.$now.replaceChildren(
+      /* replaceChildren would print a null child as the word "null", so empty parts are dropped */
+      this.$now.replaceChildren(...[
         h("p", { class: "now-eyebrow" }, h("span", { class: "now-dot ph-" + st.phase }), t.eyebrow),
         h("h1", { class: "now-title" }, bdi(t.title)),
         t.sub ? h("p", { class: "now-sub" }, bdi(t.sub)) : null,
-        this.stepStrip());
+        this.stepStrip()].filter(Boolean));
       this.$next.replaceChildren(a.label, a.song ? bdi(a.song) : ""); this.$next.disabled = !a.run;
       this.$back.disabled = st.phase === "lobby";
       this.renderPart();
