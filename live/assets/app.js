@@ -40,6 +40,8 @@
     if (Array.isArray(c)) { c.forEach(x => add(el, x)); return; }
     el.append(c.nodeType ? c : document.createTextNode(String(c)));
   }
+  /* replaceChildren prints null/false children as text ("null"), so empty parts are dropped first */
+  const setKids = (el, ...kids) => el.replaceChildren(...kids.flat().filter(x => x != null && x !== false));
   const bdi = (t, cls) => h("bdi", { dir: "auto", class: cls || null }, t);
   const pad = (n) => String(n).padStart(2, "0");
   const pct = (a, t) => t ? Math.round(a * 100 / t) : 0;
@@ -205,7 +207,7 @@
     }
     save() { if (this.me) { this.me.votes = this.myVotes; safeStore.set(this.pkey, this.me); } }
     renderTop() {
-      this.top.replaceChildren(
+      setKids(this.top, 
         h("div", { class: "brand" }, h("span", { class: "brand-word" }, "SOUND", h("b", null, "CLASH")), h("span", { class: "brand-sub" }, SHOW.title)),
         h("div", { class: "aud-top-act" },
           h("button", { class: "contact-chip", type: "button", onclick: () => this.openSheet("contact") }, h("span", { "aria-hidden": "true" }, "📞"), "צרו קשר"),
@@ -234,7 +236,7 @@
       const key = (promoOn ? "promo" + st.promo.seq : "") + (this.me ? "in" : "out") + ph + st.round + (ph === "lobby" ? (this.me && this.me.prediction) : "") + (ph === "raffle" ? JSON.stringify(st.raffle) : "") + (["voting", "song1", "song2"].includes(ph) ? (this.myVotes[st.round] || "") + (st.voteDuringSongs !== false) : "") + (ph === "reveal" ? JSON.stringify((st.results || {})[st.round] || {}) : "") + (ph === "encore" ? st.encoreSide || "" : "");
       if (key !== this._key) {
         this._key = key;
-        this.main.replaceChildren(view);
+        setKids(this.main, view);
         this.main.scrollTop = 0;
         this.tickClock();
         if (ph === "reveal") this.celebrateReveal();
@@ -569,9 +571,9 @@
           h("h2", { class: "aud-h2" + (s.hebrew ? "" : " latin-title") }, bdi(s.title)),
           h("p", { class: "muted" }, meta(s)), box];
         this.be.getLyrics(videoKey(data.r, data.side)).then(l => {
-          if (l && l.text) box.replaceChildren(l.text);
-          else box.replaceChildren(h("p", { class: "lyrics-empty" }, "המילים לשיר הזה יעלו בקרוב."));
-        }).catch(() => box.replaceChildren(h("p", { class: "lyrics-empty" }, "אין חיבור כרגע. נסו שוב בעוד רגע.")));
+          if (l && l.text) setKids(box, l.text);
+          else setKids(box, h("p", { class: "lyrics-empty" }, "המילים לשיר הזה יעלו בקרוב."));
+        }).catch(() => setKids(box, h("p", { class: "lyrics-empty" }, "אין חיבור כרגע. נסו שוב בעוד רגע.")));
       } else if (kind === "contact") {
         body = [h("p", { class: "eyebrow" }, "Soundclash"), h("h2", { class: "aud-h2" }, "דברו איתנו"), this.contactBlock()];
       } else {
@@ -587,7 +589,7 @@
           tm.voted ? h("p", { class: "muted" }, "עם הרוב: " + tm.withCrowd + " מתוך " + tm.voted) : null,
           this.contactBlock()];
       }
-      this.sheetEl.replaceChildren(
+      setKids(this.sheetEl, 
         h("div", { class: "sheet-scrim", onclick: close }),
         h("div", { class: "sheet-card", role: "dialog", "aria-modal": "true" },
           h("button", { class: "sheet-x", type: "button", onclick: close, "aria-label": "סגירה" }, "×"), body));
@@ -852,7 +854,7 @@
         case "raffle": v = this.sRaffle(); break;
         default: v = this.sEncore();
       }
-      this.layer.replaceChildren(v);
+      setKids(this.layer, v);
       if (st.screen && st.screen.qr && ph !== "lobby") this.layer.append(this.qr("scr-qr-corner"));
       const pr = st.promo, prLeft = pr && pr.at ? pr.at + 25000 - Date.now() : 0;
       if (prLeft > 0) {
@@ -927,7 +929,7 @@
       if (!this.$pred) return;
       const preds = this.players.filter(p => p.prediction), n = preds.length, tv = preds.filter(p => p.prediction === "tv").length;
       const a = n ? pct(tv, n) : 50;
-      this.$pred.replaceChildren(
+      setKids(this.$pred, 
         h("div", { class: "scr-pred-bar" }, h("i", { class: "tv", style: { width: a + "%" } }), h("i", { class: "film", style: { width: (100 - a) + "%" } })),
         h("div", { class: "scr-pred-lab" }, h("span", { class: "tv" }, SIDE.tv.he + " " + (n ? a + "%" : "")), h("span", { class: "film" }, (n ? (100 - a) + "% " : "") + SIDE.film.he)));
     }
@@ -1153,7 +1155,7 @@
     }
     build() {
       const live = this.be.isLive();
-      if ((live && !this.admin) || (!live && !this.unlocked)) { this.root.replaceChildren(this.loginView()); this.built = false; return; }
+      if ((live && !this.admin) || (!live && !this.unlocked)) { setKids(this.root, this.loginView()); this.built = false; return; }
       if (this.built) return; this.built = true;
       this.$mode = h("span", { class: "pill " + (live ? "pill-live" : "pill-demo") }, live ? "חי · Firebase" : "מצב הדגמה");
       this.$players = h("b", null, "0");
@@ -1173,7 +1175,7 @@
       this.$crowd = h("div", { class: "crowd" });
       this.$settings = h("div", { class: "settings" });
       this.previewHost = h("div", { class: "preview-host" });
-      this.root.replaceChildren(
+      setKids(this.root, 
         h("header", { class: "adm-top" },
           h("div", { class: "brand" }, h("span", { class: "brand-word" }, "SOUND", h("b", null, "CLASH")), h("span", { class: "brand-sub" }, "שולחן הבמאי")),
           this.showPicker(), this.$mode, this.$conn,
@@ -1279,7 +1281,7 @@
       if (!this.$part) return;
       const k = this.nextPart(), v = (this.st && this.st.video) || {};
       this.$part.hidden = !k;
-      if (k) this.$part.replaceChildren("⏭ מעבר לסרטון הבא באמצע השיר ", h("bdi", { dir: "ltr" }, v.key + " → " + k));
+      if (k) setKids(this.$part, "⏭ מעבר לסרטון הבא באמצע השיר ", h("bdi", { dir: "ltr" }, v.key + " → " + k));
     }
     set(p) { return this.be.setState(p).catch(e => this.toast("השמירה נכשלה: " + (e.message || e))); }
     goIntro(r) { return this.set({ phase: "intro", round: r, votingEndsAt: 0, video: this.vid("", "stop") }); }
@@ -1350,17 +1352,16 @@
           x ? h("span", { class: "run-res w-" + x.winner }, x.winner === "tie" ? "תיקו" : SIDE[x.winner].latin, " ", pct(x.tv, x.total) + ":" + (x.total ? 100 - pct(x.tv, x.total) : 0)) : null));
       });
       items.push(row(h("span", { class: "run-t" }, h("span", { class: "run-n" }, "🏆"), "אלופים · הגרלה · הדרן"), ["final", "raffle", "encore"].includes(st.phase), false, null));
-      this.$run.replaceChildren(...items);
+      setKids(this.$run, ...items);
     }
     renderNow() {
       const st = this.st, t = phaseTitle(st), a = this.nextAction();
-      /* replaceChildren would print a null child as the word "null", so empty parts are dropped */
-      this.$now.replaceChildren(...[
+      setKids(this.$now, ...[
         h("p", { class: "now-eyebrow" }, h("span", { class: "now-dot ph-" + st.phase }), t.eyebrow),
         h("h1", { class: "now-title" }, bdi(t.title)),
         t.sub ? h("p", { class: "now-sub" }, bdi(t.sub)) : null,
         this.stepStrip()].filter(Boolean));
-      this.$next.replaceChildren(a.label, a.song ? bdi(a.song) : ""); this.$next.disabled = !a.run;
+      setKids(this.$next, a.label, a.song ? bdi(a.song) : ""); this.$next.disabled = !a.run;
       this.$back.disabled = st.phase === "lobby";
       this.renderPart();
     }
@@ -1426,7 +1427,7 @@
         kids.push(h("div", { class: "ctx-order" }, h("span", null, "סדר בדו־קרב הזה: ", h("b", null, SIDE[ord[0]].team), " ואז ", h("b", null, SIDE[ord[1]].team)),
           st.phase === "intro" ? h("button", { class: "btn-ghost", type: "button", onclick: () => { const o = Object.assign({}, st.order || {}); o[r] = other(firstSide(st, r)); this.set({ order: o }); } }, "החלפת סדר") : null));
       }
-      this.$ctx.replaceChildren(...kids);
+      setKids(this.$ctx, ...kids);
     }
     renderTally() {
       if (!this.$tally || !this.st) return;
@@ -1436,7 +1437,7 @@
       this.$tally.hidden = false;
       const t = st.phase === "reveal" && (st.results || {})[r] ? st.results[r] : tally(this.votes.filter(v => v.r === r));
       const tv = pct(t.tv, t.total);
-      this.$tally.replaceChildren(
+      setKids(this.$tally, 
         h("div", { class: "tally-head" }, h("span", null, st.phase === "reveal" ? "תוצאה סופית" : "ספירה חיה (רק את/ה רואה את האחוזים כאן)"), h("b", null, t.total + " קולות")),
         h("div", { class: "tally-bar" }, h("i", { class: "tv", style: { width: (t.total ? tv : 50) + "%" } }), h("i", { class: "film", style: { width: (t.total ? 100 - tv : 50) + "%" } })),
         h("div", { class: "tally-lab" }, h("span", { class: "tv" }, h("bdi", { dir: "ltr" }, L.tv + " " + (t.total ? tv : 0) + "% · " + t.tv)), h("span", { class: "film" }, h("bdi", { dir: "ltr" }, L.film + " " + (t.total ? 100 - tv : 0) + "% · " + t.film))));
@@ -1445,7 +1446,7 @@
       const st = this.st;
       const secs = h("select", { id: "adm-secs", class: "field field-sm", onchange: (e) => this.set({ voteSeconds: +e.target.value }) },
         [10, 15, 20, 25, 30, 45].map(s => h("option", { value: s, selected: (st.voteSeconds || 20) === s }, s + " שניות")));
-      this.$settings.replaceChildren(
+      setKids(this.$settings, 
         h("h2", { class: "adm-h" }, "הגדרות"),
         h("div", { class: "set-row" }, h("label", { for: "adm-secs" }, "זמן הצבעה"), secs),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-during", type: "checkbox", checked: st.voteDuringSongs !== false, onchange: (e) => this.set({ voteDuringSongs: e.target.checked }) }), "ההצבעה פתוחה כבר מתחילת השיר הראשון")),
@@ -1455,9 +1456,9 @@
     }
     dangerZone() {
       const wrap = h("div", { class: "danger" });
-      const ask = () => wrap.replaceChildren(h("span", null, "לאפס את כל ההצבעות, הכרטיסים והתוצאות?"),
+      const ask = () => setKids(wrap, h("span", null, "לאפס את כל ההצבעות, הכרטיסים והתוצאות?"),
         h("button", { class: "btn-danger", type: "button", onclick: async () => { await this.be.resetShow(); if (this.crowd) this.crowd.reset(); this.toast("המופע אופס."); } }, "כן, לאפס"),
-        h("button", { class: "btn-ghost", type: "button", onclick: () => wrap.replaceChildren(btn) }, "ביטול"));
+        h("button", { class: "btn-ghost", type: "button", onclick: () => setKids(wrap, btn) }, "ביטול"));
       const btn = h("button", { class: "btn-ghost btn-warn", type: "button", onclick: ask }, "איפוס מופע");
       wrap.append(btn); return wrap;
     }
@@ -1471,7 +1472,7 @@
       const st = this.st, v = st.video || {}, meta = this.screenMeta || {}, have = new Set(meta.videos || []);
       const avail = (k) => have.has(k) || !!meta.base;
       const overlayOn = !st.screen || st.screen.overlay !== false;
-      this.$vnow.replaceChildren(
+      setKids(this.$vnow, 
         h("div", { class: "vnow-row" },
           h("span", { class: "vnow-k" }, v.key && v.cmd !== "stop" ? "🎞 " + v.key + (v.cmd === "pause" ? " · עצור" : " · מתנגן") : "אין סרטון על המסך"),
           meta.status && /^missing/.test(meta.status) ? h("span", { class: "warn" }, "הקובץ לא נמצא במחשב המסך") : null,
@@ -1492,7 +1493,7 @@
       if (SHOW.encores) ["tv", "film"].forEach(sd => keys.push({ k: videoKey("enc", sd), t: "הדרן · " + songOf("enc", sd).title, s: sd }));
       keys.push({ k: "final", t: "לופ סיום" });
       this.renderPart();
-      this.$videos.replaceChildren(...keys.map(x => h("button", {
+      setKids(this.$videos, ...keys.map(x => h("button", {
         type: "button", class: "vid" + (v.key === x.k && v.cmd !== "stop" ? " is-on" : "") + (avail(x.k) ? " is-ok" : ""), onclick: () => this.videoCmd("play", x.k), title: avail(x.k) ? "זמין" : "חסר קובץ"
       }, h("span", { class: "vid-k" + (x.s ? " s-" + x.s : "") }, x.k), h("span", { class: "vid-t" }, bdi(x.t)))));
     }
@@ -1529,7 +1530,7 @@
       const imp = h("details", { class: "lyr-imp" }, h("summary", null, "ייבוא מילים מהאפליקציה הקודמת"),
         h("p", { class: "muted" }, "פותחים בגיטהאב את הקובץ app.py של האפליקציה הקודמת, מעתיקים את כל התוכן ומדביקים כאן. האפליקציה מוצאת את המילים של כל שיר לפי שם השיר ושומרת אותן אצלו."),
         impTa, h("div", { class: "set-row" }, h("button", { class: "btn-ghost", type: "button", onclick: runImport }, "ייבוא"), impMsg));
-      this.$lyrics.replaceChildren(
+      setKids(this.$lyrics, 
         h("p", { class: "muted" }, "המילים מוצגות לקהל בתוך האפליקציה, בכפתור \"📝 מילים\" של כל שיר. יש מילים ל-" + done + " מתוך " + keys.length + " שירים."),
         h("div", { class: "set-row" }, h("label", { for: "adm-lyr-song" }, "שיר"), sel), ta,
         h("div", { class: "set-row" }, h("button", { class: "btn-primary", type: "button", onclick: save }, "שמירת המילים"), msg), imp);
@@ -1566,7 +1567,7 @@
         catch (e) { msg.textContent = "השמירה נכשלה: " + (e.message || e); }
       };
       const edited = keys.filter(x => factEdit(x.i, x.s, map)).length;
-      this.$facts.replaceChildren(
+      setKids(this.$facts, 
         h("p", { class: "muted" }, "הטקסט שהקהל רואה בכפתור \"💡 " + (SHOW.id === "tv-vs-film" ? "על השיר והסצנה" : "על השיר") + "\". הנוסח הנוכחי כבר בתיבה, מתקנים ושומרים." + (edited ? (edited === 1 ? " נערך שיר אחד (מסומן ב-✎)." : " נערכו " + edited + " שירים (מסומנים ב-✎).") : "")),
         h("div", { class: "set-row" }, h("label", { for: "adm-fact-song" }, "שיר"), sel),
         sceneTa ? h("label", { class: "fact-lbl", for: "adm-fact-scene" }, SIDE[cur.s].sceneLabel || "הסצנה") : null, sceneTa,
@@ -1576,7 +1577,7 @@
     renderCrowd() {
       if (!this.crowd || !this.$crowd) return;
       const c = this.crowd;
-      this.$crowd.replaceChildren(
+      setKids(this.$crowd, 
         h("p", { class: "muted" }, "קהל מדומה שנכנס, מנחש, מצביע ושולח תגובות. נועד לחזרות ולהדגמה בלבד."),
         h("div", { class: "set-row" },
           h("button", { class: c.running ? "btn-ghost" : "btn-primary", type: "button", onclick: () => { c.running ? c.stop() : c.start(); this.renderCrowd(); } }, c.running ? "עצירת הקהל" : "הפעלת קהל וירטואלי"),
@@ -1774,7 +1775,7 @@
     const be = window.SCBackend.create(CFG, view === "demo" || view === "booth" || new URLSearchParams(location.search).has("demo"));
     try { await be.init(); }
     catch (e) {
-      root.replaceChildren(h("div", { class: "fatal" }, h("h1", null, "אין חיבור לשרת ההצבעות"), h("p", null, "בדקו את החיבור לאינטרנט ורעננו את הדף."), h("p", { class: "muted" }, String(e.message || e))));
+      setKids(root, h("div", { class: "fatal" }, h("h1", null, "אין חיבור לשרת ההצבעות"), h("p", null, "בדקו את החיבור לאינטרנט ורעננו את הדף."), h("p", { class: "muted" }, String(e.message || e))));
       return;
     }
     let active = null;
