@@ -357,7 +357,7 @@ function calc(){
   if (CFG.bundle){ for (const b of CFG.bundle){ if (expCount>=b.count) rate=b.rate; } disc = exp*rate; }
   const pre = show+tech+exp-disc+other;
   const vat = pre*CFG.vat, total = pre+vat;
-  const listTotal = showList+tech+exp+other+giftVal+listExtra;
+  const listTotal = showList+tech+exp+other+listExtra;   // המתנות לא נספרות כחיסכון (14.11.2026)
   const saving = listTotal-pre;
 
   $('lines').innerHTML = lines.map(([n,p,t]) => `<li><span>${n}</span><span class="${t==='מתנה'?'g':''}">${t ? t : fmt(p)}</span></li>`).join('')

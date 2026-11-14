@@ -134,8 +134,8 @@ FORMATS = [
          era="90's", name="Soundclash ניינטיז",
          nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
          name_html=ltr("Soundclash") + " ניינטיז",
-         tag="כבר ממלא אולמות", live=True, logo="assets/img/logo-90s.svg", logo_alt="Soundclash ניינטיז",
-         short="המופע שכבר ממלא אולמות: ארה״ב מול בריטניה."),
+         tag="כבר על הבמות", live=True, logo="assets/img/logo-90s.svg", logo_alt="Soundclash ניינטיז",
+         short="המופע שכבר עולה על הבמות: ארה״ב מול בריטניה."),
     dict(slug="israel", file="israel.html", theme="theme-il", css="f-il",
          era="80/90", name="Soundclash מסיבה ישראלית",
          nav="מסיבה ישראלית", nav_plain="מסיבה ישראלית",
@@ -744,7 +744,7 @@ for f in FORMATS:
         vids = ""   # סרטוני היוטיוב של הניינטיז לא מוצגים כאן; במקומם סרטוני ה-AI (ינון, 14.11.2026)
     else:
         vids = video_section(VIDEOS_NO_TRAILER, head="ככה נראה קרב Soundclash", eyebrow="המנגנון בעיניים",
-                             sub="הסרטונים צולמו בניינטיז, המופע שכבר ממלא אולמות. המנגנון וההצבעה זהים.",
+                             sub="הסרטונים צולמו בניינטיז, המופע שכבר עולה על הבמות. המנגנון וההצבעה זהים.",
                              limit=3)
 
     body = f"""
@@ -899,7 +899,7 @@ about_body = f"""
     <ul class="lineup">{lineup_html}</ul>
 
     <h3>הזירות</h3>
-    <p>אותו מנגנון מוגש בכמה מופעים: סדרות נגד סרטים, המופע החדש; ניינטיז, שכבר ממלא אולמות; מסיבה ישראלית; ואייטיז לפי בקשה.
+    <p>אותו מנגנון מוגש בכמה מופעים: סדרות נגד סרטים, המופע החדש; ניינטיז, שכבר עולה על הבמות; מסיבה ישראלית; ואייטיז לפי בקשה.
     כל המופעים זמינים להזמנה בתיאום מראש. גודל ההרכב ומבנה הסיבובים מאפשרים התאמה
     לסוג האירוע, לכמות האורחים ולמשך ההופעה.</p>
 
@@ -1146,7 +1146,7 @@ events_body = r"""<section class="hero hero-corp">
         </ul>
       </article>
     </div>
-    <p class="center mt-32" style="color:var(--text-dim)">לא מחפשים סדרות וסרטים? אותו מנגנון רץ גם ב<a class="inline" href="90s.html">ניינטיז</a> (המופע שכבר ממלא אולמות) וב<a class="inline" href="israel.html">מסיבה הישראלית</a>. <a class="inline" href="80s.html">אייטיז</a> לפי בקשה.</p>
+    <p class="center mt-32" style="color:var(--text-dim)">לא מחפשים סדרות וסרטים? אותו מנגנון רץ גם ב<a class="inline" href="90s.html">ניינטיז</a> (המופע שכבר עולה על הבמות) וב<a class="inline" href="israel.html">מסיבה הישראלית</a>. <a class="inline" href="80s.html">אייטיז</a> לפי בקשה.</p>
   </div>
 </section>
 
