@@ -253,3 +253,16 @@ window.SC_CONFIG = {
     });
   }
 })();
+
+/* הדגמת האפליקציה: מתנגנת בלי קול, וכפתור מפעיל סאונד */
+document.querySelectorAll(".demo-video").forEach(function (fig) {
+  var v = fig.querySelector("video"), b = fig.querySelector(".demo-sound");
+  if (!v || !b) return;
+  b.addEventListener("click", function () {
+    var on = v.muted;
+    v.muted = !on;
+    if (on) { try { v.currentTime = 0; } catch (e) {} var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    b.setAttribute("aria-label", on ? "השתקה" : "הפעלת סאונד");
+  });
+});

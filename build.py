@@ -56,6 +56,28 @@ VIDEOS = [
     ("AxSH8I3mNvE", "אז איך זה הולך עם ההצבעות?"),
 ]
 TRAILER = "6XJsn9DJnxg"
+import hashlib as _h
+ASSET_V = _h.sha1(open("assets/css/site.css","rb").read() + open("assets/js/site.js","rb").read()).hexdigest()[:8]
+# הטריילר מציג את הניינטיז, ולכן הוא מופיע רק בעמוד הניינטיז (ינון, 14.11.2026).
+# בשאר העמודים: הדגמת האפליקציה של סדרות נגד סרטים, עד שיהיה סרטון חדש של המופע.
+VIDEOS_NO_TRAILER = [v for v in VIDEOS if v[0] != TRAILER]
+DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4"
+DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg"
+
+def demo_video(cls="hero-video", caption="הדגמה: ככה נראה ערב של סדרות נגד סרטים, על המסך ובטלפון"):
+    return f"""<figure class="{cls} demo-video">
+      <video src="{DEMO_MP4}" poster="{DEMO_POSTER}" autoplay muted loop playsinline preload="metadata"
+        aria-label="{caption}"></video>
+      <button type="button" class="demo-sound" aria-pressed="false" aria-label="הפעלת סאונד">
+        <span class="on">🔊 עם סאונד</span><span class="off">🔇 בלי סאונד</span></button>
+    </figure>
+    <p class="demo-cap">{caption}</p>"""
+
+def trailer_video(cls="hero-video"):
+    return f"""<div class="{cls}">
+      <iframe src="https://www.youtube.com/embed/{TRAILER}?rel=0" title="Soundclash ניינטיז — טריילר"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>"""
 
 # ============================================================================
 #  3. הפורמטים (״הזירות״)
@@ -226,14 +248,14 @@ def page(filename, title, description, body, active, theme="theme-90", og_img=HE
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Heebo:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/site.css?v={ASSET_V}">
 {jsonld}
 </head>
 <body class="{theme}">
 {nav(active)}
 {body}
 {footer()}
-<script src="assets/js/site.js" defer></script>
+<script src="assets/js/site.js?v={ASSET_V}" defer></script>
 </body>
 </html>
 """
@@ -499,10 +521,7 @@ home_body = f"""
       המופע החדש שלנו: <a class="inline" href="tv-vs-film.html"><span class="b-side">סדרות נגד סרטים</span></a>.
     </p>
     <div class="proofs"><span>אתם מכריעים</span><span>מופע עם מסך</span><span>ערב שלם</span></div>
-    <div class="hero-video">
-      <iframe src="https://www.youtube.com/embed/{TRAILER}?rel=0" title="Soundclash — טריילר"
-        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-    </div>
+    {demo_video()}
     <div class="cta-row center">
       <a class="btn btn-solid" href="tv-vs-film.html">לסדרות נגד סרטים</a>
       <a class="btn btn-outline" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
@@ -516,7 +535,7 @@ home_body = f"""
 {formats_index()}
 {addons_block()}
 {mechanism_block()}
-{video_section(VIDEOS, head="צפו בקרב מקרוב", sub="ביצועים חיים, ותגובות הקהל בזמן ההצבעה.", limit=3)}
+{video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב", sub="ביצועים חיים, ותגובות הקהל בזמן ההצבעה.", limit=3)}
 {audience_block()}
 {gallery_section(IMAGES[:6], head="תמונות מהבמה")}
 {spec_block(DEFAULT_SPEC)}
@@ -651,10 +670,10 @@ for f in FORMATS:
     spec.insert(5, ("זמינות", d["avail"]))
 
     if f["live"]:
-        vids = video_section(VIDEOS, head="צפו בקרב מקרוב",
+        vids = video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב",
                              sub="ביצועים חיים מזירת הניינטיז, ותגובות הקהל בזמן ההצבעה.", limit=3)
     else:
-        vids = video_section(VIDEOS, head="ככה נראה קרב Soundclash", eyebrow="המנגנון בעיניים",
+        vids = video_section(VIDEOS_NO_TRAILER, head="ככה נראה קרב Soundclash", eyebrow="המנגנון בעיניים",
                              sub="הסרטונים צולמו בניינטיז, המופע שכבר ממלא אולמות. המנגנון וההצבעה זהים.",
                              limit=3)
 
@@ -668,6 +687,7 @@ for f in FORMATS:
     {('<img class="hero-logo" src="' + f['logo'] + '" alt="' + f['logo_alt'] + '">') if f.get('logo') else ('<div class="era-mark latin">' + f['era'] + '</div>')}
     <h2>{d['sub']}</h2>
     <p class="lede">{d['lede']}</p>
+    {trailer_video() if f["live"] else (demo_video() if f["slug"] == "screen" else "")}
     <div class="cta-row center">
       <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת הזירה הזו</a>
       <a class="btn btn-wa" href="{wa_link('היי, אשמח לפרטים על ' + f['name'] + ' לאירוע שלנו.')}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
@@ -741,7 +761,7 @@ gallery_body = f"""
 </section>
 
 {gallery_section(IMAGES, head="כל התמונות", eyebrow="גלריה", link_more=False)}
-{video_section(VIDEOS, head="וידאו מההופעות", eyebrow="וידאו", limit=4)}
+{video_section(VIDEOS_NO_TRAILER, head="וידאו מההופעות", eyebrow="וידאו", limit=4)}
 {contact_band("רוצים לראות את זה אצלכם?",
               "אפשר להתקשר, לשלוח וואטסאפ, או למלא את טופס ההזמנה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>')}
@@ -1064,10 +1084,11 @@ events_body = r"""<section class="hero hero-corp">
         </ul>
       </div>
     </div>
+    <div class="mt-32"><!--DEMO--></div>
     <div class="video-grid mt-32"><article class="video-card reveal">
-        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/6XJsn9DJnxg?rel=0" title="תגובות הקהל"
+        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/vkYElSJr6PI?rel=0" title="אז מה זה Soundclash?"
           allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
-        <div class="video-info"><h3>תגובות הקהל</h3></div>
+        <div class="video-info"><h3>אז מה זה Soundclash?</h3></div>
       </article><article class="video-card reveal">
         <div class="video-thumb"><iframe src="https://www.youtube.com/embed/tjGkZa0l0NU?rel=0" title="ככה מצביעים באפליקציה"
           allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
@@ -1128,6 +1149,7 @@ events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["pho
                .replace("{DUELS}", DUELS_SECTION)
                .replace("{ADDONS}", addons_block(head="ערב שלם, לא רק הופעה: אנחנו מביאים את כל זה", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
                .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))
+events_body = events_body.replace("<!--DEMO-->", demo_video())
 page("events.html", "Soundclash לאירועי חברה — קרב מוזיקלי שהעובדים מכריעים",
      "מופע קרב מוזיקלי חי לאירועי חברה וערבי גיבוש: סדרות נגד סרטים, שישה נגנים, סולן וסולנית, והעובדים מצביעים מהטלפון ומכריעים. הצעת מחיר תוך 24 שעות: 054-6738192.",
      events_body, "events", theme="theme-screen", og_img=HERO_IMG)
