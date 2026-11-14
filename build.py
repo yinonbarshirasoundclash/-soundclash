@@ -220,7 +220,7 @@ def footer(p=""):
         </ul>
       </div>
     </div>
-    <div class="footer-bottom">© {datetime.date.today().year} להקת <span class="latin">SOUNDCLASH</span> · מעשיתיאטרון · כל הזכויות שמורות</div>
+    <div class="footer-bottom">© {datetime.date.today().year} <span class="latin">SOUNDCLASH</span> · כל הזכויות שמורות</div>
   </div>
 </footer>
 <a class="wa-float" href="{wa_link()}" target="_blank" rel="noopener" aria-label="שליחת הודעה בוואטסאפ">{ICON["wa"]}</a>"""
@@ -843,8 +843,8 @@ about_body = f"""
     לסוג האירוע, לכמות האורחים ולמשך ההופעה.</p>
 
     <h3>מי עומד מאחורי זה</h3>
-    <p>ההפקה היא של <strong>מעשיתיאטרון</strong>. אנשי הקשר להזמנות הם <strong>ינון בר שירה</strong> ו<strong>נעמה בר שירה</strong>,
-    ואפשר להגיע אלינו ישירות בטלפון, בוואטסאפ או בטופס יצירת הקשר באתר — בלי סוכנות באמצע.</p>
+    <p>Soundclash היא להקה עצמאית. אנשי הקשר להזמנות הם <strong>ינון בר שירה</strong> ו<strong>נעמה בר שירה</strong>,
+    ואפשר להגיע אלינו ישירות בטלפון, בוואטסאפ או בטופס יצירת הקשר באתר.</p>
   </div>
 </section>
 
