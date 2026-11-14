@@ -363,6 +363,9 @@ DUELS_SECTION = """<section id="duels">
 REUT_90 = "רעות זורמן – שירה וגיטרה חשמלית"
 NICOLE_TV = "ניקול רודוי – שירה"
 SINGER_ONLY = "סולנית – שירה"
+# בסדרות נגד סרטים ינון רק שר, בלי גיטרה אקוסטית (ינון, 14.11.2026)
+YINON_ACOUSTIC = "ינון בר שירה – שירה וגיטרה אקוסטית"
+YINON_VOCALS = "ינון בר שירה – שירה"
 SINGER_GENERAL = "ניקול רודוי – שירה (סדרות נגד סרטים) | רעות זורמן – שירה וגיטרה חשמלית (ניינטיז)"
 
 REQ_GENERAL = "מערכת הגברה ותאורה סטנדרטית לאולם. בסדרות נגד סרטים גם מסך או מקרן; אם אין במקום, נכלול אותו בהצעת המחיר"
@@ -641,7 +644,8 @@ def duel_block(a, b):
 for f in FORMATS:
     d = FORMAT_PAGES[f["slug"]]
     spec = [r for r in DEFAULT_SPEC if r[0] != "זמינות פורמט"]
-    spec = [(k, v.replace(SINGER_GENERAL, {"90s": REUT_90, "screen": NICOLE_TV}.get(f["slug"], SINGER_ONLY))) if k == "הרכב" else (k, v)
+    spec = [(k, v.replace(SINGER_GENERAL, {"90s": REUT_90, "screen": NICOLE_TV}.get(f["slug"], SINGER_ONLY))
+                 .replace(YINON_ACOUSTIC, YINON_VOCALS if f["slug"] == "screen" else YINON_ACOUSTIC)) if k == "הרכב" else (k, v)
             for k, v in spec]
     spec = [(k, (REQ_SCREEN if f["slug"] == "screen" else REQ_NO_SCREEN) if k == "מה נדרש במקום" else v) for k, v in spec]
     spec.insert(5, ("זמינות", d["avail"]))
@@ -1101,7 +1105,7 @@ events_body = r"""<section class="hero hero-corp">
       <div class="eyebrow">מפרט</div>
       <h2>המפרט, בלי לחפש</h2>
     </div>
-    <dl class="spec reveal"><div class="spec-row"><dt>הרכב</dt><dd>ינון בר שירה – שירה וגיטרה אקוסטית | ניקול רודוי – שירה | ולאד פוזיילוב – גיטרה מובילה וקולות | חן ירמיצקי – קלידים | עומר מתתיהו – בס | תומר כהן – תופים</dd></div><div class="spec-row"><dt>אורך</dt><dd>גרסה של כ-45 דקות, או מופע מלא של כ-90 דקות</dd></div><div class="spec-row"><dt>קהל</dt><dd>מעשרות עובדים ועד אירועים גדולים. ההגברה והמסך מותאמים לגודל האירוע</dd></div><div class="spec-row"><dt>מה אנחנו מביאים</dt><dd>אפליקציית ההצבעה, מסך התוצאות וההפעלה מול הקהל</dd></div><div class="spec-row"><dt>מה נדרש במקום</dt><dd>הגברה ותאורה סטנדרטיות, מסך או מקרן להצגת התוצאות (אם אין, נכלול אותו בהצעת המחיר), וקליטה סלולרית או Wi-Fi לעובדים</dd></div><div class="spec-row"><dt>מתאים ל</dt><dd>ערבי גיבוש, מסיבות חברה, הרמות כוסית, כנסים ואירועים שנתיים</dd></div></dl>
+    <dl class="spec reveal"><div class="spec-row"><dt>הרכב</dt><dd>ינון בר שירה – שירה | ניקול רודוי – שירה | ולאד פוזיילוב – גיטרה מובילה וקולות | חן ירמיצקי – קלידים | עומר מתתיהו – בס | תומר כהן – תופים</dd></div><div class="spec-row"><dt>אורך</dt><dd>גרסה של כ-45 דקות, או מופע מלא של כ-90 דקות</dd></div><div class="spec-row"><dt>קהל</dt><dd>מעשרות עובדים ועד אירועים גדולים. ההגברה והמסך מותאמים לגודל האירוע</dd></div><div class="spec-row"><dt>מה אנחנו מביאים</dt><dd>אפליקציית ההצבעה, מסך התוצאות וההפעלה מול הקהל</dd></div><div class="spec-row"><dt>מה נדרש במקום</dt><dd>הגברה ותאורה סטנדרטיות, מסך או מקרן להצגת התוצאות (אם אין, נכלול אותו בהצעת המחיר), וקליטה סלולרית או Wi-Fi לעובדים</dd></div><div class="spec-row"><dt>מתאים ל</dt><dd>ערבי גיבוש, מסיבות חברה, הרמות כוסית, כנסים ואירועים שנתיים</dd></div></dl>
   </div>
 </section>
 
