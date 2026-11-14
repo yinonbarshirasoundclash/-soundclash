@@ -61,8 +61,8 @@ ASSET_V = _h.sha1(open("assets/css/site.css","rb").read() + open("assets/js/site
 # הטריילר מציג את הניינטיז, ולכן הוא מופיע רק בעמוד הניינטיז (ינון, 14.11.2026).
 # בשאר העמודים: הדגמת האפליקציה של סדרות נגד סרטים, עד שיהיה סרטון חדש של המופע.
 VIDEOS_NO_TRAILER = [v for v in VIDEOS if v[0] != TRAILER]
-DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=4"
-DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg?v=4"
+DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=5"
+DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg?v=5"
 # תמונת רקע בלי דגלים לעמודי סדרות נגד סרטים: פריים מסרטוני ה-AI של המופע (ינון, 14.11.2026)
 HERO_SCREEN = "assets/img/hero-tv-vs-film.jpg"
 SCREEN_CLIPS = [  # (קובץ בלי סיומת, צד, מקור)
@@ -96,7 +96,11 @@ def screen_videos_section():
   </div>
 </section>"""
 
-def demo_video(cls="hero-video", caption="הדגמה: ככה נראה ערב של סדרות נגד סרטים, על המסך ובטלפון"):
+DEMO_CAPTION = "הדגמה: סיבוב מסיבת הריקודים, Bad Romance מול It's Raining Men, על המסך ובטלפון"
+DEMO_CAPTION_HTML = ("הדגמה: סיבוב מסיבת הריקודים, <bdi dir=\"ltr\">Bad Romance</bdi> מול "
+                     "<bdi dir=\"ltr\">It's Raining Men</bdi>, על המסך ובטלפון")
+
+def demo_video(cls="hero-video", caption=DEMO_CAPTION, caption_html=DEMO_CAPTION_HTML):
     return f"""<figure class="{cls} demo-video">
       <video src="{DEMO_MP4}" poster="{DEMO_POSTER}" autoplay muted loop playsinline preload="metadata"
         aria-label="{caption}"></video>
@@ -104,7 +108,7 @@ def demo_video(cls="hero-video", caption="הדגמה: ככה נראה ערב ש�
         <span class="on">🔊 עם סאונד</span><span class="off">🔇 בלי סאונד</span></button>
       <button type="button" class="demo-full" aria-label="צפייה במסך מלא, עם סאונד">⛶ מסך מלא</button>
     </figure>
-    <p class="demo-cap">{caption}</p>"""
+    <p class="demo-cap">{caption_html}</p>"""
 
 def trailer_video(cls="hero-video"):
     return f"""<div class="{cls}">
@@ -387,16 +391,16 @@ DUELS_SECTION = """<section id="duels">
     </div>
     <div class="duel-list">
       <div class="duel-row reveal">
-        <div class="theme">הריקוד</div>
-        <div class="side tv"><span class="who latin">TV</span><b>Fame</b><small>תהילה</small></div>
-        <div class="mini-vs latin">VS</div>
-        <div class="side film"><span class="who latin">FILM</span><b>Stayin' Alive</b><small>קדחת מוצאי שבת</small></div>
-      </div>
-      <div class="duel-row reveal">
         <div class="theme">מסיבת ריקודים</div>
         <div class="side tv"><span class="who latin">TV</span><b>Bad Romance</b><small>גוסיפ גירל</small></div>
         <div class="mini-vs latin">VS</div>
         <div class="side film"><span class="who latin">FILM</span><b>It's Raining Men</b><small>היומן של ברידג׳ט ג׳ונס</small></div>
+      </div>
+      <div class="duel-row reveal">
+        <div class="theme">הריקוד</div>
+        <div class="side tv"><span class="who latin">TV</span><b>Fame</b><small>תהילה</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">FILM</span><b>Stayin' Alive</b><small>קדחת מוצאי שבת</small></div>
       </div>
       <div class="duel-row reveal">
         <div class="theme">תל אביב מול תל אביב</div>

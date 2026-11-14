@@ -1673,8 +1673,8 @@
      BOOTH — the stage screen and a phone side by side, running the show by
      itself in a loop (conference booth screen, promo recordings).
      booth.html            → endless loop, three rounds per lap
-     booth.html?rec        → one tight round for a ~1 minute recording
-     booth.html?rec&r=3    → the same, on round 4
+     booth.html?rec        → one tight round for a ~1 minute recording (round 9, the glam round)
+     booth.html?rec&r=4    → the same, on round 4
      ========================================================================= */
   function BoothView(root, be) {
     const qs = new URLSearchParams(location.search), rec = qs.has("rec");
@@ -1756,8 +1756,11 @@
       crowd = new VirtualCrowd(be);
       be.onState(st => crowd.onState(st));
       await sleep(300);
-      if (rec) { const r = Math.min(N - 1, Math.max(0, (+qs.get("r") || 4) - 1)); await lap([r]); say(""); return; }
-      const order = SET.map((d, i) => i);
+      /* the glam round leads: Bad Romance vs It's Raining Men (round 9) is the
+         recorded round and the first round of every loop (ינון, 14.11.2026) */
+      const LEAD = Math.min(N - 1, 8);
+      if (rec) { const r = Math.min(N - 1, Math.max(0, (+qs.get("r") || LEAD + 1) - 1)); await lap([r]); say(""); return; }
+      const order = [LEAD].concat(SET.map((d, i) => i).filter(i => i !== LEAD));
       for (let k = 0; ; k = (k + 3) % N) {
         await lap([0, 1, 2].map(j => order[(k + j) % N]));
       }
