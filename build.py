@@ -61,7 +61,7 @@ ASSET_V = _h.sha1(open("assets/css/site.css","rb").read() + open("assets/js/site
 # הטריילר מציג את הניינטיז, ולכן הוא מופיע רק בעמוד הניינטיז (ינון, 14.11.2026).
 # בשאר העמודים: הדגמת האפליקציה של סדרות נגד סרטים, עד שיהיה סרטון חדש של המופע.
 VIDEOS_NO_TRAILER = [v for v in VIDEOS if v[0] != TRAILER]
-DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4"
+DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=2"
 DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg"
 
 def demo_video(cls="hero-video", caption="הדגמה: ככה נראה ערב של סדרות נגד סרטים, על המסך ובטלפון"):
