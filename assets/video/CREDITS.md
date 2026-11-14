@@ -6,3 +6,6 @@
 - Large crowd applause — freesound_community — https://pixabay.com/sound-effects/people-large-crowd-applause-6250/
 - Crowd - Cheering - Rhythmic cheering — GregorQuendel_SoundDesign — https://pixabay.com/sound-effects/city-crowd-cheering-rhythmic-cheering-137248/
 - Crowd Cheering — u_xg7ssi08yr — https://pixabay.com/sound-effects/people-crowd-cheering-379666/
+
+## tv-vs-film-demo.mp4 (14.11.2026, סיבוב Bad Romance מול It's Raining Men)
+- פסקול: Disco Funk - Saturday Night של AntipodeanWriter (קישור למעלה), מהחלק השני של השיר (מ-1:06). הובא על ידי ינון ונעמה מ-Pixabay ב-14.11.2026.
