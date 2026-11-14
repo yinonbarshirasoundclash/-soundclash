@@ -384,6 +384,7 @@ DUELS_SECTION = """<section id="duels">
 
 # ביוגרפיות הסולנים (14.11.2026). אותו נוסח בחוברות ובחבילת הפרסום.
 NICOLE_PHOTO = "assets/img/nicole-rodoy.jpg"
+YINON_PHOTO = "assets/img/yinon-bar-shira.jpg"
 NICOLE_BIO = ("זמרת ושחקנית. מופיעה בהפקות מוזיקליות, בפרויקטים אמנותיים ובמחזות זמר "
               "(״צלילי המוזיקה״, ״LEA״, מופעי קברט ועוד). בוגרת ״המסלול לתיאטרון ומחזות זמר״ ולהקה צבאית.")
 YINON_BIO = ("בוגר בית הספר רימון. זמר בצמד ״רטרו״ לקבלות פנים ובלהקת המחווה ״טופ גאנז״. "
@@ -404,7 +405,7 @@ def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow=
     </div>
     <div class="voices">
       {card(NICOLE_PHOTO, "ניקול רודוי, הסולנית של סדרות נגד סרטים", "ניקול רודוי", "שירה", NICOLE_BIO)}
-      {card(IMAGES[6][0], "ינון בר שירה שר על הבמה", "ינון בר שירה", "שירה", YINON_BIO)}
+      {card(YINON_PHOTO, "ינון בר שירה שר על הבמה", "ינון בר שירה", "שירה", YINON_BIO, pos="center 30%")}
     </div>
     <p class="band-line reveal">{BAND_LINE}</p>
   </div>
