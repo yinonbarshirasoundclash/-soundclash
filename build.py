@@ -61,14 +61,14 @@ ASSET_V = _h.sha1(open("assets/css/site.css","rb").read() + open("assets/js/site
 # הטריילר מציג את הניינטיז, ולכן הוא מופיע רק בעמוד הניינטיז (ינון, 14.11.2026).
 # בשאר העמודים: הדגמת האפליקציה של סדרות נגד סרטים, עד שיהיה סרטון חדש של המופע.
 VIDEOS_NO_TRAILER = [v for v in VIDEOS if v[0] != TRAILER]
-DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=5"
-DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg?v=5"
+DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=6"
+DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg?v=6"
 # תמונת רקע בלי דגלים לעמודי סדרות נגד סרטים: פריים מסרטוני ה-AI של המופע (ינון, 14.11.2026)
 HERO_SCREEN = "assets/img/hero-tv-vs-film.jpg"
 SCREEN_CLIPS = [  # (קובץ בלי סיומת, צד, מקור)
-    ("assets/video/screen-10-tv", "tv", "חברים"),
+    ("assets/video/screen-09-tv", "tv", "Bad Romance"),  # הגלאם קודם (14.11.2026)
     ("assets/video/screen-03-film", "film", "טיטאניק"),
-    ("assets/video/screen-05-tv", "tv", "איך פגשתי את אמא"),
+    ("assets/video/screen-10-tv", "tv", "חברים"),
 ]
 
 def svids_html():
