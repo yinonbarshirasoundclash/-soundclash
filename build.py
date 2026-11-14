@@ -61,8 +61,8 @@ ASSET_V = _h.sha1(open("assets/css/site.css","rb").read() + open("assets/js/site
 # הטריילר מציג את הניינטיז, ולכן הוא מופיע רק בעמוד הניינטיז (ינון, 14.11.2026).
 # בשאר העמודים: הדגמת האפליקציה של סדרות נגד סרטים, עד שיהיה סרטון חדש של המופע.
 VIDEOS_NO_TRAILER = [v for v in VIDEOS if v[0] != TRAILER]
-DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=3"
-DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg?v=3"
+DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=4"
+DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg?v=4"
 # תמונת רקע בלי דגלים לעמודי סדרות נגד סרטים: פריים מסרטוני ה-AI של המופע (ינון, 14.11.2026)
 HERO_SCREEN = "assets/img/hero-tv-vs-film.jpg"
 SCREEN_CLIPS = [  # (קובץ בלי סיומת, צד, מקור)
@@ -70,6 +70,13 @@ SCREEN_CLIPS = [  # (קובץ בלי סיומת, צד, מקור)
     ("assets/video/screen-03-film", "film", "טיטאניק"),
     ("assets/video/screen-05-tv", "tv", "איך פגשתי את אמא"),
 ]
+
+def svids_html():
+    return '<div class="svids">' + "".join(
+        f'<figure class="svid reveal"><video src="{f}.mp4" poster="{f}.jpg" muted loop playsinline preload="none" data-autoplay-visible '
+        f'aria-label="סרטון האווירה של {src}"></video>'
+        f'<figcaption><span class="side side-{side}">{"סדרה" if side == "tv" else "סרט"}</span> {src}</figcaption></figure>'
+        for f, side, src in SCREEN_CLIPS) + '</div>'
 
 def screen_videos_section():
     """במקום תמונות מהבמה (עם דגלי הניינטיז): שלושה מסרטוני ה-AI שהוכנו למופע."""
@@ -398,7 +405,7 @@ DUELS_SECTION = """<section id="duels">
         <div class="side film"><span class="who latin">FILM</span><b>לגור איתו</b><small>דיזנגוף 99</small></div>
       </div>
       <div class="duel-row reveal">
-        <div class="theme">הדרן: חברים</div>
+        <div class="theme">אני שם בשבילך</div>
         <div class="side tv"><span class="who latin">TV</span><b>I'll Be There for You</b><small>חברים</small></div>
         <div class="mini-vs latin">VS</div>
         <div class="side film"><span class="who latin">FILM</span><b>I'm a Believer</b><small>שרק</small></div>
@@ -729,6 +736,8 @@ for f in FORMATS:
     if f["live"]:
         vids = video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב",
                              sub="ביצועים חיים מזירת הניינטיז, ותגובות הקהל בזמן ההצבעה.", limit=3)
+    elif f["slug"] == "screen":
+        vids = ""   # סרטוני היוטיוב של הניינטיז לא מוצגים כאן; במקומם סרטוני ה-AI (ינון, 14.11.2026)
     else:
         vids = video_section(VIDEOS_NO_TRAILER, head="ככה נראה קרב Soundclash", eyebrow="המנגנון בעיניים",
                              sub="הסרטונים צולמו בניינטיז, המופע שכבר ממלא אולמות. המנגנון וההצבעה זהים.",
@@ -1164,20 +1173,8 @@ events_body = r"""<section class="hero hero-corp">
       </div>
     </div>
     <div class="mt-32"><!--DEMO--></div>
-    <div class="video-grid mt-32"><article class="video-card reveal">
-        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/vkYElSJr6PI?rel=0" title="אז מה זה Soundclash?"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
-        <div class="video-info"><h3>אז מה זה Soundclash?</h3></div>
-      </article><article class="video-card reveal">
-        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/tjGkZa0l0NU?rel=0" title="ככה מצביעים באפליקציה"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
-        <div class="video-info"><h3>ככה מצביעים באפליקציה</h3></div>
-      </article><article class="video-card reveal">
-        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/AxSH8I3mNvE?rel=0" title="רגעי ההכרעה"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
-        <div class="video-info"><h3>רגעי ההכרעה</h3></div>
-      </article></div>
-    <p class="center mt-32" style="color:var(--text-dim)">הסרטונים צולמו בזירת הניינטיז, המופע שכבר רץ. המנגנון, ההצבעה והמבנה זהים בכל הזירות.</p>
+    <div class="mt-32"><!--SVIDS--></div>
+    <p class="center mt-32" style="color:var(--text-dim)">על המסך: סרטון אווירה מקורי לכל שיר. שלוש דוגמאות מתוך עשרים שיצרנו למופע.</p>
   </div>
 </section>
 
@@ -1229,6 +1226,7 @@ events_body = r"""<section class="hero hero-corp">
 events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["phone"])
                .replace("{DUELS}", DUELS_SECTION)
                .replace("{HERO_SCREEN}", HERO_SCREEN)
+               .replace("<!--SVIDS-->", svids_html())
                .replace("{VOICES}", voices_block(head="מי על הבמה", eyebrow="הנבחרת"))
                .replace("{ADDONS}", addons_block(head="ערב שלם, לא רק הופעה: אנחנו מביאים את כל זה", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
                .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))

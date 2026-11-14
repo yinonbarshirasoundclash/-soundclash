@@ -106,7 +106,7 @@ window.SC_SHOWS["tv-vs-film"] = {
             fact: "המקור של The Weather Girls יצא ב-1982. אחד הכותבים היה פול שייפר, מנהל הלהקה של דייוויד לטרמן." }
   },
   {
-    theme: "הדרן: חברים", first: "tv", singer: "ינון",
+    theme: "אני שם בשבילך", first: "tv", singer: "ינון",
     tv:   { title: "I'll Be There for You", artist: "The Rembrandts", source: "חברים", sourceEn: "Friends", year: 1994, art: "friends",
             scene: "שיר הפתיחה של הסדרה, עם הריקוד של ששת החברים במזרקה. מחיאות הכפיים אחרי שורת הפתיחה הפכו לסימן ההיכר של השיר.",
             fact: "בהתחלה השיר היה רק פתיח של פחות מדקה. תחנות רדיו בארה\"ב שידרו אותו בלופ, והביקוש הכריח את הלהקה להקליט שיר מלא." },
