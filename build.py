@@ -563,7 +563,7 @@ home_body = f"""
 {formats_index()}
 {addons_block()}
 {mechanism_block()}
-{video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב", sub="ביצועים חיים, ותגובות הקהל בזמן ההצבעה.", limit=3)}
+{video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב", sub="ביצועים חיים מזירת הניינטיז, ותגובות הקהל בזמן ההצבעה. המנגנון זהה בכל הזירות.", limit=3)}
 {audience_block()}
 {gallery_section(IMAGES[:6], head="תמונות מהבמה")}
 {spec_block(DEFAULT_SPEC)}
@@ -635,7 +635,7 @@ FORMAT_PAGES = {
            ["שירי פתיחה מוכרים", "רגעי מפתח מהעונה", "סדרות פולחן", "השירים שכולם מזהים"]),
    side_b=("TEAM FILM", "צד הסרטים", "השירים שנצרבו יחד עם סצנה אחת גדולה — לא הפסקול התזמורתי, אלא השיר שכולם מזהים מהשנייה הראשונה.",
            ["שירים מסצנות איקוניות", "הלהיט שכולם מכירים מהסרט", "קולנוע פולחן", "הסצנה שכולם זוכרים"]),
-   avail="זמין להזמנה למועדונים ולאירועי חברה. יש גם גרסה של 45 דקות."),
+   avail="זמין להזמנה למועדונים, לאירועי חברה, לרשויות ולהיכלי תרבות. יש גם גרסה של 45 דקות."),
 }
 
 ISRAEL_DUELS_SECTION = """<section id="duels">
@@ -696,6 +696,8 @@ for f in FORMATS:
             for k, v in spec]
     spec = [(k, (REQ_SCREEN if f["slug"] == "screen" else REQ_NO_SCREEN) if k == "מה נדרש במקום" else v) for k, v in spec]
     spec.insert(5, ("זמינות", d["avail"]))
+    if f["slug"] == "screen":
+        spec.insert(5, ("אם הקליטה חלשה", "הקרב ממשיך: הקהל מצביע בדגלונים בצבעי שני הצדדים, וההכרעה מוכרזת מהבמה"))
 
     if f["live"]:
         vids = video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב",
@@ -744,6 +746,25 @@ for f in FORMATS:
 # ============================================================================
 #  8. הופעות קרובות
 # ============================================================================
+def static_shows():
+    """רשימת הופעות סטטית מ-shows.json בזמן הבנייה, כדי שהדף לא ייראה ריק לפני שה-JS נטען."""
+    import json as _j
+    MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
+    today = datetime.date.today().isoformat()
+    shows = sorted([x for x in _j.load(open("shows.json", encoding="utf-8")).get("shows", []) if x.get("date","") >= today], key=lambda x: x["date"])
+    if not shows:
+        return '<div class="empty-state">אין כרגע תאריכים פתוחים לקהל הרחב.</div>'
+    out = []
+    for x in shows:
+        y, m, d = (int(v) for v in x["date"].split("-"))
+        e = html.escape
+        meta = e(x.get("format") or "Soundclash") + (" · " + e(x["time"]) if x.get("time") else "") + (" · " + e(x["note"]) if x.get("note") else "")
+        btn = (f'<a class="btn btn-solid" href="{e(x["tickets"])}" target="_blank" rel="noopener">כרטיסים</a>' if x.get("tickets")
+               else '<span class="chip">פרטים בטלפון</span>')
+        out.append(f'<article class="show-item"><div class="show-date"><div class="d latin">{d}</div><div class="m">{MONTHS[m-1]} {y}</div></div>'
+                   f'<div class="show-main"><h3>{e(x["venue"])}{(" · " + e(x["city"])) if x.get("city") else ""}</h3><p>{meta}</p></div>{btn}</article>')
+    return "\n".join(out)
+
 shows_body = f"""
 <section class="hero compact">
   <div class="hero-photo" style="background-image:url('{IMAGES[2][0]}')"></div>
@@ -759,7 +780,7 @@ shows_body = f"""
 <section>
   <div class="wrap-narrow">
     <div class="show-list" data-shows-list>
-      <div class="empty-state">טוען תאריכים…</div>
+{static_shows()}
     </div>
     <noscript><p class="empty-state" style="margin-top:16px">לצפייה בתאריכים המעודכנים יש לאפשר JavaScript, או להתקשר ל-{PHONE_MAIN}.</p></noscript>
   </div>
@@ -990,7 +1011,7 @@ events_body = r"""<section class="hero hero-corp">
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
-    <div class="eyebrow">לא עוד להקת קאברים · לאירועי חברה</div>
+    <div class="eyebrow">לא עוד להקת קאברים. הקהל מכריע · לאירועי חברה</div>
     <img class="hero-logo" src="assets/img/logo-tv-vs-film.svg" alt="Soundclash סדרות נגד סרטים">
     <h2>סדרות נגד סרטים. והעובדים מכריעים.</h2>
     <p class="lede">מופע קרב מוזיקלי חי: שישה נגנים, סולן וסולנית, <b>השירים מהסדרות</b> מול <span class="b-side">השירים מהסרטים</span> שכולם בחדר גדלו עליהם. כל עובד מצביע מהטלפון, התוצאה עולה למסך בזמן אמת, ובסוף הערב מוכרז מנצח. וזה לא רק הופעה, זה ערב שלם, עם תוספות שאנחנו מביאים.</p>
@@ -1129,7 +1150,7 @@ events_body = r"""<section class="hero hero-corp">
           allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
         <div class="video-info"><h3>רגעי ההכרעה</h3></div>
       </article></div>
-    <p class="center mt-32" style="color:var(--text-dim)">הסרטונים צולמו בהופעות Soundclash. המנגנון, ההצבעה והמבנה זהים בכל הזירות.</p>
+    <p class="center mt-32" style="color:var(--text-dim)">הסרטונים צולמו בזירת הניינטיז, המופע שכבר רץ. המנגנון, ההצבעה והמבנה זהים בכל הזירות.</p>
   </div>
 </section>
 
@@ -1146,7 +1167,9 @@ events_body = r"""<section class="hero hero-corp">
       <details class="reveal"><summary>באיזו שפה המופע?</summary><p>ההגשה בעברית, והשירים בשפת המקור. בדרך יש גם רגעים בעברית שכל האולם שר.</p></details>
       <details class="reveal"><summary>אפשר לשלב את המופע בתוך ערב עם נאומים, ארוחה או הענקת פרסים?</summary><p>כן. הגרסה של 45 דקות נבנתה בדיוק בשביל זה, ואת המופע המלא אפשר לחלק לשני חלקים סביב התוכנית שלכם.</p></details>
       <details class="reveal"><summary>אפשר להפוך את זה לערב שלם?</summary><p>כן: חידון מונחה על המסך לפני המופע, שטיח אדום, פופקורן, דמויות, פסלוני זהב ועוד. בוחרים מה מתאים, ואנחנו מביאים ומפעילים.</p></details>
-      <details class="reveal"><summary>כמה זמן מראש צריך להזמין?</summary><p>מומלץ 4–6 שבועות לפני התאריך, כדי לתאם את הרפרטואר והצד הטכני מול האולם.</p></details>
+      <details class="reveal"><summary>מה קורה אם הקליטה באולם חלשה?</summary><p>ההצבעה עובדת בכל טלפון עם קליטה בסיסית או עם ה-Wi-Fi של המקום. ואם הקליטה בכל זאת נופלת, הקרב ממשיך: הקהל מצביע בדגלונים בצבעי שני הצדדים, וההכרעה מוכרזת מהבמה.</p></details>
+      <details class="reveal"><summary>איזה מידע נאסף מהעובדים בהצבעה?</summary><p>כמעט כלום. לא מורידים אפליקציה ולא נרשמים. מי שרוצה כותב שם פרטי או כינוי, וכל מצביע מקבל מספר כרטיס אקראי. ההגרלה נעשית לפי מספר הכרטיס, והזוכה מראה את המסך שלו ללהקה. לא מבקשים טלפון, מייל או פרטים מזהים.</p></details>
+      <details class="reveal"><summary>כמה זמן מראש צריך להזמין?</summary><p>כדאי לפנות מוקדם ככל האפשר, כדי לתאם את הרפרטואר והצד הטכני מול האולם.</p></details>
     </div>
   </div>
 </section>

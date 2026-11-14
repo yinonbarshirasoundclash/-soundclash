@@ -111,7 +111,7 @@ window.SC_CONFIG = {
                 '<span class="dot"></span>' +
                 '<span>ההופעה הקרובה: <b>' + esc(n.venue) + '</b>' + (n.city ? ", " + esc(n.city) : "") +
                 ' · <b>' + n._d.getDate() + " ב" + MONTHS[n._d.getMonth()] + '</b>' +
-                (n.time ? ", " + esc(n.time) : "") + '</span>' +
+                (n.time ? ", " + esc(n.time) : "") + (n.format ? " · " + esc(n.format) : "") + '</span>' +
                 (n.tickets ? '<a href="' + esc(n.tickets) + '" target="_blank" rel="noopener">לרכישת כרטיסים ←</a>' : "") +
               '</div>';
             ribbonEl.hidden = false;
