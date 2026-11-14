@@ -61,8 +61,33 @@ ASSET_V = _h.sha1(open("assets/css/site.css","rb").read() + open("assets/js/site
 # הטריילר מציג את הניינטיז, ולכן הוא מופיע רק בעמוד הניינטיז (ינון, 14.11.2026).
 # בשאר העמודים: הדגמת האפליקציה של סדרות נגד סרטים, עד שיהיה סרטון חדש של המופע.
 VIDEOS_NO_TRAILER = [v for v in VIDEOS if v[0] != TRAILER]
-DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=2"
-DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg"
+DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=3"
+DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg?v=3"
+# תמונת רקע בלי דגלים לעמודי סדרות נגד סרטים: פריים מסרטוני ה-AI של המופע (ינון, 14.11.2026)
+HERO_SCREEN = "assets/img/hero-tv-vs-film.jpg"
+SCREEN_CLIPS = [  # (קובץ בלי סיומת, צד, מקור)
+    ("assets/video/screen-10-tv", "tv", "חברים"),
+    ("assets/video/screen-03-film", "film", "טיטאניק"),
+    ("assets/video/screen-05-tv", "tv", "איך פגשתי את אמא"),
+]
+
+def screen_videos_section():
+    """במקום תמונות מהבמה (עם דגלי הניינטיז): שלושה מסרטוני ה-AI שהוכנו למופע."""
+    items = "".join(
+        f'<figure class="svid reveal"><video src="{f}.mp4" poster="{f}.jpg" muted loop playsinline preload="none" data-autoplay-visible '
+        f'aria-label="סרטון האווירה של {src}"></video>'
+        f'<figcaption><span class="side side-{side}">{"סדרה" if side == "tv" else "סרט"}</span> {src}</figcaption></figure>'
+        for f, side, src in SCREEN_CLIPS)
+    return f"""<section id="on-screen">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">על המסך</div>
+      <h2>סרטון מקורי לכל שיר</h2>
+      <p>שלוש דוגמאות מתוך עשרים סרטוני האווירה שיצרנו למופע. כל שיר מקבל סרטון משלו, עם רמזים לסדרה או לסרט שהוא מגיע מהם.</p>
+    </div>
+    <div class="svids">{items}</div>
+  </div>
+</section>"""
 
 def demo_video(cls="hero-video", caption="הדגמה: ככה נראה ערב של סדרות נגד סרטים, על המסך ובטלפון"):
     return f"""<figure class="{cls} demo-video">
@@ -70,6 +95,7 @@ def demo_video(cls="hero-video", caption="הדגמה: ככה נראה ערב ש�
         aria-label="{caption}"></video>
       <button type="button" class="demo-sound" aria-pressed="false" aria-label="הפעלת סאונד">
         <span class="on">🔊 עם סאונד</span><span class="off">🔇 בלי סאונד</span></button>
+      <button type="button" class="demo-full" aria-label="צפייה במסך מלא, עם סאונד">⛶ מסך מלא</button>
     </figure>
     <p class="demo-cap">{caption}</p>"""
 
@@ -710,7 +736,7 @@ for f in FORMATS:
 
     body = f"""
 <section class="hero">
-  <div class="hero-photo" style="background-image:url('{IMAGES[1][0]}')"></div>
+  <div class="hero-photo" style="background-image:url('{HERO_SCREEN if f["slug"] == "screen" else IMAGES[1][0]}')"></div>
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
@@ -735,7 +761,7 @@ for f in FORMATS:
 {(DUELS_SECTION + voices_block() + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b']) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרעת הזירה", sub="ההצבעה אינה גימיק שמתלווה למופע — היא המבנה שלו. כל סיבוב נסגר בהכרעה של הקהל.")}
 {vids}
-{gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
+{screen_videos_section() if f["slug"] == "screen" else gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
 {spec_block(spec, title="המפרט של הזירה הזו")}
 {contact_band("רוצים את " + f['name_html'] + " אצלכם?",
               "תגידו לנו תאריך, מקום וגודל קהל משוער — ונחזור אליכם עם הצעה.",
@@ -1008,7 +1034,7 @@ page("contact.html", "יצירת קשר והזמנת המופע — Soundclash",
 # ============================================================================
 CORP_WA_TEXT = "היי, אשמח להצעת מחיר למופע Soundclash באירוע חברה."
 events_body = r"""<section class="hero hero-corp">
-  <div class="hero-photo" style="background-image:url('https://static.wixstatic.com/media/6340ee_d115b17d2a7547de89268dbb48c48452~mv2.jpg')"></div>
+  <div class="hero-photo" style="background-image:url('{HERO_SCREEN}')"></div>
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
@@ -1202,6 +1228,7 @@ events_body = r"""<section class="hero hero-corp">
 </section>"""
 events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["phone"])
                .replace("{DUELS}", DUELS_SECTION)
+               .replace("{HERO_SCREEN}", HERO_SCREEN)
                .replace("{VOICES}", voices_block(head="מי על הבמה", eyebrow="הנבחרת"))
                .replace("{ADDONS}", addons_block(head="ערב שלם, לא רק הופעה: אנחנו מביאים את כל זה", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
                .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))

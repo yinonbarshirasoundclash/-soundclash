@@ -266,3 +266,37 @@ document.querySelectorAll(".demo-video").forEach(function (fig) {
     b.setAttribute("aria-label", on ? "השתקה" : "הפעלת סאונד");
   });
 });
+
+/* הדגמה במסך מלא: עם סאונד, מההתחלה */
+document.querySelectorAll(".demo-video").forEach(function (fig) {
+  var v = fig.querySelector("video"), b = fig.querySelector(".demo-full"), snd = fig.querySelector(".demo-sound");
+  if (!v || !b) return;
+  b.addEventListener("click", function () {
+    v.muted = false;
+    if (snd) { snd.setAttribute("aria-pressed", "true"); snd.setAttribute("aria-label", "השתקה"); }
+    try { v.currentTime = 0; } catch (e) {}
+    var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+    if (v.requestFullscreen) v.requestFullscreen().catch(function () {});
+    else if (v.webkitRequestFullscreen) v.webkitRequestFullscreen();
+    else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();   /* אייפון */
+    v.controls = true;
+  });
+  function onExit() { if (!document.fullscreenElement && !document.webkitFullscreenElement) v.controls = false; }
+  document.addEventListener("fullscreenchange", onExit);
+  document.addEventListener("webkitfullscreenchange", onExit);
+  v.addEventListener("webkitendfullscreen", function () { v.controls = false; });
+});
+
+/* סרטונים שמתנגנים רק כשהם על המסך */
+(function () {
+  var vids = document.querySelectorAll("video[data-autoplay-visible]");
+  if (!vids.length) return;
+  if (!("IntersectionObserver" in window)) { vids.forEach(function (v) { v.preload = "auto"; v.play().catch(function () {}); }); return; }
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      var v = e.target;
+      if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause();
+    });
+  }, { threshold: 0.35 });
+  vids.forEach(function (v) { io.observe(v); });
+})();
