@@ -557,3 +557,15 @@ a.inline{color:var(--accent); text-decoration:underline; text-underline-offset:3
 .demo-sound[aria-pressed="true"] .on{display:none;}
 .demo-sound[aria-pressed="true"] .off{display:inline;}
 .demo-cap{text-align:center; color:var(--text-dim); font-size:14px; margin:0 auto 28px; max-width:780px;}
+
+/* ===== הסולנים (voices_block ב-build.py) ===== */
+.voices{display:grid; grid-template-columns:repeat(2,1fr); gap:22px;}
+@media (max-width:640px){.voices{grid-template-columns:1fr;} .voice img{aspect-ratio:1/1;}}
+.voice{background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column;}
+.voice img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:#0e0c0b;}
+.voice-body{padding:20px 22px 24px;}
+.voice h3{font-size:21px; margin-bottom:2px;}
+.voice .role{color:var(--accent-2); font-size:14px; font-weight:700; margin-bottom:10px;}
+.voice p{font-size:15px; color:var(--text-dim); line-height:1.65;}
+.band-line{text-align:center; color:var(--text-dim); font-size:15px; line-height:1.7; margin:26px auto 0; max-width:640px;}
+.band-line b{color:var(--text);}

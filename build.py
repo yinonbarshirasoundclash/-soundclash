@@ -382,6 +382,34 @@ DUELS_SECTION = """<section id="duels">
   </div>
 </section>"""
 
+# ביוגרפיות הסולנים (14.11.2026). אותו נוסח בחוברות ובחבילת הפרסום.
+NICOLE_PHOTO = "assets/img/nicole-rodoy.jpg"
+NICOLE_BIO = ("זמרת ושחקנית. מופיעה בהפקות מוזיקליות, בפרויקטים אמנותיים ובמחזות זמר "
+              "(״צלילי המוזיקה״, ״LEA״, מופעי קברט ועוד). בוגרת ״המסלול לתיאטרון ומחזות זמר״ ולהקה צבאית.")
+YINON_BIO = ("בוגר בית הספר רימון. זמר בצמד ״רטרו״ לקבלות פנים ובלהקת המחווה ״טופ גאנז״. "
+             "יוצר מחזות הזמר ״טריפ״ ו״עשן מעל המים״, ומפיק ויוזם הקונספט של Soundclash.")
+BAND_LINE = ("ולצידם על הבמה: <b>ולאד פוזיילוב</b> (גיטרה וקולות, ״הכל בגלל ג׳ני״), "
+             "<b>חן ירמיצקי</b> (קלידים, הראסטיז), <b>עומר מתתיהו</b> (בס) ו<b>תומר כהן</b> (תופים, Honeybee).")
+
+def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow="על הבמה"):
+    """שני הסולנים של סדרות נגד סרטים, עם תמונה וביוגרפיה קצרה."""
+    def card(img, alt, name, role, bio, pos="center 20%"):
+        return (f'<article class="voice reveal"><img src="{img}" alt="{alt}" loading="lazy" style="object-position:{pos}">'
+                f'<div class="voice-body"><h3>{name}</h3><div class="role">{role}</div><p>{bio}</p></div></article>')
+    return f"""<section id="voices">
+  <div class="wrap-narrow">
+    <div class="section-head reveal">
+      <div class="eyebrow">{eyebrow}</div>
+      <h2>{head}</h2>
+    </div>
+    <div class="voices">
+      {card(NICOLE_PHOTO, "ניקול רודוי, הסולנית של סדרות נגד סרטים", "ניקול רודוי", "שירה", NICOLE_BIO)}
+      {card(IMAGES[6][0], "ינון בר שירה שר על הבמה", "ינון בר שירה", "שירה", YINON_BIO)}
+    </div>
+    <p class="band-line reveal">{BAND_LINE}</p>
+  </div>
+</section>"""
+
 REUT_90 = "רעות זורמן – שירה וגיטרה חשמלית"
 NICOLE_TV = "ניקול רודוי – שירה"
 SINGER_ONLY = "סולנית – שירה"
@@ -701,7 +729,7 @@ for f in FORMATS:
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{(DUELS_SECTION + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b']) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
+{(DUELS_SECTION + voices_block() + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b']) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרעת הזירה", sub="ההצבעה אינה גימיק שמתלווה למופע — היא המבנה שלו. כל סיבוב נסגר בהכרעה של הקהל.")}
 {vids}
 {gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
@@ -820,6 +848,7 @@ about_body = f"""
   </div>
 </section>
 
+{voices_block(head="הסולנים של סדרות נגד סרטים", eyebrow="המופע החדש")}
 {stats_bar(DEFAULT_STATS)}
 {mechanism_block()}
 {gallery_section(IMAGES[6:], head="הלהקה", link_more=True)}
@@ -994,6 +1023,8 @@ events_body = r"""<section class="hero hero-corp">
 
 {DUELS}
 
+{VOICES}
+
 {ADDONS}
 
 <section id="flow">
@@ -1147,6 +1178,7 @@ events_body = r"""<section class="hero hero-corp">
 </section>"""
 events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["phone"])
                .replace("{DUELS}", DUELS_SECTION)
+               .replace("{VOICES}", voices_block(head="מי על הבמה", eyebrow="הנבחרת"))
                .replace("{ADDONS}", addons_block(head="ערב שלם, לא רק הופעה: אנחנו מביאים את כל זה", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
                .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))
 events_body = events_body.replace("<!--DEMO-->", demo_video())
