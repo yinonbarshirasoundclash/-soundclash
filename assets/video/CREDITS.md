@@ -9,3 +9,4 @@
 
 ## tv-vs-film-demo.mp4 (14.11.2026, סיבוב Bad Romance מול It's Raining Men)
 - פסקול: Disco Funk - Saturday Night של AntipodeanWriter (קישור למעלה), מהחלק השני של השיר (מ-1:06). הובא על ידי ינון ונעמה מ-Pixabay ב-14.11.2026.
+- שכבת קהל (15.11.2026): רעש קהל שקט ברקע (Large crowd applause), מחיאות קצביות בזמן ההצבעה (Rhythmic cheering) וצעקות בהכרזה (Crowd Cheering). הקישורים למעלה. נעמה הורידה מ-Pixabay ב-15.11.2026.
