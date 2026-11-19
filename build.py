@@ -758,6 +758,19 @@ def crowd_clip():
       <button type="button" class="demo-full" aria-label="צפייה במסך מלא, עם סאונד">⛶</button>
     </figure>"""
 
+def crowd_card(head="וונדרבר, חיפה", text="20 שניות מתוך ההופעה בספטמבר, מצולמות בטלפון מתוך הקהל. שיר מול שיר, הידיים באוויר, ובסוף כל סיבוב כולם מצביעים.",
+               eyebrow="ככה זה נראה מהקהל", wrap=False):
+    """כרטיס עם סרטון הקהל מוונדרבר ומלל לידו. wrap=True עוטף אותו במקטע משלו."""
+    card = f"""<div class="sx-crowd reveal">
+      {crowd_clip()}
+      <div>
+        <div class="eyebrow">{eyebrow}</div>
+        <h2>{head}</h2>
+        <p>{text}</p>
+      </div>
+    </div>"""
+    return f'<section class="crowd-sec"><div class="wrap">{card}</div></section>' if wrap else card
+
 def proof_strip():
     return f"""<section class="proof-strip">
   <div class="wrap ps-grid">
@@ -1011,6 +1024,7 @@ for f in FORMATS:
 {(DUELS_SECTION + voices_block() + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
 {vids}
+{crowd_card(head="הקהל בוונדרבר, חיפה", text="ככה נראה ערב ניינטיז מתוך הקהל: 20 שניות מספטמבר, מצולמות בטלפון. הידיים באוויר, כולם שרים, ובסוף כל סיבוב מצביעים.", wrap=True) if f["slug"] == "90s" else ""}
 {screen_videos_section() if f["slug"] == "screen" else gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
 {spec_block(spec, title="המפרט של המופע")}
 {contact_band("רוצים את " + f['name_html'] + " אצלכם?",
@@ -1039,14 +1053,7 @@ shows_body = f"""
 {static_shows()}
     </div>
     <noscript><p class="empty-state" style="margin-top:16px">לצפייה בתאריכים המעודכנים יש לאפשר JavaScript, או להתקשר ל-{PHONE_MAIN}.</p></noscript>
-    <div class="sx-crowd">
-      {crowd_clip()}
-      <div>
-        <div class="eyebrow">ככה זה נראה מהקהל</div>
-        <h2>וונדרבר, חיפה</h2>
-        <p>20 שניות מתוך ההופעה בספטמבר, מצולמות בטלפון מתוך הקהל. שיר מול שיר, הידיים באוויר, ובסוף כל סיבוב כולם מצביעים.</p>
-      </div>
-    </div>
+    {crowd_card()}
     {shows_strip()}
   </div>
 </section>
@@ -1075,6 +1082,7 @@ gallery_body = f"""
 </section>
 
 {gallery_section(IMAGES, head="כל התמונות", eyebrow="גלריה", link_more=False)}
+{crowd_card(wrap=True)}
 {video_section(VIDEOS_NO_TRAILER, head="וידאו מההופעות", eyebrow="וידאו", limit=4)}
 {contact_band("רוצים לראות את זה אצלכם?",
               "אפשר להתקשר, לשלוח וואטסאפ, או למלא את טופס ההזמנה.",
@@ -1279,6 +1287,7 @@ contact_body = f"""
   </div>
 </section>
 
+{crowd_card(head="ככה זה נראה אצלכם", text="20 שניות מההופעה בוונדרבר, חיפה, מצולמות בטלפון מתוך הקהל. זה מה שאנחנו מביאים לאירוע: אולם שעומד על הרגליים ומצביע.", eyebrow="מהקהל", wrap=True)}
 {spec_block(DEFAULT_SPEC, title="מה כדאי לדעת לפני שמדברים")}
 """
 page("contact.html", "יצירת קשר והזמנת המופע — Soundclash",
@@ -1337,6 +1346,7 @@ events_body = r"""<section class="hero hero-corp">
         </ul>
       </div>
     </div>
+    <!--CROWD-->
   </div>
 </section>
 
@@ -1490,6 +1500,9 @@ events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["pho
                .replace("{ADDONS}", addons_block(head="מה עוד אפשר להוסיף לערב", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
                .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))
 events_body = events_body.replace("<!--DEMO-->", demo_video())
+events_body = events_body.replace("<!--CROWD-->", crowd_card(head="ככה נראה קהל של Soundclash",
+    text="20 שניות מתוך הופעת הניינטיז בוונדרבר, חיפה, מצולמות בטלפון מתוך הקהל. אותו מנגנון בדיוק רץ בסדרות נגד סרטים: שיר מול שיר, וכל האולם מצביע.",
+    eyebrow="מהקהל"))
 page("events.html", "Soundclash לאירועי חברה — קרב מוזיקלי שהעובדים מכריעים",
      "מופע קרב מוזיקלי חי לאירועי חברה וערבי גיבוש: סדרות נגד סרטים, שישה נגנים, סולן וסולנית, והעובדים מצביעים מהטלפון ומכריעים. הצעת מחיר תוך 24 שעות: 054-6738192.",
      events_body, "events", theme="theme-screen", og_img=OG["events"])
