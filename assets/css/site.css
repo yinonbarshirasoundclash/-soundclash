@@ -724,3 +724,25 @@ body.theme-screen .duel-row .side.film .who{color:#e8a33d;}
 @media (prefers-reduced-motion: reduce){
   .js-on .duel-row:not(.in) .side,.js-on .duel-row:not(.in) .mini-vs{transform:none; opacity:1;}
 }
+
+/* ---- צילומי תמונע (19.11.2026) ---- */
+.gallery.masonry{display:block; columns:3 260px; column-gap:16px;}
+.gallery.masonry figure{break-inside:avoid; aspect-ratio:auto; margin:0 0 16px; display:block;}
+.gallery.masonry img{height:auto;}
+@media (max-width:560px){.gallery.masonry{columns:2; column-gap:10px;} .gallery.masonry figure{margin-bottom:10px;}}
+.photo-credit{text-align:center; color:var(--text-faint); font-size:14px; margin-top:14px;}
+.band-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px;}
+@media (max-width:860px){.band-grid{grid-template-columns:1fr 1fr;}}
+.band-card{position:relative; border-radius:var(--radius); overflow:hidden; aspect-ratio:3/4; background:var(--bg-card);}
+.band-card img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.band-card figcaption{position:absolute; inset:auto 0 0 0; padding:40px 14px 14px; background:linear-gradient(transparent, rgba(8,7,6,.92));
+  display:flex; flex-direction:column; gap:2px;}
+.band-card b{font-family:'Suez One',Georgia,serif; font-weight:400; font-size:19px; line-height:1.2;}
+.band-card span{font-size:14.5px; color:var(--text-dim);}
+.duel-card.has-photo{position:relative; overflow:hidden; isolation:isolate;}
+.duel-card.has-photo::before{content:''; position:absolute; inset:0; z-index:-1; background:var(--dc) center 30%/cover; opacity:.30;}
+.duel-card.has-photo::after{content:''; position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(180deg, rgba(18,15,14,.35), rgba(18,15,14,.92) 70%);}
+.contact-band.has-photo{background:
+  linear-gradient(135deg, color-mix(in srgb, var(--side-a) 40%, rgba(18,16,16,.88)) 0%, rgba(18,16,16,.9) 50%, color-mix(in srgb, var(--side-b) 40%, rgba(18,16,16,.88)) 100%),
+  url('/assets/img/tmuna/09213-800.webp') center 40%/cover;}

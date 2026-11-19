@@ -36,27 +36,35 @@ SOCIAL = {
 #     לכל תמונה: <id>-800.webp (נייד), <id>-1600.webp (מלא), <id>-og.jpg (שיתוף 1200x630).
 # ============================================================================
 W = "assets/img/stage/"
-IMAGES = [
-    (W + "d115b17d", "הלהקה על הבמה במהלך המופע", False),
-    (W + "bb6e95f2", "הלהקה מניפה אגרוף לעבר הקהל", False),
-    (W + "f10df775", "הסולן שר עם יד על הלב", False),
-    (W + "234c6486", "הבסיסט מנגן על הבמה", False),
-    (W + "6b83c4a9", "גיטריסט אקוסטי במהלך ההופעה", False),
-    (W + "97af6be2", "גיטריסט מחייך אל הקהל", False),
-    (W + "27674a9d", "הסולן בהופעה חיה", True),
-    (W + "c6693df8", "פורטרט הסולנית", True),
-    (W + "6f1e7a0d", "הסולן והגיטריסטית יחד על הבמה", True),
+PHOTO_CREDIT = "צילום: ירון וג וענת מגריל"
+IMAGES = [   # צילומי ההופעה בתמונע, תל אביב (19.11.2026). (נתיב, תיאור, לאורך?)
+    ("assets/img/tmuna/09202", "כל הלהקה על הבמה בתמונע, מול שני הדגלים והקהל", False),
+    ("assets/img/tmuna/09122", "הלהקה בתאורה ירוקה, דגל בריטניה ודגל ארה״ב מאחור", False),
+    ("assets/img/tmuna/09213", "הלהקה בתאורה סגולה מול אולם מלא", False),
+    ("assets/img/tmuna/09363", "הסולנית מחייכת עם הגיטרה החשמלית", True),
+    ("assets/img/tmuna/09307", "ינון שר עם האקוסטית בתאורה אדומה", False),
+    ("assets/img/tmuna/09274", "הסולן והסולנית בתאורה כחולה", False),
+    ("assets/img/tmuna/09224", "ינון עם האקוסטית מול הדגל האמריקאי", True),
+    ("assets/img/tmuna/09347", "ההרכב המלא בתאורה אדומה", False),
+    ("assets/img/tmuna/09219", "הגיטריסט, הסולן והסולנית בתאורה צבעונית", False),
+    ("assets/img/tmuna/09270-2", "הבסיסט בחולצת קווין", True),
+    ("assets/img/tmuna/09260", "יד מורמת לקהל בתאורה כחולה", False),
+    ("assets/img/tmuna/09381", "הגיטריסט והקלידן", True),
+    ("assets/img/tmuna/09230", "גיטרה חשמלית ואקוסטית זו לצד זו", False),
+    ("assets/img/tmuna/09296", "שירה מול הדגל הבריטי", True),
+    ("assets/img/tmuna/09350", "הסולנית והבסיסט מתחת לדגל האמריקאי", False),
+    ("assets/img/tmuna/09393", "הסולן בעשן הבמה", True),
 ]
 def img(i, size=1600):
     """נתיב לתמונת במה לפי מזהה, בגודל 800 או 1600."""
     return f"{i}-{size}.webp"
 def hero_photo(i):
     """רקע הפתיחה: 800 בנייד, 1600 במסך רחב. תמונה שאינה מתיקיית הבמה עוברת כמו שהיא."""
-    if i.startswith(W):
+    if i.startswith(W) or i.startswith("assets/img/tmuna/"):
         return f'<div class="hero-photo" style="--hp:url(\'/{img(i,800)}\');--hp-l:url(\'/{img(i)}\')"></div>'
     return f'<div class="hero-photo" style="--hp:url(\'/{i}\');--hp-l:url(\'/{i}\')"></div>'
 def og_of(i):
-    return f"{SITE_URL}/{i}-og.jpg"
+    return f"{SITE_URL}/{i}-og.jpg"   # קיים ל-09122 ו-09202 מתיקיית תמונע
 HERO_IMG = IMAGES[0][0]
 OG = {k: f"{SITE_URL}/assets/img/og/{k}.jpg" for k in ("home", "tv-vs-film", "events", "israel", "shows")}
 
@@ -222,7 +230,7 @@ def socials_html():
             out.append('<a href="%s" target="_blank" rel="noopener" aria-label="%s">%s</a>' % (url, label, ICON[key]))
     return '<div class="socials">%s</div>' % "".join(out) if out else ""
 
-def contact_band(title, sub, extra_btn=""):
+def contact_band(title, sub, extra_btn="", photo=True):
     people = "".join(
         '<div class="person"><b>%s</b><a href="tel:%s">%s</a></div>' % (n, t, p)
         for n, p, t in CONTACTS)
@@ -230,7 +238,7 @@ def contact_band(title, sub, extra_btn=""):
     return f"""<div class="seam-div" aria-hidden="true"></div>
 <section>
   <div class="wrap">
-    <div class="contact-band reveal">
+    <div class="contact-band reveal{' has-photo' if photo else ''}">
       <div class="eyebrow" style="justify-content:center">להזמנת המופע</div>
       <h2>{title}</h2>
       <p class="sub">{sub}</p>
@@ -518,14 +526,15 @@ def video_section(vids, head="צפו בקרב מקרוב", eyebrow="בפעולה
 
 def gallery_section(imgs, head="תמונות מהבמה", eyebrow="גלריה", link_more=True):
     figs = "".join(
-        '<figure class="reveal%s"><img src="%s" srcset="%s 800w, %s 1600w" sizes="(max-width:700px) 100vw, 400px" data-full="%s" alt="%s" loading="lazy" width="800" height="533"></figure>' % (" contain" if c else "", img(u,800), img(u,800), img(u), img(u), html.escape(a))
+        '<figure class="reveal"><img src="%s" srcset="%s 800w, %s 1600w" sizes="(max-width:700px) 50vw, 400px" data-full="%s" alt="%s" loading="lazy" width="800" height="%d"></figure>' % (img(u,800), img(u,800), img(u), img(u), html.escape(a), 1200 if c else 533)
         for u, a, c in imgs)
     more = ('<div class="cta-row center mt-32"><a class="btn btn-outline" href="gallery.html">לגלריה המלאה</a></div>'
             if link_more else "")
     return f"""<section id="gallery">
   <div class="wrap">
     <div class="section-head reveal"><div class="eyebrow">{eyebrow}</div><h2>{head}</h2></div>
-    <div class="gallery">{figs}</div>
+    <div class="gallery masonry">{figs}</div>
+    <p class="photo-credit">{PHOTO_CREDIT}</p>
     {more}
   </div>
 </section>
@@ -688,7 +697,7 @@ STRIP = [("09363", "הסולנית עם הגיטרה החשמלית"), ("09224",
          ("09381", "הגיטריסט והקלידן"), ("09296", "שירה מול הדגל הבריטי")]
 def shows_strip():
     pics = "".join(f'<div><img src="{img(T + i, 800)}" alt="{a}" loading="lazy" width="800" height="1200"></div>' for i, a in STRIP)
-    return f'<div class="sx-rule"><span>מהבמה · תמונע, תל אביב</span><i></i></div><div class="sx-strip">{pics}</div>'
+    return f'<div class="sx-rule"><span>מהבמה · תמונע, תל אביב</span><i></i></div><div class="sx-strip">{pics}</div><p class="photo-credit">{PHOTO_CREDIT}</p>'
 
 write_calendars()
 
@@ -905,11 +914,13 @@ ISRAEL_DUELS_SECTION = """<section id="duels">
   </div>
 </section>"""
 
-def duel_block(a, b):
+def duel_block(a, b, photos=None):
     def card(side, cls):
         tag, h, p, chips = side
         chips_html = "".join('<span class="chip">%s</span>' % c for c in chips)
-        return (f'<div class="duel-card {cls} reveal"><span class="tag latin">{tag}</span>'
+        ph = (photos or {}).get(cls)
+        style = f' style="--dc:url(\'/{T}{ph}-800.webp\')"' if ph else ""
+        return (f'<div class="duel-card {cls}{" has-photo" if ph else ""} reveal"{style}><span class="tag latin">{tag}</span>'
                 f'<h3>{h}</h3><p>{p}</p><div class="chips">{chips_html}</div></div>')
     return f"""<section id="sides">
   <div class="wrap">
@@ -970,14 +981,14 @@ for f in FORMATS:
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{(DUELS_SECTION + voices_block() + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b']) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
+{(DUELS_SECTION + voices_block() + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
 {vids}
 {screen_videos_section() if f["slug"] == "screen" else gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
 {spec_block(spec, title="המפרט של המופע")}
 {contact_band("רוצים את " + f['name_html'] + " אצלכם?",
               "תגידו לנו תאריך, מקום וגודל קהל משוער, ונחזור אליכם עם הצעה.",
-              '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>')}
+              '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>', photo=f["slug"] not in ("screen", "israel", "80s"))}
 """
     page(f["file"], d["title"], d["desc"], body, "fmt-" + f["slug"], theme=f["theme"], og_img={"screen": OG["tv-vs-film"], "israel": OG["israel"]}.get(f["slug"], og_of(IMAGES[1][0])))
 
@@ -1045,12 +1056,31 @@ page("gallery.html", "גלריה — Soundclash",
 LINEUP = [
     ("ינון בר שירה",   "שירה וגיטרה אקוסטית"),
     ("ניקול רודוי",    "שירה. הסולנית של סדרות נגד סרטים"),
-    ("רעות זורמן",     "שירה וגיטרה חשמלית בזירת הניינטיז"),
+    ("רעות זורמן",     "שירה וגיטרה חשמלית במופע הניינטיז"),
     ("ולאד פוזיילוב",  "גיטרה חשמלית מובילה וקולות"),
     ("חן ירמיצקי",     "קלידים"),
     ("עומר מתתיהו",    "בס"),
     ("תומר כהן",       "תופים"),
 ]
+BAND_PHOTOS = [  # השמות אומתו מול ינון (19.11.2026)
+    ("09393", "ינון בר שירה", "שירה וגיטרה אקוסטית"),
+    ("09363", "רעות זורמן", "שירה וגיטרה חשמלית, ניינטיז"),
+    ("09381", "ולאד פוזיילוב וחן ירמיצקי", "גיטרה מובילה וקלידים"),
+    ("09270-2", "עומר מתתיהו", "בס"),
+]
+def band_photos():
+    cards = "".join(f'<figure class="band-card reveal"><img src="{T}{i}-800.webp" alt="{n}, {r}" loading="lazy" width="800" height="1200">'
+                    f'<figcaption><b>{n}</b><span>{r}</span></figcaption></figure>' for i, n, r in BAND_PHOTOS)
+    return f"""<section id="band">
+  <div class="wrap">
+    <div class="section-head reveal"><div class="eyebrow">על הבמה</div><h2>הלהקה</h2>
+      <p>מההופעה בתמונע, תל אביב. ומאחורה, על התופים: תומר כהן.</p></div>
+    <div class="band-grid">{cards}</div>
+    <p class="photo-credit">{PHOTO_CREDIT}</p>
+    <div class="cta-row center mt-32"><a class="btn btn-outline" href="gallery.html">לגלריה המלאה</a></div>
+  </div>
+</section>"""
+
 lineup_html = "".join('<li><b>%s</b> — %s</li>' % (name, role) for name, role in LINEUP)
 
 about_body = f"""
@@ -1091,7 +1121,7 @@ about_body = f"""
 {voices_block(head="הסולנים של סדרות נגד סרטים", eyebrow="המופע החדש")}
 {stats_bar(DEFAULT_STATS)}
 {mechanism_block()}
-{gallery_section(IMAGES[6:], head="הלהקה", link_more=True)}
+{band_photos()}
 {contact_band("נשמח לדבר",
               "תגידו לנו תאריך, מקום וגודל קהל משוער, ונחזור אליכם עם הצעה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>')}
