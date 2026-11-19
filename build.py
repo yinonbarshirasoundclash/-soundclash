@@ -1067,16 +1067,17 @@ BAND_PHOTOS = [  # השמות אומתו מול ינון (19.11.2026)
     ("09363", "רעות זורמן", "שירה וגיטרה חשמלית, ניינטיז"),
     ("09381", "ולאד פוזיילוב וחן ירמיצקי", "גיטרה מובילה וקלידים"),
     ("09270-2", "עומר מתתיהו", "בס"),
+    ("tomer", "תומר כהן", "תופים"),
 ]
 def band_photos():
-    cards = "".join(f'<figure class="band-card reveal"><img src="{T}{i}-800.webp" alt="{n}, {r}" loading="lazy" width="800" height="1200">'
+    cards = "".join(f'<figure class="band-card reveal"><img src="{T}{i}-800.webp" alt="{n}, {r}" loading="lazy" width="800" height="1200"{' style="object-position:50% 55%"' if i == "tomer" else ""}>'
                     f'<figcaption><b>{n}</b><span>{r}</span></figcaption></figure>' for i, n, r in BAND_PHOTOS)
     return f"""<section id="band">
   <div class="wrap">
     <div class="section-head reveal"><div class="eyebrow">על הבמה</div><h2>הלהקה</h2>
-      <p>מההופעה בתמונע, תל אביב. ומאחורה, על התופים: תומר כהן.</p></div>
+      <p>ששת הנגנים של Soundclash, ברובם מההופעה בתמונע, תל אביב.</p></div>
     <div class="band-grid">{cards}</div>
-    <p class="photo-credit">{PHOTO_CREDIT}</p>
+    <p class="photo-credit">צילומי הבמה: ירון וג וענת מגריל</p>
     <div class="cta-row center mt-32"><a class="btn btn-outline" href="gallery.html">לגלריה המלאה</a></div>
   </div>
 </section>"""
