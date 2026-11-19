@@ -747,3 +747,15 @@ body.theme-screen .duel-row .side.film .who{color:#e8a33d;}
 .contact-band.has-photo{background:
   linear-gradient(135deg, color-mix(in srgb, var(--side-a) 40%, rgba(18,16,16,.88)) 0%, rgba(18,16,16,.9) 50%, color-mix(in srgb, var(--side-b) 40%, rgba(18,16,16,.88)) 100%),
   url('/assets/img/tmuna/09213-800.webp') center 40%/cover;}
+
+/* ---- שאר הלהקה, בעיגולים מתחת לסולנים (19.11.2026) ---- */
+.crew{margin:30px auto 0; text-align:center;}
+.crew-label{font-weight:700; color:var(--accent-2); font-size:15px; margin-bottom:16px;}
+.crew-list{list-style:none; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; max-width:720px; margin:0 auto;}
+.crew-list li{display:flex; flex-direction:column; align-items:center; gap:4px;}
+.crew-list img{width:108px; height:108px; border-radius:50%; object-fit:cover; margin-bottom:6px;
+  border:2px solid var(--line-strong); box-shadow:0 0 0 4px var(--bg), 0 0 0 5px var(--accent-soft);
+  filter:saturate(.85);}
+.crew-list b{font-family:'Suez One',Georgia,serif; font-weight:400; font-size:17px; line-height:1.2;}
+.crew-list span{font-size:14.5px; color:var(--text-dim);}
+@media (max-width:600px){.crew-list{grid-template-columns:1fr 1fr; row-gap:22px;} .crew-list img{width:96px; height:96px;}}

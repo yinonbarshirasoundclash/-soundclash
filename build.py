@@ -460,7 +460,17 @@ YINON_BIO = ("בוגר בית הספר רימון. זמר בצמד ״רטרו״ 
 BAND_LINE = ("ולצידם על הבמה: <b>ולאד פוזיילוב</b> (גיטרה וקולות, ״הכל בגלל ג׳ני״), "
              "<b>חן ירמיצקי</b> (קלידים, הראסטיז), <b>עומר מתתיהו</b> (בס) ו<b>תומר כהן</b> (תופים, Honeybee).")
 
-def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow="על הבמה"):
+CREW = [  # עיגולי פנים מתוך צילומי תמונע (תומר: צילום שלו). שמות אומתו מול ינון, 19.11.2026
+    ("vlad", "ולאד פוזיילוב", "גיטרה וקולות", "״הכל בגלל ג׳ני״"),
+    ("chen", "חן ירמיצקי", "קלידים", "הראסטיז"),
+    ("omer", "עומר מתתיהו", "בס", ""),
+    ("tomer", "תומר כהן", "תופים", "Honeybee"),
+]
+def crew_html():
+    return "".join(f'<li><img src="assets/img/tmuna/face-{k}.webp" alt="{n}" loading="lazy" width="400" height="400">'
+                   f'<b>{n}</b><span>{r}{(" · " + x) if x else ""}</span></li>' for k, n, r, x in CREW)
+
+def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow="על הבמה", crew=True):
     """שני הסולנים של סדרות נגד סרטים, עם תמונה וביוגרפיה קצרה."""
     def card(img, alt, name, role, bio, pos="center 20%"):
         return (f'<article class="voice reveal"><img src="{img}" alt="{alt}" loading="lazy" style="object-position:{pos}">'
@@ -475,7 +485,7 @@ def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow=
       {card(NICOLE_PHOTO, "ניקול רודוי, הסולנית של סדרות נגד סרטים", "ניקול רודוי", "שירה", NICOLE_BIO)}
       {card(YINON_PHOTO, "ינון בר שירה שר על הבמה", "ינון בר שירה", "שירה", YINON_BIO, pos="center 30%")}
     </div>
-    <p class="band-line reveal">{BAND_LINE}</p>
+    {('<div class="crew reveal"><div class="crew-label">ולצידם על הבמה</div><ul class="crew-list">' + crew_html() + '</ul></div>') if crew else ''}
   </div>
 </section>"""
 
@@ -1119,7 +1129,7 @@ about_body = f"""
   </div>
 </section>
 
-{voices_block(head="הסולנים של סדרות נגד סרטים", eyebrow="המופע החדש")}
+{voices_block(head="הסולנים של סדרות נגד סרטים", eyebrow="המופע החדש", crew=False)}
 {stats_bar(DEFAULT_STATS)}
 {mechanism_block()}
 {band_photos()}
