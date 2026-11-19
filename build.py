@@ -81,7 +81,7 @@ ASSET_V = _h.sha1(open("assets/css/site.css","rb").read() + open("assets/js/site
 # בשאר העמודים: הדגמת האפליקציה של סדרות נגד סרטים, עד שיהיה סרטון חדש של המופע.
 VIDEOS_NO_TRAILER = [v for v in VIDEOS if v[0] != TRAILER]
 DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=9"
-DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.jpg?v=8"
+DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.webp?v=9"
 # תמונת רקע בלי דגלים לעמודי סדרות נגד סרטים: פריים מסרטוני ה-AI של המופע (ינון, 14.11.2026)
 HERO_SCREEN = "assets/img/hero-tv-vs-film.jpg"
 SCREEN_CLIPS = [  # (קובץ בלי סיומת, צד, מקור)
@@ -259,7 +259,7 @@ def footer(p=""):
     <div class="footer-grid">
       <div>
         <div class="brand latin">SOUND<b>CLASH</b></div>
-        <p class="tagline">מופע קרב מוזיקלי חי, שבו ההכרעה בין שני צדדים נמסרת לקהל — בהצבעה חיה מהטלפון.</p>
+        <p class="tagline">מופע קרב מוזיקלי חי, שבו ההכרעה בין שני צדדים נמסרת לקהל, בהצבעה חיה מהטלפון.</p>
         {socials_html()}
       </div>
       <div>
@@ -347,12 +347,12 @@ DEFAULT_STATS = [
     ("APP", "אפליקציית הצבעה משלנו"),
 ]
 
-NOTE_GENERAL = ("את מערכת ההצבעות אנחנו מביאים ומפעילים מהבמה — אפליקציה שפיתחנו בעצמנו, שרצה על הטלפון של הקהל. "
+NOTE_GENERAL = ("את מערכת ההצבעות אנחנו מביאים ומפעילים מהבמה. זו אפליקציה שפיתחנו בעצמנו, והיא רצה על הטלפון של הקהל. "
                 "התוצאה עולה בטלפון של כל אחד מהקהל, ועל מסך המקום אם יש. בסדרות נגד סרטים יש גם מסך עם סרטוני אווירה, "
                 "ואם אין מסך במקום, נכלול אותו בהצעת המחיר.")
-NOTE_NO_SCREEN = ("את מערכת ההצבעות אנחנו מביאים ומפעילים מהבמה — אפליקציה שפיתחנו בעצמנו, שרצה על הטלפון של הקהל. "
+NOTE_NO_SCREEN = ("את מערכת ההצבעות אנחנו מביאים ומפעילים מהבמה. זו אפליקציה שפיתחנו בעצמנו, והיא רצה על הטלפון של הקהל. "
                   "אין מה להתקין באולם ואין ציוד שצריך להשיג: התוצאה עולה בטלפון של כל אחד מהקהל, ועל מסך המקום אם יש.")
-NOTE_SCREEN = ("את מערכת ההצבעות אנחנו מביאים ומפעילים מהבמה — אפליקציה שפיתחנו בעצמנו, שרצה על הטלפון של הקהל. "
+NOTE_SCREEN = ("את מערכת ההצבעות אנחנו מביאים ומפעילים מהבמה. זו אפליקציה שפיתחנו בעצמנו, והיא רצה על הטלפון של הקהל. "
                "על המסך רצים סרטוני אווירה מקוריים לכל שיר ותוצאות ההצבעה. אם אין מסך או מקרן במקום, נכלול אותו בהצעת המחיר.")
 
 def mechanism_block(note=NOTE_GENERAL, head="ככה זה עובד, שלב אחר שלב",
@@ -837,8 +837,8 @@ home_body = f"""
     {demo_video()}
     <div class="cta-row center">
       <a class="btn btn-solid" href="tv-vs-film.html">לסדרות נגד סרטים</a>
-      <a class="btn btn-outline" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
-      <a class="btn btn-wa" href="{wa_link()}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
+      <a class="btn btn-outline hide-m" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
+      <a class="btn btn-wa hide-m" href="{wa_link()}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
       <a class="btn btn-outline" href="events.html">לאירועי חברה</a>
     </div>
   </div>
@@ -1005,13 +1005,13 @@ for f in FORMATS:
   <div class="hero-inner">
     <div class="eyebrow">{f['tag']} · Soundclash</div>
     {('<img class="hero-logo" src="' + f['logo'].replace('-sm', '') + '" alt="' + f['logo_alt'] + '">') if f.get('logo') else ('<div class="era-mark latin">' + f['era'] + '</div>')}
-    <h2>{d['sub']}</h2>
+    <h1 class="as-h2">{d['sub']}</h1>
     <p class="lede">{d['lede']}</p>
     {trailer_video() if f["live"] else (demo_video() if f["slug"] == "screen" else "")}
     <div class="cta-row center">
       <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
-      <a class="btn btn-wa" href="{wa_link('היי, אשמח לפרטים על ' + f['name'] + ' לאירוע שלנו.')}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
-      <a class="btn btn-outline" href="contact.html">טופס הזמנה</a>
+      <a class="btn btn-wa hide-m" href="{wa_link('היי, אשמח לפרטים על ' + f['name'] + ' לאירוע שלנו.')}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
+      <a class="btn btn-outline hide-m" href="contact.html">טופס הזמנה</a>
     </div>
   </div>
 </section>
@@ -1145,7 +1145,7 @@ about_body = f"""
     המופע אינו מקבץ של להיטים בסדר כלשהו: הוא בנוי כסדרת סיבובים, ובסופו של כל סיבוב הקהל מצביע ומכריע מי לקח אותו.</p>
 
     <p>את מערכת ההצבעה פיתחנו בעצמנו. היא רצה בדפדפן של הטלפון, בלי הורדה ובלי הרשמה, ומציגה את התוצאה בזמן אמת, בטלפון של כל אחד מהקהל ועל מסך האולם אם יש.
-    זה מה שמחזיק את הקהל בתוך המופע לכל אורכו — הוא לא רק צופה בערב, הוא קובע איך הוא נגמר. את המערכת אנחנו מביאים ומפעילים,
+    זה מה שמחזיק את הקהל בתוך המופע לכל אורכו: הוא קובע איך הערב נגמר. את המערכת אנחנו מביאים ומפעילים,
     כך שמבחינת המקום המארח זו לא עוד משימה טכנית ברשימה.</p>
 
     <h3>ההרכב</h3>
@@ -1191,7 +1191,7 @@ contact_body = f"""
     <div class="eyebrow">להזמנת המופע</div>
     <h1 class="latin" style="font-size:clamp(38px,7.5vw,78px)">BOOK THE CLASH</h1>
     <h2>בואו נמצא לזה תאריך</h2>
-    <p class="lede">הכי מהיר — טלפון או וואטסאפ. אם נוח לכם בכתב, הטופס למטה שולח לנו את כל מה שאנחנו צריכים כדי לחזור אליכם עם הצעה.</p>
+    <p class="lede">הכי מהיר: טלפון או וואטסאפ. אם נוח לכם בכתב, הטופס למטה שולח לנו את כל מה שאנחנו צריכים כדי לחזור אליכם עם הצעה.</p>
     <div class="cta-row center">
       <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} {PHONE_MAIN}</a>
       <a class="btn btn-wa" href="{wa_link()}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
@@ -1274,7 +1274,7 @@ contact_body = f"""
           <a class="btn btn-wa" data-wa-from-form href="{wa_link()}" target="_blank" rel="noopener">{ICON["wa"]} לשלוח בוואטסאפ במקום</a>
         </div>
         <div class="form-msg" role="status" aria-live="polite"></div>
-        <p class="form-note">כפתור הוואטסאפ פותח שיחה עם כל מה שכבר מילאתם בטופס — לא צריך להקליד שוב.</p>
+        <p class="form-note">כפתור הוואטסאפ פותח שיחה עם כל מה שכבר מילאתם בטופס, ולא צריך להקליד שוב.</p>
       </form>
     </div>
 
@@ -1307,13 +1307,13 @@ events_body = r"""<section class="hero hero-corp">
   <div class="hero-inner">
     <div class="eyebrow">לאירועי חברה</div>
     <img class="hero-logo" src="assets/img/logo-tv-vs-film.webp" width="680" height="792" alt="Soundclash סדרות נגד סרטים">
-    <h2>סדרות נגד סרטים. והעובדים מכריעים.</h2>
+    <h1 class="as-h2">סדרות נגד סרטים. והעובדים מכריעים.</h1>
     <p class="lede">מופע קרב מוזיקלי חי: שישה נגנים, סולן וסולנית, <b>השירים מהסדרות</b> מול <span class="b-side">השירים מהסרטים</span> שכולם בחדר גדלו עליהם. כל עובד מצביע מהטלפון, התוצאה עולה למסך בזמן אמת, ובסוף הערב מוכרז מנצח. ואפשר להפוך את זה לערב שלם, עם תוספות שאנחנו מביאים.</p>
     <div class="cta-row center">
       <a class="btn btn-solid" href="#quote">לקבלת הצעת מחיר</a>
       <a class="btn btn-outline" href="#addons">לבניית הערב</a>
-      <a class="btn btn-wa" href="{CORP_WA}" target="_blank" rel="noopener">{WA} וואטסאפ</a>
-      <a class="btn btn-outline" href="tel:0546738192">{PH} 054-6738192</a>
+      <a class="btn btn-wa hide-m" href="{CORP_WA}" target="_blank" rel="noopener">{WA} וואטסאפ</a>
+      <a class="btn btn-outline hide-m" href="tel:0546738192">{PH} 054-6738192</a>
     </div>
   </div>
 </section>
