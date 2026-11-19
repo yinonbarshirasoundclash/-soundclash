@@ -398,7 +398,7 @@ ADDONS = [
     ("פסלוני זהב", "לזוכי החידון ולמצביעים המצטיינים"),
 ]
 
-def addons_block(head="ערב שלם, לא רק הופעה", sub="להיטים מקפיצים ומרקידים שמרימים את כל האולם. רוצים יותר? בונים את הערב מתוספות שאנחנו מביאים:", cta=True):
+def addons_block(head="ערב בכיכובכם", sub="להיטים מקפיצים ומרקידים שמרימים את כל האולם. רוצים יותר? בונים את הערב מתוספות שאנחנו מביאים:", cta=True):
     cards = "".join('<div class="addon reveal"><b>%s</b><span>%s</span></div>' % (h, t) for h, t in ADDONS)
     btn = ('<div class="cta-row center mt-32"><a class="btn btn-outline" href="events.html#quote">לבניית הערב שלכם</a></div>' if cta else "")
     return f"""<section id="addons">
