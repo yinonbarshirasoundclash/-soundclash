@@ -59,7 +59,7 @@ window.SC_CONFIG = {
     var idx = 0;
     function show(i) {
       idx = (i + galleryImgs.length) % galleryImgs.length;
-      lbImg.src = galleryImgs[idx].src;
+      lbImg.src = galleryImgs[idx].getAttribute("data-full") || galleryImgs[idx].currentSrc || galleryImgs[idx].src;
       lbImg.alt = galleryImgs[idx].alt;
       lb.setAttribute("data-open", "true");
       document.body.style.overflow = "hidden";
@@ -81,21 +81,72 @@ window.SC_CONFIG = {
     });
   }
 
-  /* ---------- 4. הופעות מתוך shows.json ---------- */
+  /* ---------- 4. הופעות מתוך shows.json ----------
+     אותה תבנית בדיוק כמו show_rows() ב-build.py (לוח בסגנון nbshira.com). */
   var MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+  var DAYS = ["יום ראשון","יום שני","יום שלישי","יום רביעי","יום חמישי","יום שישי","שבת"];
+  var PHOTOS = ["f10df775","97af6be2","234c6486","6b83c4a9","bb6e95f2"];
+  var MARK_MIC = '<path d="M50 12a14 14 0 0114 14v22a14 14 0 01-28 0V26a14 14 0 0114-14zM28 46a22 22 0 0044 0M50 68v16M38 86h24"/>';
+  var MARK_VOTE = '<rect x="30" y="8" width="40" height="84" rx="8"/><path d="M40 70V58M50 70V40M60 70V50"/>';
+  var WA_ICON = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>';
 
   function parseShows(list) {
     var today = new Date(); today.setHours(0, 0, 0, 0);
+    var seen = {};
+    list.forEach(function (s) {            /* שם קובץ היומן: כמו ב-build.py */
+      var n = (seen[s.date] || 0) + 1; seen[s.date] = n;
+      s._cal = "cal/" + s.date + (n === 1 ? "" : "-" + n) + ".ics";
+    });
     return list
       .map(function (s) { var d = new Date(s.date + "T00:00:00"); return isNaN(d) ? null : Object.assign({}, s, { _d: d }); })
       .filter(function (s) { return s && s._d >= today; })
-      .sort(function (a, b) { return a._d - b._d; });
+      .sort(function (a, b) { return (a._d - b._d) || String(a.time || "").localeCompare(String(b.time || "")); });
+  }
+  function fmtShort(s) { return String(s.format || "Soundclash").replace("Soundclash", "").trim() || "Soundclash"; }
+  function waReserve(s) {
+    var t = "היי, אשמח לשריין מקום להופעה של Soundclash ב" + s.venue + (s.city ? ", " + s.city : "") +
+            " ב-" + s._d.getDate() + "." + (s._d.getMonth() + 1) + ".";
+    return "https://wa.me/" + window.SC_CONFIG.whatsapp + "?text=" + encodeURIComponent(t);
+  }
+  function wazeLink(s) {
+    return "https://waze.com/ul?q=" + encodeURIComponent((s.address || (s.venue + " " + (s.city || ""))).trim()) + "&navigate=yes";
+  }
+  function flagFor(s) {
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var days = Math.round((s._d - today) / 864e5);
+    if (days === 0) return "הערב";
+    if (days === 1) return "מחר";
+    if (days <= 14) return "בעוד " + days + " ימים";
+    return "";
+  }
+  function showRow(s, i) {
+    var side = i % 2 === 0 ? "a" : "b";
+    var flag = flagFor(s);
+    var info = [s.note, s.address].filter(Boolean).map(esc).join(" · ");
+    var main = s.tickets
+      ? '<a class="btn btn-solid" href="' + esc(s.tickets) + '" target="_blank" rel="noopener">כרטיסים</a>'
+      : '<a class="btn btn-wa" href="' + esc(waReserve(s)) + '" target="_blank" rel="noopener">' + WA_ICON + ' שריון מקום בוואטסאפ</a>';
+    return '<article class="sx-row">' +
+      '<div class="sx-date side-' + side + '">' +
+        '<svg class="sx-mark" aria-hidden="true" viewBox="0 0 100 100">' + (side === "a" ? MARK_MIC : MARK_VOTE) + '</svg>' +
+        '<div><div class="d1">' + DAYS[s._d.getDay()] + (s.time ? ' · <bdi dir="ltr">' + esc(s.time) + '</bdi>' : "") + '</div>' +
+          '<div class="d2"><bdi dir="ltr">' + s._d.getDate() + "." + (s._d.getMonth() + 1) + "." + s._d.getFullYear() + '</bdi>' +
+          (flag ? '<span class="flag">' + flag + '</span>' : "") + '</div></div>' +
+        '<div><div class="k">' + esc(fmtShort(s)) + '</div><div class="pl">' + esc(s.city || "") + '</div></div>' +
+      '</div>' +
+      '<div class="sx-photo"><img src="assets/img/stage/' + PHOTOS[i % PHOTOS.length] + '-800.webp" alt="" loading="lazy" width="800" height="533"></div>' +
+      '<div class="sx-title"><b>' + esc(s.venue) + '</b>' + (info ? '<span>' + info + '</span>' : "") +
+        '<div class="sx-acts">' + main +
+          '<a class="btn btn-ghost" href="' + s._cal + '">ליומן</a>' +
+          '<a class="btn btn-ghost" href="' + esc(wazeLink(s)) + '" target="_blank" rel="noopener">Waze</a>' +
+        '</div></div>' +
+    '</article>';
   }
 
   function loadShows() {
-    var listEl   = document.querySelector("[data-shows-list]");
+    var lists    = Array.prototype.slice.call(document.querySelectorAll("[data-shows-list]"));
     var ribbonEl = document.querySelector("[data-next-show]");
-    if (!listEl && !ribbonEl) return;
+    if (!lists.length && !ribbonEl) return;
 
     fetch("shows.json", { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
@@ -112,7 +163,8 @@ window.SC_CONFIG = {
                 '<span>ההופעה הקרובה: <b>' + esc(n.venue) + '</b>' + (n.city ? ", " + esc(n.city) : "") +
                 ' · <b>' + n._d.getDate() + " ב" + MONTHS[n._d.getMonth()] + '</b>' +
                 (n.time ? ", " + esc(n.time) : "") + (n.format ? " · " + esc(n.format) : "") + '</span>' +
-                (n.tickets ? '<a href="' + esc(n.tickets) + '" target="_blank" rel="noopener">לרכישת כרטיסים ←</a>' : "") +
+                (n.tickets ? '<a href="' + esc(n.tickets) + '" target="_blank" rel="noopener">לרכישת כרטיסים ←</a>'
+                           : '<a href="' + esc(waReserve(n)) + '" target="_blank" rel="noopener">לשריון מקום ←</a>') +
               '</div>';
             ribbonEl.hidden = false;
           } else {
@@ -120,33 +172,26 @@ window.SC_CONFIG = {
           }
         }
 
-        /* רשימת ההופעות המלאה */
-        if (listEl) {
+        /* לוח ההופעות (בעמוד ההופעות, ושלוש הקרובות בדף הבית) */
+        lists.forEach(function (listEl) {
+          var limit = parseInt(listEl.getAttribute("data-limit"), 10) || 0;
+          var section = listEl.closest("[data-shows-section]");
           if (!shows.length) {
+            if (section) { section.hidden = true; return; }
             listEl.innerHTML = '<div class="empty-state">אין כרגע תאריכים פתוחים לקהל הרחב.<br>' +
-              'להזמנת המופע לאירוע — <a href="contact.html" style="color:var(--accent);text-decoration:underline">דף יצירת הקשר</a>.</div>';
+              'להזמנת המופע לאירוע: <a href="contact.html" style="color:var(--accent);text-decoration:underline">דף יצירת הקשר</a>.</div>';
             return;
           }
-          listEl.innerHTML = shows.map(function (s) {
-            return '<article class="show-item">' +
-              '<div class="show-date"><div class="d latin">' + s._d.getDate() + '</div>' +
-                '<div class="m">' + MONTHS[s._d.getMonth()] + " " + s._d.getFullYear() + '</div></div>' +
-              '<div class="show-main"><h3>' + esc(s.venue) + (s.city ? " · " + esc(s.city) : "") + '</h3>' +
-                '<p>' + esc(s.format || "Soundclash") + (s.time ? " · " + esc(s.time) : "") +
-                (s.note ? " · " + esc(s.note) : "") + '</p></div>' +
-              (s.tickets
-                ? '<a class="btn btn-solid" href="' + esc(s.tickets) + '" target="_blank" rel="noopener">כרטיסים</a>'
-                : '<span class="chip">פרטים בטלפון</span>') +
-            '</article>';
-          }).join("");
-        }
+          listEl.innerHTML = (limit ? shows.slice(0, limit) : shows).map(showRow).join("");
+        });
       })
       .catch(function () {
-        if (listEl) {
+        lists.forEach(function (listEl) {
+          if (listEl.querySelector(".sx-row")) return;   /* הגרסה הסטטית נשארת */
           listEl.innerHTML = '<div class="empty-state">לא הצלחנו לטעון את רשימת ההופעות כרגע.<br>' +
             'אפשר לברר תאריכים בטלפון <a href="tel:' + window.SC_CONFIG.phone + '" style="color:var(--accent)">' +
             window.SC_CONFIG.phone + '</a>.</div>';
-        }
+        });
         if (ribbonEl) ribbonEl.hidden = true;
       });
   }

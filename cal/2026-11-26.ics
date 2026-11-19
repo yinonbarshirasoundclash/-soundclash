@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Soundclash//shows//HE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:2026-11-26@soundclash.co.il
+DTSTAMP:20261126T000000Z
+DTSTART:20261126T193000Z
+DTEND:20261126T213000Z
+SUMMARY:Soundclash בגולא
+LOCATION:גולא\, שמואל הנגיד 7\, פתח תקווה
+DESCRIPTION:Soundclash ניינטיז · פתיחת דלתות 20:30 · כרטיסים: https://gula.org.il/113033 · https://soundclash.co.il/shows.html
+URL:https://gula.org.il/113033
+END:VEVENT
+END:VCALENDAR

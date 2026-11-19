@@ -14,7 +14,7 @@
   --line-strong:rgba(255,255,255,.16);
   --text:#f4efe6;
   --text-dim:#b9b1a4;
-  --text-faint:#7d766c;
+  --text-faint:#978f83;   /* הובהר ב-19.11.2026: עובר יחס ניגודיות 4.5 על כל הרקעים */
 
   /* --- מבטא (נדרס לכל פורמט) --- */
   --accent:#e0493d;          /* צבע התפר — הקו שמפריד בין שני הצדדים */
@@ -55,8 +55,8 @@ body.theme-il{  /* הקרב הישראלי — כחול מול זהב חם */
   --side-a:#2f63c4; --side-b:#c98a26;
   --bg:#070a10; --bg-raised:#0d121b; --bg-card:#111824;
 }
-body.theme-screen{ /* סדרות נגד סרטים — זהב מקרן מול כחול מסך */
-  --accent:#e8a33d; --accent-2:#f0d9a8; --accent-3:#5d8fd6;
+body.theme-screen{ /* סדרות נגד סרטים: זהב מקרן (סרט) מול טורקיז מסך (סדרה), כמו בלוגו */
+  --accent:#e8a33d; --accent-2:#f0d9a8; --accent-3:#3ec6cf;
   --accent-soft:rgba(232,163,61,.13); --accent-glow:rgba(232,163,61,.4);
   --side-a:#b8792a; --side-b:#3f6ba8;
   --bg:#0a0908; --bg-raised:#100e0c; --bg-card:#161311;
@@ -95,9 +95,10 @@ section{padding:74px 0;}
 /* ===================== כותרות מקטע ===================== */
 .eyebrow{
   display:inline-flex; align-items:center; gap:10px;
-  font-family:'Bebas Neue', sans-serif; letter-spacing:.26em; font-size:13.5px;
-  color:var(--accent); text-transform:uppercase; margin-bottom:14px;
+  font-family:'Heebo', sans-serif; font-weight:700; letter-spacing:0; font-size:15px;
+  color:var(--accent); margin-bottom:14px;
 }
+.eyebrow .latin,.eyebrow.latin{letter-spacing:.14em;}
 .eyebrow::before,.eyebrow::after{content:''; width:24px; height:1px; background:var(--accent); opacity:.75;}
 .eyebrow.one-side::after{display:none;}
 
@@ -171,7 +172,7 @@ section{padding:74px 0;}
   padding:86px 20px 74px; text-align:center; overflow:hidden; background:var(--bg-raised);
 }
 .hero.compact{padding:62px 20px 54px;}
-.hero-photo{position:absolute; inset:0; background-size:cover; background-position:center 26%; opacity:.42; filter:saturate(.85) contrast(1.06);}
+.hero-photo{position:absolute; inset:0; background-image:var(--hp); background-size:cover; background-position:center 26%; opacity:.42; filter:saturate(.85) contrast(1.06);}
 .hero-photo::after{content:''; position:absolute; inset:0;
   background:linear-gradient(180deg, rgba(11,10,9,.6) 0%, rgba(11,10,9,.42) 42%, rgba(11,10,9,.88) 100%);}
 .hero-glow{position:absolute; inset:0; pointer-events:none;
@@ -308,7 +309,7 @@ section{padding:74px 0;}
 .f-80{--f-a:#ff2e88; --f-b:#25e0e0;}
 .f-y2k{--f-a:#4ad8ff; --f-b:#8f6bff;}
 .f-il{--f-a:#4a8dff; --f-b:#f2b33d;}
-.f-screen{--f-a:#e8a33d; --f-b:#5d8fd6;}
+.f-screen{--f-a:#e8a33d; --f-b:#3ec6cf;}
 
 /* ===================== וידאו ===================== */
 .video-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
@@ -324,7 +325,7 @@ section{padding:74px 0;}
 /* ===================== גלריה ===================== */
 .gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
 @media (max-width:900px){.gallery{grid-template-columns:1fr 1fr;}}
-@media (max-width:560px){.gallery{grid-template-columns:1fr;}}
+@media (max-width:560px){.gallery{grid-template-columns:1fr 1fr; gap:10px;}}
 .gallery figure{position:relative; border-radius:var(--radius); overflow:hidden; aspect-ratio:4/3; background:var(--bg-card); border-top:3px solid var(--side-a);}
 .gallery figure:nth-child(2n){border-top-color:var(--side-b);}
 .gallery img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
@@ -586,3 +587,140 @@ a.inline{color:var(--accent); text-decoration:underline; text-underline-offset:3
 .svid .side{font-size:12px; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:999px;}
 .svid .side-tv{background:rgba(62,198,207,.16); color:#3ec6cf;}
 .svid .side-film{background:rgba(232,163,61,.16); color:#e8a33d;}
+
+/* =========================================================================
+   סבב ליה ואיתי, 19.11.2026
+   ========================================================================= */
+
+/* ---- רקע הפתיחה: תמונה קטנה בנייד, גדולה במסך רחב ---- */
+@media (min-width:700px){ .hero-photo{background-image:var(--hp-l, var(--hp));} }
+
+/* ---- קריאוּת בנייד: טקסט רץ 16, כיתובים 14.5 לפחות ---- */
+.step p,.format-card p,.spec-row dd,.spec-row dt,.aud-card p,.voice p,.duel-card p,.addon span,.pkg-for,
+.footer .tagline,.footer a,.show-main p,.proof-main > p{font-size:16px;}
+.stat .lbl,.chip,.duel-row .side small,.quote cite,.demo-cap,.footer-bottom,.form-note,.format-card .go{font-size:14.5px;}
+.format-card .status{font-size:13px;} .duel-row .who{font-size:13px;} .pv-label{font-size:14px;}
+
+/* ---- סדרות נגד סרטים: סדרה בטורקיז, סרט בזהב, כמו בלוגו ---- */
+body.theme-screen .hero .lede b{color:#3ec6cf;}
+body.theme-screen .hero .lede .b-side{color:#e8a33d;}
+body.theme-screen .duel-row .side.tv{background:rgba(62,198,207,.13); box-shadow:inset 0 0 0 1px rgba(62,198,207,.3);}
+body.theme-screen .duel-row .side.film{background:rgba(232,163,61,.13); box-shadow:inset 0 0 0 1px rgba(232,163,61,.3);}
+body.theme-screen .duel-row .side.tv .who{color:#3ec6cf;}
+body.theme-screen .duel-row .side.film .who{color:#e8a33d;}
+
+/* ---- כפתור משני דק ---- */
+.btn-ghost{border-color:var(--line-strong); color:var(--text); padding:10px 16px; font-size:14.5px;}
+.btn-ghost:hover{border-color:var(--text);}
+
+/* ---- הדו־קרב זז: הצדדים נכנסים מהקצוות ונפגשים ב-VS (פעם אחת) ---- */
+.js-on .duel-row.reveal{opacity:1; transform:none;}
+.js-on .duel-row .side{transition:transform .6s cubic-bezier(.2,.8,.2,1), opacity .6s ease;}
+.js-on .duel-row .mini-vs{transition:transform .35s .45s ease, opacity .35s .45s ease, text-shadow .6s .6s;}
+.js-on .duel-row:not(.in) .side.tv{transform:translateX(40px); opacity:0;}
+.js-on .duel-row:not(.in) .side.film{transform:translateX(-40px); opacity:0;}
+.js-on .duel-row:not(.in) .mini-vs{transform:scale(2.2); opacity:0;}
+.js-on .duel-row.in .mini-vs{text-shadow:0 0 16px var(--accent-glow);}
+.js-on .duel-card.reveal:not(.in){transform:scale(.94);}
+.duel-list,.duel{overflow-x:clip;}
+
+/* ---- קו התפר כמפריד בין מקטעים ---- */
+.seam-div{height:16px; max-width:var(--max); margin:0 auto; opacity:.55;
+  background:linear-gradient(90deg, var(--side-a), var(--accent) 50%, var(--side-b));
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath d='M0 8 L10 3 L20 13 L30 3 L40 8' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E") repeat-x center/40px 16px;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath d='M0 8 L10 3 L20 13 L30 3 L40 8' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E") repeat-x center/40px 16px;}
+
+/* ---- פס הוכחה בדף הבית ---- */
+.proof-strip{padding:34px 0; border-bottom:1px solid var(--line);}
+.proof-strip .wrap{display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center;}
+.ps-quote blockquote{font-family:'Suez One',Georgia,serif; font-size:clamp(20px,3vw,26px); line-height:1.45; color:var(--text);}
+.ps-quote figcaption{color:var(--text-dim); font-size:15px; margin-top:6px;}
+.ps-venues{color:var(--text-dim); font-size:15.5px;}
+.ps-venues b{color:var(--text); font-weight:700;}
+.ps-venues span{color:var(--accent); font-weight:700;}
+.proof-top{padding-top:56px;}
+
+/* ---- לוח ההופעות, בהשראת לוח האירועים של nbshira.com ---- */
+.sx-page{padding-top:28px;}
+.sx-head{position:relative; overflow:hidden; min-height:clamp(170px,22vw,240px); display:flex; align-items:center; justify-content:center;
+  text-align:center; border-radius:var(--radius-lg); margin-bottom:18px; background:var(--side-b);}
+.sx-side{position:absolute; inset:0;}
+.sx-side.a{z-index:1;}
+.sx-side.b{background:
+  repeating-radial-gradient(circle at 12% 120%, transparent 0 22px, rgba(0,0,0,.22) 22px 36px, transparent 36px 58px), var(--side-b);}
+.sx-side.a{background:
+  repeating-radial-gradient(circle at 88% -30%, transparent 0 24px, rgba(0,0,0,.22) 24px 38px, transparent 38px 62px), var(--side-a);
+  clip-path:polygon(100% 0,52% 0,46% 12%,56% 24%,43% 36%,57% 48%,42% 60%,55% 72%,45% 84%,53% 100%,100% 100%);
+}
+.sx-head::after{content:''; position:absolute; inset:0; pointer-events:none; box-shadow:inset 0 0 80px rgba(0,0,0,.45);}
+.sx-head-in{position:relative; z-index:2; padding:24px 16px;}
+.sx-kicker{font-size:15px; letter-spacing:.3em; color:#fff; opacity:.8;}
+.sx-head h1{font-size:clamp(40px,8vw,86px); line-height:.95; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.35);}
+.sx-head p{margin-top:8px; color:#fff; font-weight:700; font-size:clamp(16px,2vw,20px);}
+.sx-lede{text-align:center; color:var(--text-dim); margin:0 auto 22px; max-width:640px;}
+.sx-list{display:flex; flex-direction:column; gap:14px;}
+.sx-row{display:grid; grid-template-columns:minmax(220px,330px) minmax(0,250px) minmax(0,1fr); min-height:170px;
+  background:var(--bg-card); background-image:radial-gradient(ellipse at 30% 50%, color-mix(in srgb, var(--side-a) 12%, transparent), transparent 70%);
+  border-radius:var(--radius); overflow:hidden; border:1px solid var(--line);}
+.sx-date{position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; gap:10px;
+  padding:18px 22px 16px; padding-inline-end:84px; color:#fff;}
+.sx-date.side-a{background:var(--side-a);}
+.sx-date.side-b{background:var(--side-b);}
+.sx-date .d1{font-size:17px; font-weight:700;}
+.sx-date .d2{font-family:'Bebas Neue',sans-serif; font-size:44px; line-height:1; letter-spacing:.02em;}
+.sx-date .k{font-size:14px; font-weight:700; opacity:.85;}
+.sx-date .pl{font-family:'Suez One',Georgia,serif; font-size:22px; line-height:1.15;}
+.sx-date .flag{display:inline-block; margin-inline-start:10px; font-family:'Heebo',sans-serif; font-size:13px; font-weight:800;
+  padding:3px 9px; border-radius:6px; background:#fff; color:#14100e; vertical-align:8px; letter-spacing:0;}
+.sx-mark{position:absolute; inset-inline-end:16px; top:50%; width:58px; height:58px; margin-top:-29px;
+  fill:none; stroke:rgba(255,255,255,.55); stroke-width:5; stroke-linecap:round; stroke-linejoin:round;}
+.sx-photo{position:relative; overflow:hidden; min-height:140px;}
+.sx-photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(.8) contrast(1.05) brightness(.82);
+  -webkit-mask-image:linear-gradient(to left,#000 60%,transparent 100%); mask-image:linear-gradient(to left,#000 60%,transparent 100%);}
+.sx-title{display:flex; flex-direction:column; justify-content:center; align-items:center; gap:6px; padding:16px 22px; text-align:center;}
+.sx-title b{font-family:'Suez One',Georgia,serif; font-weight:400; font-size:clamp(26px,3vw,36px); line-height:1.1; color:var(--text);}
+.sx-title > span{color:var(--text-dim); font-size:15.5px;}
+.sx-acts{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:8px;}
+.sx-acts .btn{padding:11px 18px; font-size:15px; min-height:44px;}
+.sx-acts .btn-ghost{padding:10px 14px;}
+.sx-rule{display:flex; align-items:center; gap:14px; margin:34px 0 14px;}
+.sx-rule span{font-weight:700; color:var(--accent); font-size:15px;}
+.sx-rule i{flex:1; height:1px; background:var(--line-strong);}
+.sx-strip{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px;}
+.sx-strip div{position:relative; aspect-ratio:1.8; overflow:hidden; border-radius:12px; background:var(--bg-card);}
+.sx-strip img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.sx-strip div::after{content:''; position:absolute; inset:0; box-shadow:inset 0 0 60px 14px rgba(5,4,4,.8);}
+@media (max-width:900px){
+  .sx-row{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);}
+  .sx-date{grid-column:1 / -1; flex-direction:row; align-items:flex-end; flex-wrap:wrap;}
+  .sx-photo{min-height:150px;}
+  .sx-photo img{-webkit-mask-image:none; mask-image:none;}
+}
+@media (max-width:600px){
+  .sx-row{grid-template-columns:1fr;}
+  .sx-photo{display:none;}
+  .sx-date{padding:16px 18px; padding-inline-end:76px;}
+  .sx-date .d2{font-size:38px;}
+  .sx-strip{grid-template-columns:1fr 1fr;}
+  .sx-strip div:nth-child(3){display:none;}
+}
+.home-shows .sx-row{min-height:150px;}
+@media (max-width:600px){ .sx-acts .btn:first-child{flex-basis:100%;} }
+
+/* ---- פס פעולה קבוע בנייד (במקום העיגול הירוק) ---- */
+.mbar{display:none;}
+@media (max-width:940px){
+  .wa-float{display:none;}
+  .mbar{display:grid; grid-template-columns:1fr 1fr 1.25fr; gap:8px; position:fixed; inset:auto 0 0 0; z-index:90;
+    padding:8px 10px calc(10px + env(safe-area-inset-bottom)); background:color-mix(in srgb, var(--bg-raised) 94%, transparent);
+    backdrop-filter:blur(10px); border-top:1px solid var(--line-strong);}
+  .mbar a{display:flex; align-items:center; justify-content:center; gap:7px; min-height:46px; border-radius:999px; font-weight:700; font-size:15px;}
+  .mbar svg{width:18px; height:18px; fill:currentColor;}
+  .mbar .m-wa{background:#25D366; color:#08240f;}
+  .mbar .m-call{border:1px solid var(--line-strong); color:var(--text);}
+  .mbar .m-main{background:var(--accent); color:#14100e;}
+  body{padding-bottom:72px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .js-on .duel-row:not(.in) .side,.js-on .duel-row:not(.in) .mini-vs{transform:none; opacity:1;}
+}

@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Soundclash//shows//HE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:2027-01-20@soundclash.co.il
+DTSTAMP:20270120T000000Z
+DTSTART:20270120T183000Z
+DTEND:20270120T203000Z
+SUMMARY:Soundclash בבאבי בר
+LOCATION:באבי בר\, הנגר 8\, הוד השרון
+DESCRIPTION:Soundclash ניינטיז · https://soundclash.co.il/shows.html
+URL:https://soundclash.co.il/shows.html
+END:VEVENT
+END:VCALENDAR

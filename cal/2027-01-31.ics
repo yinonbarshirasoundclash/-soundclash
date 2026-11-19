@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Soundclash//shows//HE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:2027-01-31@soundclash.co.il
+DTSTAMP:20270131T000000Z
+DTSTART:20270131T183000Z
+DTEND:20270131T203000Z
+SUMMARY:Soundclash באוסאליבן
+LOCATION:אוסאליבן\, שדרות המלאכות 12\, מודיעין-מכבים-רעות
+DESCRIPTION:Soundclash ניינטיז · ישפרו סנטר (מרכז עינב) · https://soundclash.co.il/shows.html
+URL:https://soundclash.co.il/shows.html
+END:VEVENT
+END:VCALENDAR

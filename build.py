@@ -32,22 +32,33 @@ SOCIAL = {
 }
 
 # ============================================================================
-#  2. תמונות — מתארחות כרגע ב-CDN של וויקס.
-#     ראו "לניתוק מלא מוויקס" במדריך ההעלאה.
+#  2. תמונות הבמה. הועברו מוויקס למאגר ב-19.11.2026 (tools/migrate_images.py).
+#     לכל תמונה: <id>-800.webp (נייד), <id>-1600.webp (מלא), <id>-og.jpg (שיתוף 1200x630).
 # ============================================================================
-W = "https://static.wixstatic.com/media/"
+W = "assets/img/stage/"
 IMAGES = [
-    (W + "6340ee_d115b17d2a7547de89268dbb48c48452~mv2.jpg", "הלהקה על הבמה במהלך המופע", False),
-    (W + "6340ee_bb6e95f2c5ea4c468617c7f99f1cc2c1~mv2.jpg", "הלהקה מניפה אגרוף לעבר הקהל", False),
-    (W + "6340ee_f10df7753d7f4714a93b0b92467d3533~mv2.jpg", "הסולן שר עם יד על הלב", False),
-    (W + "6340ee_234c648614d14907b08c0aa503435bae~mv2.jpg", "הבסיסט מנגן על הבמה", False),
-    (W + "6340ee_6b83c4a9c13043b5a809fe554f973962~mv2.jpg", "גיטריסט אקוסטי במהלך ההופעה", False),
-    (W + "6340ee_97af6be2ba504392b8665f861ad18877~mv2.jpg", "גיטריסט מחייך אל הקהל", False),
-    (W + "6340ee_27674a9d0cd14a9c98fbbca10437b6f4~mv2.jpg", "הסולן בהופעה חיה", True),
-    (W + "6340ee_c6693df8aee1431f9ecff5688b69be67~mv2.jpg", "פורטרט הסולנית", True),
-    (W + "6340ee_6f1e7a0dc85545bfa46d9a7959113d4b~mv2.jpg", "הסולן והגיטריסטית יחד על הבמה", True),
+    (W + "d115b17d", "הלהקה על הבמה במהלך המופע", False),
+    (W + "bb6e95f2", "הלהקה מניפה אגרוף לעבר הקהל", False),
+    (W + "f10df775", "הסולן שר עם יד על הלב", False),
+    (W + "234c6486", "הבסיסט מנגן על הבמה", False),
+    (W + "6b83c4a9", "גיטריסט אקוסטי במהלך ההופעה", False),
+    (W + "97af6be2", "גיטריסט מחייך אל הקהל", False),
+    (W + "27674a9d", "הסולן בהופעה חיה", True),
+    (W + "c6693df8", "פורטרט הסולנית", True),
+    (W + "6f1e7a0d", "הסולן והגיטריסטית יחד על הבמה", True),
 ]
+def img(i, size=1600):
+    """נתיב לתמונת במה לפי מזהה, בגודל 800 או 1600."""
+    return f"{i}-{size}.webp"
+def hero_photo(i):
+    """רקע הפתיחה: 800 בנייד, 1600 במסך רחב. תמונה שאינה מתיקיית הבמה עוברת כמו שהיא."""
+    if i.startswith(W):
+        return f'<div class="hero-photo" style="--hp:url(\'/{img(i,800)}\');--hp-l:url(\'/{img(i)}\')"></div>'
+    return f'<div class="hero-photo" style="--hp:url(\'/{i}\');--hp-l:url(\'/{i}\')"></div>'
+def og_of(i):
+    return f"{SITE_URL}/{i}-og.jpg"
 HERO_IMG = IMAGES[0][0]
+OG = {k: f"{SITE_URL}/assets/img/og/{k}.jpg" for k in ("home", "tv-vs-film", "events", "israel", "shows")}
 
 VIDEOS = [
     ("6XJsn9DJnxg", "הקהל בטירוף"),
@@ -128,19 +139,19 @@ FORMATS = [
          era="TV/FILM", name="Soundclash סדרות נגד סרטים",
          nav="סדרות נגד סרטים", nav_plain="סדרות נגד סרטים",
          name_html=ltr("Soundclash") + " סדרות נגד סרטים",
-         tag="המופע החדש", live=False, hot=True, logo="assets/img/logo-tv-vs-film.svg", logo_alt="Soundclash סדרות נגד סרטים",
+         tag="המופע החדש", live=False, hot=True, logo="assets/img/logo-tv-vs-film-sm.webp", logo_alt="Soundclash סדרות נגד סרטים",
          short="שיר מסדרה מול שיר מסרט, 10 סיבובים, ומסך עם וידאו מקורי לכל שיר."),
     dict(slug="90s", file="90s.html", theme="theme-90", css="f-90",
          era="90's", name="Soundclash ניינטיז",
          nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
          name_html=ltr("Soundclash") + " ניינטיז",
-         tag="כבר על הבמות", live=True, logo="assets/img/logo-90s.svg", logo_alt="Soundclash ניינטיז",
+         tag="כבר על הבמות", live=True, logo="assets/img/logo-90s-sm.webp", logo_alt="Soundclash ניינטיז",
          short="המופע שכבר עולה על הבמות: ארה״ב מול בריטניה."),
     dict(slug="israel", file="israel.html", theme="theme-il", css="f-il",
          era="80/90", name="Soundclash מסיבה ישראלית",
          nav="מסיבה ישראלית", nav_plain="מסיבה ישראלית",
          name_html=ltr("Soundclash") + " מסיבה ישראלית",
-         tag="להזמנה", live=False, logo="assets/img/logo-israeli-party.svg", logo_alt="Soundclash מסיבה ישראלית",
+         tag="להזמנה", live=False, logo="assets/img/logo-israeli-party-sm.webp", logo_alt="Soundclash מסיבה ישראלית",
          short="מסיבה ישראלית: אייטיז נגד ניינטיז, שירים שכל האולם שר, ורחבה מלאה עד הסוף."),
     dict(slug="80s", file="80s.html", theme="theme-80", css="f-80",
          era="80's", name="Soundclash אייטיז",
@@ -188,7 +199,7 @@ def nav(active, depth_prefix=""):
     <div class="nav-links" id="nav-links" data-open="false">
       {item("index.html", "דף הבית", "home")}
       <details class="nav-drop">
-        <summary{drop_active}>הפורמטים</summary>
+        <summary{drop_active}>המופעים</summary>
         <div class="drop-menu">{formats_menu}</div>
       </details>
       {item("events.html", "לאירועי חברה", "events")}
@@ -216,7 +227,8 @@ def contact_band(title, sub, extra_btn=""):
         '<div class="person"><b>%s</b><a href="tel:%s">%s</a></div>' % (n, t, p)
         for n, p, t in CONTACTS)
     people += '<div class="person"><b>אימייל</b><span>%s</span></div>' % EMAIL
-    return f"""<section>
+    return f"""<div class="seam-div" aria-hidden="true"></div>
+<section>
   <div class="wrap">
     <div class="contact-band reveal">
       <div class="eyebrow" style="justify-content:center">להזמנת המופע</div>
@@ -243,7 +255,7 @@ def footer(p=""):
         {socials_html()}
       </div>
       <div>
-        <h4>הזירות</h4>
+        <h4>המופעים</h4>
         <ul>{fmt_links}</ul>
       </div>
       <div>
@@ -262,7 +274,16 @@ def footer(p=""):
 </footer>
 <a class="wa-float" href="{wa_link()}" target="_blank" rel="noopener" aria-label="שליחת הודעה בוואטסאפ">{ICON["wa"]}</a>"""
 
-def page(filename, title, description, body, active, theme="theme-90", og_img=HERO_IMG, jsonld=""):
+def mbar(active):
+    """פס פעולה קבוע בתחתית המסך בנייד: וואטסאפ, חיוג, ופעולה ראשית לפי העמוד."""
+    main = ('<a class="m-main" href="#quote">הצעת מחיר</a>' if active == "events"
+            else '<a class="m-main" href="contact.html">להזמנת המופע</a>')
+    return (f'<nav class="mbar" aria-label="פעולות מהירות">'
+            f'<a class="m-wa" href="{wa_link()}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>'
+            f'<a class="m-call" href="tel:{PHONE_TEL}">{ICON["phone"]} חיוג</a>{main}</nav>')
+
+def page(filename, title, description, body, active, theme="theme-90", og_img=None, jsonld=""):
+    og_img = og_img or OG["home"]
     doc = f"""<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -292,6 +313,7 @@ def page(filename, title, description, body, active, theme="theme-90", og_img=HE
 {nav(active)}
 {body}
 {footer()}
+{mbar(active)}
 <script src="assets/js/site.js?v={ASSET_V}" defer></script>
 </body>
 </html>
@@ -310,8 +332,8 @@ def stats_bar(items):
         for n, l in items)
 
 DEFAULT_STATS = [
-    ("6", "נגנים על הבמה"),
-    ("2", "סולן וסולנית"),
+    ("6", "על הבמה, עם סולן וסולנית"),
+    ("20", "להיטים שכולם מכירים"),
     ("10", "סיבובים"),
     ("90", "דקות מופע"),
     ("APP", "אפליקציית הצבעה משלנו"),
@@ -326,8 +348,9 @@ NOTE_SCREEN = ("את מערכת ההצבעות אנחנו מביאים ומפע�
                "על המסך רצים סרטוני אווירה מקוריים לכל שיר ותוצאות ההצבעה. אם אין מסך או מקרן במקום, נכלול אותו בהצעת המחיר.")
 
 def mechanism_block(note=NOTE_GENERAL, head="ככה זה עובד, שלב אחר שלב",
-                    sub="ההצבעה אינה גימיק שמתלווה למופע — היא המבנה שלו. כל סיבוב נסגר בהכרעה של הקהל."):
-    return f"""<section id="mechanism">
+                    sub="כל סיבוב נגמר כשהקהל מכריע, והנקודות מצטברות עד ההכרזה."):
+    return f"""<div class="seam-div" aria-hidden="true"></div>
+<section id="mechanism">
   <div class="wrap">
     <div class="section-head reveal">
       <div class="eyebrow">המנגנון</div>
@@ -335,10 +358,10 @@ def mechanism_block(note=NOTE_GENERAL, head="ככה זה עובד, שלב אחר
       <p>{sub}</p>
     </div>
     <div class="mechanism">
-      <div class="step reveal"><h3>הזירה נפתחת</h3><p>שני הצדדים מוכרזים מהבמה, והקהל סורק קוד ונכנס לאפליקציית ההצבעה מהטלפון. בלי הורדה, בלי הרשמה.</p></div>
-      <div class="step reveal"><h3>שיר מול שיר</h3><p>הלהקה מנגנת שיר מהצד האחד ומיד אחריו שיר מהצד השני. ראש בראש, בביצוע חי ונאמן למקור.</p></div>
+      <div class="step reveal"><h3>הקרב נפתח</h3><p>שני הצדדים מוכרזים מהבמה, והקהל סורק קוד ונכנס לאפליקציית ההצבעה מהטלפון. בלי הורדה, בלי הרשמה.</p></div>
+      <div class="step reveal"><h3>שיר מול שיר</h3><p>הלהקה מנגנת שיר של צד אחד, ומיד אחריו שיר של הצד השני. ראש בראש, בביצוע חי ונאמן למקור.</p></div>
       <div class="step reveal"><h3>הקהל מכריע</h3><p>ההצבעה פתוחה לאורך כל הסיבוב. בסופו יש ספירה לאחור של 20 שניות, והתוצאה נחשפת בזמן אמת.</p></div>
-      <div class="step reveal"><h3>הכרזה ופרסים</h3><p>הניקוד המצטבר קובע את המנצחת של הערב, ובין המצביעים מחולקים פרסים. הקהל יוצא עם תוצאה, לא רק עם מופע.</p></div>
+      <div class="step reveal"><h3>הכרזה ופרסים</h3><p>הניקוד המצטבר קובע את הצד המנצח, ובין המצביעים מוגרלים פרסים.</p></div>
     </div>
     <p class="center mt-32" style="color:var(--text-dim)">{note}</p>
   </div>
@@ -468,7 +491,7 @@ DEFAULT_SPEC = [
     ("מבנה", "סיבובי קרב, שיר מול שיר, עם הצבעת קהל בסוף כל סיבוב"),
     ("מה אנחנו מביאים", "את אפליקציית ההצבעה ואת ההפעלה שלה מול הקהל"),
     ("מה נדרש במקום", REQ_GENERAL),
-    ("זמינות פורמט", "זירת הניינטיז זמינה מיידית. שאר הזירות זמינות להזמנה בתיאום מראש"),
+    ("זמינות פורמט", "מופע הניינטיז זמין מיידית. שאר המופעים זמינים להזמנה בתיאום מראש"),
     ("קהל", "מועדונים ובמות, אירועי חברה, מחלקות תרבות ומתנ״סים, פסטיבלים ואירועים פרטיים"),
     ("שפה", "המופע מוגש בעברית, הרפרטואר בשפת המקור"),
 ]
@@ -495,7 +518,7 @@ def video_section(vids, head="צפו בקרב מקרוב", eyebrow="בפעולה
 
 def gallery_section(imgs, head="תמונות מהבמה", eyebrow="גלריה", link_more=True):
     figs = "".join(
-        '<figure class="reveal%s"><img src="%s" alt="%s" loading="lazy"></figure>' % (" contain" if c else "", u, html.escape(a))
+        '<figure class="reveal%s"><img src="%s" srcset="%s 800w, %s 1600w" sizes="(max-width:700px) 100vw, 400px" data-full="%s" alt="%s" loading="lazy" width="800" height="533"></figure>' % (" contain" if c else "", img(u,800), img(u,800), img(u), img(u), html.escape(a))
         for u, a, c in imgs)
     more = ('<div class="cta-row center mt-32"><a class="btn btn-outline" href="gallery.html">לגלריה המלאה</a></div>'
             if link_more else "")
@@ -519,15 +542,15 @@ def formats_index():
         status_cls = "status" if (f["live"] or f.get("hot")) else "status neutral"
         cards += f"""<a class="format-card {f['css']} reveal" href="{f['file']}">
       <div class="{status_cls}">{f['tag']}</div>
-      {('<img class="card-logo" src="' + f['logo'] + '" alt="' + f['logo_alt'] + '" loading="lazy">') if f.get('logo') else ('<div class="era latin">' + f['era'] + '</div>')}
+      {('<img class="card-logo" src="' + f['logo'] + '" alt="' + f['logo_alt'] + '" loading="lazy" width="300" height="360">') if f.get('logo') else ('<div class="era latin">' + f['era'] + '</div>')}
       <h3>{f['name_html']}</h3>
       <p>{f['short']}</p>
-      <span class="go">לדף הזירה ←</span>
+      <span class="go">לדף המופע ←</span>
     </a>"""
     return f"""<section id="formats">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">הזירות</div>
+      <div class="eyebrow">המופעים</div>
       <h2>המופע החדש, והמופעים שכבר הוכיחו את עצמם</h2>
       <p>אותו מנגנון בכל מופע: שיר מול שיר, והקהל מכריע מהטלפון. בוחרים את המופע שמדבר לקהל שלכם.</p>
     </div>
@@ -537,17 +560,145 @@ def formats_index():
 
 
 # ============================================================================
+#  5ב. הופעות: שורות, יומן, סימון לגוגל
+# ============================================================================
+SHOW_PHOTOS = ["f10df775", "97af6be2", "234c6486", "6b83c4a9", "bb6e95f2"]  # מתחלפות לפי הסדר
+HE_DAYS = ["יום שני", "יום שלישי", "יום רביעי", "יום חמישי", "יום שישי", "שבת", "יום ראשון"]  # לפי weekday() של פייתון
+
+def load_shows(upcoming=True):
+    """הופעות מ-shows.json, ממוינות לפי תאריך, עם שם קובץ יומן קבוע לכל אחת."""
+    import json as _j
+    allshows = _j.load(open("shows.json", encoding="utf-8")).get("shows", [])
+    seen = {}
+    for x in allshows:                     # אותו כלל שמות כמו ב-site.js
+        n = seen.get(x["date"], 0) + 1; seen[x["date"]] = n
+        x["_cal"] = "cal/%s%s.ics" % (x["date"], "" if n == 1 else "-%d" % n)
+    today = datetime.date.today().isoformat()
+    out = [x for x in allshows if (x.get("date", "") >= today or not upcoming)]
+    return sorted(out, key=lambda x: (x["date"], x.get("time", "")))
+
+def show_start(x):
+    """תאריך ושעה בשעון ישראל, כאובייקט עם אזור זמן."""
+    from zoneinfo import ZoneInfo
+    hh, mm = (int(v) for v in (x.get("time") or "21:00").split(":"))
+    y, m, d = (int(v) for v in x["date"].split("-"))
+    return datetime.datetime(y, m, d, hh, mm, tzinfo=ZoneInfo("Asia/Jerusalem"))
+
+def fmt_short(x):
+    return (x.get("format") or "Soundclash").replace("Soundclash", "").strip() or "Soundclash"
+
+def show_wa(x):
+    y, m, d = (int(v) for v in x["date"].split("-"))
+    return wa_link("היי, אשמח לשריין מקום להופעה של Soundclash ב%s%s ב-%d.%d." % (x["venue"], (", " + x["city"]) if x.get("city") else "", d, m))
+
+def show_waze(x):
+    from urllib.parse import quote
+    q = x.get("address") or (x["venue"] + " " + x.get("city", ""))
+    return "https://waze.com/ul?q=%s&navigate=yes" % quote(q.strip())
+
+MARK_MIC = '<path d="M50 12a14 14 0 0114 14v22a14 14 0 01-28 0V26a14 14 0 0114-14zM28 46a22 22 0 0044 0M50 68v16M38 86h24"/>'
+MARK_VOTE = '<rect x="30" y="8" width="40" height="84" rx="8"/><path d="M40 70V58M50 70V40M60 70V50"/>'
+
+def show_rows(shows, prefix=""):
+    """שורות ההופעות בסגנון לוח האירועים של nbshira.com. אותה תבנית בדיוק נבנית גם ב-site.js."""
+    e = html.escape
+    rows = []
+    for i, x in enumerate(shows):
+        y, m, d = (int(v) for v in x["date"].split("-"))
+        wd = HE_DAYS[datetime.date(y, m, d).weekday()]
+        side = "a" if i % 2 == 0 else "b"
+        photo = W + SHOW_PHOTOS[i % len(SHOW_PHOTOS)]
+        info = " · ".join(e(v) for v in (x.get("note"), x.get("address")) if v)
+        main = (f'<a class="btn btn-solid" href="{e(x["tickets"])}" target="_blank" rel="noopener">כרטיסים</a>' if x.get("tickets")
+                else f'<a class="btn btn-wa" href="{e(show_wa(x))}" target="_blank" rel="noopener">{ICON["wa"]} שריון מקום בוואטסאפ</a>')
+        rows.append(f"""<article class="sx-row">
+  <div class="sx-date side-{side}">
+    <svg class="sx-mark" aria-hidden="true" viewBox="0 0 100 100">{MARK_MIC if side == "a" else MARK_VOTE}</svg>
+    <div><div class="d1">{wd}{(' · <bdi dir="ltr">' + e(x["time"]) + '</bdi>') if x.get("time") else ''}</div>
+      <div class="d2"><bdi dir="ltr">{d}.{m}.{y}</bdi></div></div>
+    <div><div class="k">{e(fmt_short(x))}</div><div class="pl">{e(x.get("city", ""))}</div></div>
+  </div>
+  <div class="sx-photo"><img src="{prefix}{img(photo, 800)}" alt="" loading="lazy" width="800" height="533"></div>
+  <div class="sx-title">
+    <b>{e(x["venue"])}</b>
+    {('<span>' + info + '</span>') if info else ''}
+    <div class="sx-acts">{main}<a class="btn btn-ghost" href="{prefix}{x["_cal"]}">ליומן</a><a class="btn btn-ghost" href="{e(show_waze(x))}" target="_blank" rel="noopener">Waze</a></div>
+  </div>
+</article>""")
+    return "\n".join(rows)
+
+def static_shows(limit=None):
+    """הגרסה הסטטית, כדי שהדף לא ייראה ריק לפני שה-JS נטען. site.js מחליף אותה בגרסה עדכנית."""
+    shows = load_shows()
+    if not shows:
+        return '<div class="empty-state">אין כרגע תאריכים פתוחים לקהל הרחב.</div>'
+    return show_rows(shows[:limit] if limit else shows)
+
+def write_calendars():
+    """קובץ יומן (ics) לכל הופעה קרובה, בתיקייה cal/. נוצר מחדש בכל בנייה."""
+    os.makedirs(os.path.join(OUT, "cal"), exist_ok=True)
+    for x in load_shows():
+        st = show_start(x).astimezone(datetime.timezone.utc)
+        en = st + datetime.timedelta(hours=2)
+        loc = ", ".join(v for v in (x["venue"], x.get("address") or x.get("city", "")) if v)
+        desc = " · ".join(v for v in (x.get("format"), x.get("note"), ("כרטיסים: " + x["tickets"]) if x.get("tickets") else "", SITE_URL + "/shows.html") if v)
+        esc_ics = lambda t: t.replace("\\", "\\\\").replace(",", "\\,").replace(";", "\\;").replace("\n", "\\n")
+        ics = "\r\n".join([
+            "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Soundclash//shows//HE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+            "BEGIN:VEVENT",
+            "UID:%s@soundclash.co.il" % x["_cal"].replace("cal/", "").replace(".ics", ""),
+            "DTSTAMP:" + x["date"].replace("-", "") + "T000000Z",   # קבוע, כדי שהקובץ לא ישתנה בכל בנייה
+            "DTSTART:" + st.strftime("%Y%m%dT%H%M%SZ"),
+            "DTEND:" + en.strftime("%Y%m%dT%H%M%SZ"),
+            "SUMMARY:" + esc_ics("Soundclash ב%s" % x["venue"]),
+            "LOCATION:" + esc_ics(loc),
+            "DESCRIPTION:" + esc_ics(desc),
+            "URL:" + (x.get("tickets") or SITE_URL + "/shows.html"),
+            "END:VEVENT", "END:VCALENDAR", ""])
+        with open(os.path.join(OUT, x["_cal"]), "w", encoding="utf-8", newline="") as fh:
+            fh.write(ics)
+
+def shows_jsonld():
+    """סימון Event של גוגל לכל הופעה קרובה, כדי שההופעות יוכלו להופיע בחיפוש."""
+    import json as _j
+    evs = []
+    for x in load_shows():
+        ev = {"@context": "https://schema.org", "@type": "MusicEvent",
+              "name": "Soundclash %s ב%s" % (fmt_short(x), x["venue"]),
+              "startDate": show_start(x).isoformat(),
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {"@type": "Place", "name": x["venue"],
+                           "address": {"@type": "PostalAddress", "streetAddress": x.get("address", ""),
+                                       "addressLocality": x.get("city", ""), "addressCountry": "IL"}},
+              "image": [OG["shows"]],
+              "description": "מופע קרב מוזיקלי חי: שיר מול שיר, והקהל מכריע מהטלפון.",
+              "performer": {"@type": "MusicGroup", "name": "Soundclash", "url": SITE_URL},
+              "organizer": {"@type": "Organization", "name": "Soundclash", "url": SITE_URL},
+              "url": SITE_URL + "/shows.html"}
+        if x.get("tickets"):
+            ev["offers"] = {"@type": "Offer", "url": x["tickets"], "availability": "https://schema.org/InStock"}
+        evs.append(ev)
+    return ('<script type="application/ld+json">%s</script>' % _j.dumps(evs, ensure_ascii=False)) if evs else ""
+
+def shows_strip():
+    pics = "".join(f'<div><img src="{img(W + i, 800)}" alt="Soundclash על הבמה" loading="lazy" width="800" height="533"></div>' for i in ("d115b17d", "6f1e7a0d", "97af6be2"))
+    return f'<div class="sx-rule"><span>מהבמה</span><i></i></div><div class="sx-strip">{pics}</div>'
+
+write_calendars()
+
+# ============================================================================
 #  6. דף הבית
 # ============================================================================
 AUDIENCE = [
     ("מועדונים ובמות",
-     "ערב עם מבנה ומתח פנימי, לא רשימת שירים. הקהל נכנס לאפליקציה כבר בשיר הראשון ונשאר בה עד ההכרזה — וזה בדיוק הזמן שבו הוא עומד מול הבר. הרפרטואר בנוי מלהיטים שהאולם מזהה מהתו הראשון."),
+     "ערב עם מתח מהשיר הראשון ועד ההכרזה. הקהל נכנס לאפליקציה כבר בשיר הראשון ונשאר בה עד הסוף, וזה בדיוק הזמן שבו הוא עומד מול הבר. הרפרטואר בנוי מלהיטים שהאולם מזהה מהתו הראשון."),
     ("מחלקות תרבות ומתנ״סים",
      "ערב תרבות נוצץ לקהל בני 30 ו-40 פלוס: הלהיטים שגדלו עליהם, עם גלאם וכוריאוגרפיה, ובלי צורך בהיכרות מוקדמת עם הלהקה. ההצבעה מייצרת השתתפות פעילה של כל האולם, גם של מי שבא רק בשביל לצאת לערב טוב."),
     ("אירועי חברה",
      "המבנה התחרותי עובד מצוין מול קבוצות: כל העובדים מצביעים מהטלפון, והתוצאות עולות על מסך האולם. ההרכב מאפשר התאמה לגודל האירוע, לכמות האורחים ולמשך הערב."),
     ("פסטיבלים ואירועי עיר",
-     "פורמט שאפשר להסביר בשורה אחת בתוכנייה, ושמייצר לרשות המארגנת נכס מדיד — כמה אנשים הצביעו ומה יצא. ארבע הזירות מאפשרות להחזיר את אותו קונספט בשנה הבאה עם עשור אחר."),
+     "קל להסביר בשורה אחת בתוכנייה, ובסוף הערב יש לרשות מספר אמיתי: כמה תושבים הצביעו. וארבעת המופעים מאפשרים להחזיר את אותו קונספט בשנה הבאה, עם עשור אחר."),
 ]
 
 def audience_block():
@@ -558,7 +709,7 @@ def audience_block():
     <div class="section-head reveal">
       <div class="eyebrow">למי זה מתאים</div>
       <h2>למה זה עובד אצלכם</h2>
-      <p>אותו מופע, ארבעה סוגי אירוע — ומה שמשתנה הוא מה שהמנגנון עושה בשבילכם.</p>
+      <p>אותו מופע, ארבעה סוגי אירוע. מה שמשתנה הוא מה שהמנגנון עושה בשבילכם.</p>
     </div>
     <div class="audience">{cards}</div>
   </div>
@@ -569,13 +720,55 @@ HOME_JSONLD = """<script type="application/ld+json">
 "url":"%s","genre":["Live Music","Pop","Interactive Show"],"description":"מופע קרב מוזיקלי חי שבו הקהל מצביע ומכריע בין שני צדדים.",
 "image":"%s","email":"%s","telephone":"+972-54-6738192",
 "address":{"@type":"PostalAddress","addressCountry":"IL"}}
-</script>""" % (SITE_URL, HERO_IMG, EMAIL)
+</script>""" % (SITE_URL, OG["home"], EMAIL)
+
+def proof_strip():
+    return """<section class="proof-strip">
+  <div class="wrap">
+    <figure class="ps-quote reveal">
+      <blockquote>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים.״</blockquote>
+      <figcaption>שחר הרוש · קהילת אלפא, אלפי מנשה · כ-200 משתתפים</figcaption>
+    </figure>
+    <div class="ps-venues reveal"><span>הופענו ב:</span> <b>תמונע</b> תל אביב · <b>וונדרבר</b> חיפה · <b>אלפא פאב</b> אלפי מנשה · <b>בלה צ'או</b> ראשון לציון</div>
+  </div>
+</section>"""
+
+def home_shows():
+    if not load_shows():
+        return ""
+    return f"""<section id="next-shows" class="home-shows" data-shows-section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">לוח ההופעות</div>
+      <h2>ההופעות הקרובות</h2>
+    </div>
+    <div class="sx-list" data-shows-list data-limit="3">
+{static_shows(limit=3)}
+    </div>
+    <div class="cta-row center mt-32"><a class="btn btn-outline" href="shows.html">ללוח ההופעות המלא</a></div>
+  </div>
+</section>"""
+
+ADDONS_TOP = ["חידון מונחה לפני המופע", "שטיח אדום", "הלוגו שלכם בפתיח", "עוד חצי שעה של ריקודים"]
+def addons_compact():
+    cards = "".join('<div class="addon reveal"><b>%s</b><span>%s</span></div>' % (h, t) for h, t in ADDONS if h in ADDONS_TOP)
+    return f"""<section id="addons">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">תוספות</div>
+      <h2>אפשר להפוך את זה לערב שלם</h2>
+      <p>כמה מהתוספות שאנחנו מביאים. את כולן אפשר לראות בעמוד אירועי החברה.</p>
+    </div>
+    <div class="addons">{{cards}}</div>
+    <div class="cta-row center mt-32"><a class="btn btn-outline" href="events.html#addons">לכל התוספות</a></div>
+  </div>
+</section>""".replace("{cards}", cards)
 
 home_body = f"""
 <div class="next-show" data-next-show hidden></div>
 
 <section class="hero">
-  <div class="hero-photo" style="background-image:url('{HERO_IMG}')"></div>
+  {hero_photo(HERO_IMG)}
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
@@ -598,15 +791,16 @@ home_body = f"""
 </section>
 
 {stats_bar(DEFAULT_STATS)}
+{proof_strip()}
 {formats_index()}
-{addons_block()}
+{home_shows()}
 {mechanism_block()}
-{video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב", sub="ביצועים חיים מזירת הניינטיז, ותגובות הקהל בזמן ההצבעה. המנגנון זהה בכל הזירות.", limit=3)}
+{addons_compact()}
+{video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב", sub="ביצועים חיים ממופע הניינטיז, ותגובות הקהל בזמן ההצבעה. המנגנון זהה בכל המופעים.", limit=2)}
 {audience_block()}
 {gallery_section(IMAGES[:6], head="תמונות מהבמה")}
-{spec_block(DEFAULT_SPEC)}
 {contact_band("רוצים את הקרב הזה באירוע שלכם?",
-              "אפשר להתקשר, לשלוח וואטסאפ, או למלא את טופס ההזמנה עם התאריך והמקום — ונחזור אליכם עם הצעה.",
+              "אפשר להתקשר, לשלוח וואטסאפ, או למלא את טופס ההזמנה עם התאריך והמקום, ונחזור אליכם עם הצעה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>')}
 """
 
@@ -632,7 +826,7 @@ FORMAT_PAGES = {
            ["גראנג׳", "גלאם רוק", "רוק אלטרנטיבי אמריקאי", "פוסט-גראנג׳"]),
    side_b=("TEAM UK", "הצד הבריטי", "המלודיה, ההברה והסטייל — העשור שבו בריטניה החזירה לעצמה את הרדיו העולמי.",
            ["בריטפופ", "אינדי בריטי", "אגדות הרוק הבריטי", "אלטרנטיב בריטי"]),
-   avail="זירת הניינטיז היא הפורמט שרץ היום, ומוכנה לתאריכים מיידיים."),
+   avail="מופע הניינטיז כבר עולה על הבמות, ומוכן לתאריכים מיידיים."),
 
  "80s": dict(
    title="Soundclash אייטיז — קרב שנות ה-80, בריטניה נגד ארה״ב",
@@ -646,7 +840,7 @@ FORMAT_PAGES = {
            ["סטדיום רוק", "גלאם מטאל", "הארט רוק", "פופ אמריקאי של MTV"]),
    side_b=("TEAM UK", "הצד הבריטי", "העשור שבו בריטניה החליפה את הגיטרה בסינתסייזר, ואת החולצה במעיל — וכבשה את המצעדים.",
            ["סינת׳-פופ", "ניו-ווייב", "ניו-רומנטיקס", "פוסט-פאנק בריטי"]),
-   avail="זירת האייטיז זמינה להזמנה. ספרו לנו על התאריך, ונבנה את הערב לפי האולם והקהל."),
+   avail="מופע האייטיז זמין להזמנה. ספרו לנו על התאריך, ונבנה את הערב לפי האולם והקהל."),
 
  "israel": dict(
    title="Soundclash מסיבה ישראלית — אייטיז נגד ניינטיז",
@@ -666,7 +860,7 @@ FORMAT_PAGES = {
    title="Soundclash סדרות נגד סרטים — קרב השירים של המסך",
    desc="מופע קרב חי על מוזיקת המסך: השירים הגדולים מתוך סדרות טלוויזיה מול השירים הגדולים מתוך סרטי קולנוע, שיר מול שיר, והקהל מכריע בהצבעה חיה. להזמנות 054-6738192.",
    sub="סדרות נגד סרטים. הקהל מכריע.",
-   arc="על המסך: <em>וידאו מקורי לכל שיר</em>, וכל שיר מצד הסדרות נפתח בפתיח מקורי בסגנון העשור שלו.",
+   arc="על המסך: <em>וידאו מקורי לכל שיר</em>, ושירי הסדרות מקבלים פתיח מקורי בסגנון העשור שלהם.",
    lede=("10 סיבובים ו-20 להיטים שכולם מכירים: <b>שיר מסדרה</b> מול <span class='b-side'>שיר מסרט</span>, סביב נושא משותף. "
          "מצביעים מהטלפון, והתוצאה עולה למסך הגדול. מופע ערב נוצץ, עם גלאם, כוריאוגרפיה וסולן וסולנית בפרונט."),
    side_a=("TEAM TV", "צד הסדרות", "השירים שליוו סדרה שלמה — משיר הפתיחה שכולם שרים בעל פה ועד לרגע שהשיר הנכון עלה בדיוק בזמן.",
@@ -739,7 +933,7 @@ for f in FORMATS:
 
     if f["live"]:
         vids = video_section(VIDEOS_NO_TRAILER, head="צפו בקרב מקרוב",
-                             sub="ביצועים חיים מזירת הניינטיז, ותגובות הקהל בזמן ההצבעה.", limit=3)
+                             sub="ביצועים חיים ממופע הניינטיז, ותגובות הקהל בזמן ההצבעה.", limit=3)
     elif f["slug"] == "screen":
         vids = ""   # סרטוני היוטיוב של הניינטיז לא מוצגים כאן; במקומם סרטוני ה-AI (ינון, 14.11.2026)
     else:
@@ -749,17 +943,17 @@ for f in FORMATS:
 
     body = f"""
 <section class="hero">
-  <div class="hero-photo" style="background-image:url('{HERO_SCREEN if f["slug"] == "screen" else IMAGES[1][0]}')"></div>
+  {hero_photo(HERO_SCREEN if f["slug"] == "screen" else IMAGES[1][0])}
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
     <div class="eyebrow">{f['tag']} · Soundclash</div>
-    {('<img class="hero-logo" src="' + f['logo'] + '" alt="' + f['logo_alt'] + '">') if f.get('logo') else ('<div class="era-mark latin">' + f['era'] + '</div>')}
+    {('<img class="hero-logo" src="' + f['logo'].replace('-sm', '') + '" alt="' + f['logo_alt'] + '">') if f.get('logo') else ('<div class="era-mark latin">' + f['era'] + '</div>')}
     <h2>{d['sub']}</h2>
     <p class="lede">{d['lede']}</p>
     {trailer_video() if f["live"] else (demo_video() if f["slug"] == "screen" else "")}
     <div class="cta-row center">
-      <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת הזירה הזו</a>
+      <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
       <a class="btn btn-wa" href="{wa_link('היי, אשמח לפרטים על ' + f['name'] + ' לאירוע שלנו.')}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
       <a class="btn btn-outline" href="contact.html">טופס הזמנה</a>
     </div>
@@ -772,66 +966,46 @@ for f in FORMATS:
 
 {stats_bar(DEFAULT_STATS)}
 {(DUELS_SECTION + voices_block() + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b']) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
-{mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרעת הזירה", sub="ההצבעה אינה גימיק שמתלווה למופע — היא המבנה שלו. כל סיבוב נסגר בהכרעה של הקהל.")}
+{mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
 {vids}
 {screen_videos_section() if f["slug"] == "screen" else gallery_section(IMAGES[3:6], head="תמונות מהבמה")}
-{spec_block(spec, title="המפרט של הזירה הזו")}
+{spec_block(spec, title="המפרט של המופע")}
 {contact_band("רוצים את " + f['name_html'] + " אצלכם?",
-              "תגידו לנו תאריך, מקום וגודל קהל משוער — ונחזור אליכם עם הצעה.",
+              "תגידו לנו תאריך, מקום וגודל קהל משוער, ונחזור אליכם עם הצעה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>')}
 """
-    page(f["file"], d["title"], d["desc"], body, "fmt-" + f["slug"], theme=f["theme"], og_img=IMAGES[1][0])
+    page(f["file"], d["title"], d["desc"], body, "fmt-" + f["slug"], theme=f["theme"], og_img={"screen": OG["tv-vs-film"], "israel": OG["israel"]}.get(f["slug"], og_of(IMAGES[1][0])))
 
 
 # ============================================================================
 #  8. הופעות קרובות
 # ============================================================================
-def static_shows():
-    """רשימת הופעות סטטית מ-shows.json בזמן הבנייה, כדי שהדף לא ייראה ריק לפני שה-JS נטען."""
-    import json as _j
-    MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
-    today = datetime.date.today().isoformat()
-    shows = sorted([x for x in _j.load(open("shows.json", encoding="utf-8")).get("shows", []) if x.get("date","") >= today], key=lambda x: x["date"])
-    if not shows:
-        return '<div class="empty-state">אין כרגע תאריכים פתוחים לקהל הרחב.</div>'
-    out = []
-    for x in shows:
-        y, m, d = (int(v) for v in x["date"].split("-"))
-        e = html.escape
-        meta = e(x.get("format") or "Soundclash") + (" · " + e(x["time"]) if x.get("time") else "") + (" · " + e(x["note"]) if x.get("note") else "")
-        btn = (f'<a class="btn btn-solid" href="{e(x["tickets"])}" target="_blank" rel="noopener">כרטיסים</a>' if x.get("tickets")
-               else '<span class="chip">פרטים בטלפון</span>')
-        out.append(f'<article class="show-item"><div class="show-date"><div class="d latin">{d}</div><div class="m">{MONTHS[m-1]} {y}</div></div>'
-                   f'<div class="show-main"><h3>{e(x["venue"])}{(" · " + e(x["city"])) if x.get("city") else ""}</h3><p>{meta}</p></div>{btn}</article>')
-    return "\n".join(out)
-
 shows_body = f"""
-<section class="hero compact">
-  <div class="hero-photo" style="background-image:url('{IMAGES[2][0]}')"></div>
-  <div class="hero-glow"></div>
-  <div class="hero-inner">
-    <div class="eyebrow">לוח הופעות</div>
-    <h1 class="latin" style="font-size:clamp(40px,8vw,86px)">SHOWS</h1>
-    <h2>הופעות קרובות פתוחות לקהל</h2>
-    <p class="lede">כאן מתפרסמים התאריכים שפתוחים לרכישת כרטיסים. להזמנת המופע לאירוע פרטי, לחברה או למקום שלכם — יצירת קשר ישירה.</p>
-  </div>
-</section>
-
-<section>
-  <div class="wrap-narrow">
-    <div class="show-list" data-shows-list>
+<section class="sx-page">
+  <div class="wrap">
+    <header class="sx-head">
+      <div class="sx-side a"></div><div class="sx-side b"></div>
+      <div class="sx-head-in">
+        <div class="sx-kicker latin">SHOWS</div>
+        <h1>לוח ההופעות</h1>
+        <p>איפה פוגשים את הקרב הבא</p>
+      </div>
+    </header>
+    <p class="sx-lede">ההופעות הפתוחות לקהל. כרטיסים בקישור, או שריון מקום בוואטסאפ.</p>
+    <div class="sx-list" data-shows-list>
 {static_shows()}
     </div>
     <noscript><p class="empty-state" style="margin-top:16px">לצפייה בתאריכים המעודכנים יש לאפשר JavaScript, או להתקשר ל-{PHONE_MAIN}.</p></noscript>
+    {shows_strip()}
   </div>
 </section>
 
 {contact_band("לא מצאתם תאריך שמתאים?",
-              "אנחנו מעלים את המופע גם כאירוע סגור — במועדון, בחברה, במתנ״ס או בפסטיבל.")}
+              "אנחנו מעלים את המופע גם כאירוע סגור: במועדון, בחברה, במתנ״ס או בפסטיבל.")}
 """
 page("shows.html", "הופעות קרובות — Soundclash",
-     "לוח ההופעות הקרובות של Soundclash, עם קישורים לרכישת כרטיסים. להזמנת המופע לאירוע: 054-6738192.",
-     shows_body, "shows", theme="theme-90", og_img=IMAGES[2][0])
+     "לוח ההופעות הקרובות של Soundclash: תאריכים, כרטיסים, שריון מקום וניווט. להזמנת המופע לאירוע: 054-6738192.",
+     shows_body, "shows", theme="theme-90", og_img=OG["shows"], jsonld=shows_jsonld())
 
 
 # ============================================================================
@@ -839,7 +1013,7 @@ page("shows.html", "הופעות קרובות — Soundclash",
 # ============================================================================
 gallery_body = f"""
 <section class="hero compact">
-  <div class="hero-photo" style="background-image:url('{IMAGES[1][0]}')"></div>
+  {hero_photo(IMAGES[1][0])}
   <div class="hero-glow"></div>
   <div class="hero-inner">
     <div class="eyebrow">מהבמה</div>
@@ -857,7 +1031,7 @@ gallery_body = f"""
 """
 page("gallery.html", "גלריה — Soundclash",
      "תמונות ווידאו מהופעות Soundclash: הלהקה על הבמה, הקהל בהצבעה, ורגעים מתוך הקרב.",
-     gallery_body, "gallery", theme="theme-90", og_img=IMAGES[1][0])
+     gallery_body, "gallery", theme="theme-90", og_img=og_of(IMAGES[1][0]))
 
 
 # ============================================================================
@@ -876,7 +1050,7 @@ lineup_html = "".join('<li><b>%s</b> — %s</li>' % (name, role) for name, role 
 
 about_body = f"""
 <section class="hero compact">
-  <div class="hero-photo" style="background-image:url('{IMAGES[0][0]}')"></div>
+  {hero_photo(IMAGES[0][0])}
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
@@ -898,7 +1072,7 @@ about_body = f"""
     <h3>ההרכב</h3>
     <ul class="lineup">{lineup_html}</ul>
 
-    <h3>הזירות</h3>
+    <h3>המופעים</h3>
     <p>אותו מנגנון מוגש בכמה מופעים: סדרות נגד סרטים, המופע החדש; ניינטיז, שכבר עולה על הבמות; מסיבה ישראלית; ואייטיז לפי בקשה.
     כל המופעים זמינים להזמנה בתיאום מראש. גודל ההרכב ומבנה הסיבובים מאפשרים התאמה
     לסוג האירוע, לכמות האורחים ולמשך ההופעה.</p>
@@ -914,11 +1088,11 @@ about_body = f"""
 {mechanism_block()}
 {gallery_section(IMAGES[6:], head="הלהקה", link_more=True)}
 {contact_band("נשמח לדבר",
-              "תגידו לנו תאריך, מקום וגודל קהל משוער — ונחזור אליכם עם הצעה.",
+              "תגידו לנו תאריך, מקום וגודל קהל משוער, ונחזור אליכם עם הצעה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>')}
 """
 page("about.html", "אודות הלהקה — Soundclash",
-     "Soundclash — הרכב חי של שישה נגנים, מופע קרב מוזיקלי עם אפליקציית הצבעה שפיתחנו בעצמנו. ההרכב, המנגנון וארבע הזירות.",
+     "Soundclash — הרכב חי של שישה נגנים, מופע קרב מוזיקלי עם אפליקציית הצבעה שפיתחנו בעצמנו. ההרכב, המנגנון וארבעת המופעים.",
      about_body, "about", theme="theme-90")
 
 
@@ -931,7 +1105,7 @@ contact_people = "".join(
 
 contact_body = f"""
 <section class="hero compact">
-  <div class="hero-photo" style="background-image:url('{IMAGES[1][0]}')"></div>
+  {hero_photo(IMAGES[1][0])}
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
@@ -991,7 +1165,7 @@ contact_body = f"""
             </select>
           </div>
           <div class="field">
-            <label for="f-format">הזירה שמעניינת אתכם <span class="req">*</span></label>
+            <label for="f-format">המופע שמעניין אתכם <span class="req">*</span></label>
             <select id="f-format" name="format" required>
               <option value="">בחרו…</option>
               {fmt_options}
@@ -1038,7 +1212,7 @@ contact_body = f"""
 """
 page("contact.html", "יצירת קשר והזמנת המופע — Soundclash",
      "להזמנת מופע Soundclash: טלפון 054-6738192, וואטסאפ או טופס הזמנה. מועדונים, אירועי חברה, מחלקות תרבות ופסטיבלים.",
-     contact_body, "contact", theme="theme-90", og_img=IMAGES[1][0])
+     contact_body, "contact", theme="theme-90", og_img=og_of(IMAGES[1][0]))
 
 
 # ============================================================================
@@ -1047,14 +1221,14 @@ page("contact.html", "יצירת קשר והזמנת המופע — Soundclash",
 # ============================================================================
 CORP_WA_TEXT = "היי, אשמח להצעת מחיר למופע Soundclash באירוע חברה."
 events_body = r"""<section class="hero hero-corp">
-  <div class="hero-photo" style="background-image:url('{HERO_SCREEN}')"></div>
+  {hero_photo(HERO_SCREEN)}
   <div class="hero-glow"></div>
   <div class="hero-seam"></div>
   <div class="hero-inner">
-    <div class="eyebrow">לא עוד להקת קאברים. הקהל מכריע · לאירועי חברה</div>
-    <img class="hero-logo" src="assets/img/logo-tv-vs-film.svg" alt="Soundclash סדרות נגד סרטים">
+    <div class="eyebrow">לאירועי חברה</div>
+    <img class="hero-logo" src="assets/img/logo-tv-vs-film.webp" width="680" height="792" alt="Soundclash סדרות נגד סרטים">
     <h2>סדרות נגד סרטים. והעובדים מכריעים.</h2>
-    <p class="lede">מופע קרב מוזיקלי חי: שישה נגנים, סולן וסולנית, <b>השירים מהסדרות</b> מול <span class="b-side">השירים מהסרטים</span> שכולם בחדר גדלו עליהם. כל עובד מצביע מהטלפון, התוצאה עולה למסך בזמן אמת, ובסוף הערב מוכרז מנצח. וזה לא רק הופעה, זה ערב שלם, עם תוספות שאנחנו מביאים.</p>
+    <p class="lede">מופע קרב מוזיקלי חי: שישה נגנים, סולן וסולנית, <b>השירים מהסדרות</b> מול <span class="b-side">השירים מהסרטים</span> שכולם בחדר גדלו עליהם. כל עובד מצביע מהטלפון, התוצאה עולה למסך בזמן אמת, ובסוף הערב מוכרז מנצח. ואפשר להפוך את זה לערב שלם, עם תוספות שאנחנו מביאים.</p>
     <div class="cta-row center">
       <a class="btn btn-solid" href="#quote">לקבלת הצעת מחיר</a>
       <a class="btn btn-outline" href="#addons">לבניית הערב</a>
@@ -1064,7 +1238,36 @@ events_body = r"""<section class="hero hero-corp">
   </div>
 </section>
 
-<div class="stats"><div class="wrap"><div class="stat"><div class="num latin">6</div><div class="lbl">נגנים על הבמה</div></div><div class="stat"><div class="num latin">2</div><div class="lbl">סולן וסולנית</div></div><div class="stat"><div class="num latin">10</div><div class="lbl">סיבובים</div></div><div class="stat"><div class="num latin">20</div><div class="lbl">להיטים שכולם מכירים</div></div><div class="stat"><div class="num latin">APP</div><div class="lbl">הצבעה מהטלפון</div></div></div></div>
+<div class="stats"><div class="wrap"><div class="stat"><div class="num latin">6</div><div class="lbl">על הבמה, עם סולן וסולנית</div></div><div class="stat"><div class="num latin">20</div><div class="lbl">להיטים שכולם מכירים</div></div><div class="stat"><div class="num latin">10</div><div class="lbl">סיבובים</div></div><div class="stat"><div class="num latin">24</div><div class="lbl">שעות להצעת מחיר</div></div><div class="stat"><div class="num latin">APP</div><div class="lbl">הצבעה מהטלפון</div></div></div></div>
+
+<section id="proof" class="proof-top">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">כבר הופענו</div>
+      <h2>הקהל מכריע, והאולם מלא עד הסוף</h2>
+    </div>
+    <div class="proof-grid">
+      <div class="proof-main reveal">
+        <div class="proof-num latin">200</div>
+        <h3>קהילת אלפא, אלפי מנשה</h3>
+        <p>הזמינה את Soundclash לערב קהילתי באלפא פאב, עם כ-200 משתתפים.</p>
+        <blockquote class="quote">
+          <p>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים. תמסור לצוות שלך תודה רבה מקהילת אלפא, ואתם מוזמנים תמיד.״</p>
+          <cite>שחר הרוש · קהילת אלפא, אלפי מנשה</cite>
+        </blockquote>
+      </div>
+      <div class="proof-venues reveal">
+        <div class="pv-label">במות שבהן הופענו</div>
+        <ul data-past-venues>
+          <li><b>תמונע</b><span>תל אביב</span></li>
+          <li><b>וונדרבר</b><span>חיפה</span></li>
+          <li><b>אלפא פאב</b><span>אלפי מנשה</span></li>
+          <li><b>בלה צ'או</b><span>ראשון לציון</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section id="why">
   <div class="wrap">
@@ -1076,7 +1279,7 @@ events_body = r"""<section class="hero hero-corp">
     <div class="audience">
       <div class="aud-card reveal"><h3>כולם משתתפים</h3><p>כל אחד בחדר פותח את הטלפון, מצביע לאורך כל דו־קרב ורואה את הקול שלו מזיז את התוצאה על המסך. מי שהצביע בסיבוב הראשון נשאר עד ההכרעה.</p></div>
       <div class="aud-card reveal"><h3>מחבר בין דורות</h3><p>חברים, טיטאניק, פוקימון, רוקי וריקי גל. הרפרטואר מגיע מהמסך, ולכן גם עובד בן 25 וגם מנהלת בת 50 מזהים את השיר מהתו הראשון.</p></div>
-      <div class="aud-card reveal"><h3>יש מתח ויש מנצח</h3><p>שני צדדים, שיר מול שיר, והתוצאה מתעדכנת על המסך אחרי כל סיבוב. בהופעות של זירת הניינטיז, הקרב נשאר צמוד עד הדו־קרב האחרון.</p></div>
+      <div class="aud-card reveal"><h3>יש מתח ויש מנצח</h3><p>שני צדדים, שיר מול שיר, והתוצאה מתעדכנת על המסך אחרי כל סיבוב. בהופעות של מופע הניינטיז, הקרב נשאר צמוד עד הדו־קרב האחרון.</p></div>
       <div class="aud-card reveal"><h3>בלי ספק נוסף לתאם</h3><p>את אפליקציית ההצבעה, מסך התוצאות וההפעלה מול הקהל אנחנו מביאים ומפעילים. אין מה להוריד, אין הרשמה, ואין עוד מפעיל שצריך להזמין.</p></div>
     </div>
   </div>
@@ -1150,31 +1353,11 @@ events_body = r"""<section class="hero hero-corp">
   </div>
 </section>
 
-<section id="proof">
+<section id="screen-demo">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">כבר הופענו</div>
-      <h2>הקהל מכריע, והאולם מלא עד הסוף</h2>
-    </div>
-    <div class="proof-grid">
-      <div class="proof-main reveal">
-        <div class="proof-num latin">200</div>
-        <h3>קהילת אלפא, אלפי מנשה</h3>
-        <p>הזמינה את Soundclash לערב קהילתי באלפא פאב, עם כ-200 משתתפים.</p>
-        <blockquote class="quote">
-          <p>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים. תמסור לצוות שלך תודה רבה מקהילת אלפא, ואתם מוזמנים תמיד.״</p>
-          <cite>שחר הרוש · קהילת אלפא, אלפי מנשה</cite>
-        </blockquote>
-      </div>
-      <div class="proof-venues reveal">
-        <div class="pv-label">במות שבהן הופענו</div>
-        <ul data-past-venues>
-          <li><b>תמונע</b><span>תל אביב</span></li>
-          <li><b>וונדרבר</b><span>חיפה</span></li>
-          <li><b>אלפא פאב</b><span>אלפי מנשה</span></li>
-          <li><b>בלה צ'או</b><span>ראשון לציון</span></li>
-        </ul>
-      </div>
+      <div class="eyebrow">על המסך ובטלפון</div>
+      <h2>ככה זה נראה באולם</h2>
     </div>
     <div class="mt-32"><!--DEMO--></div>
     <div class="mt-32"><!--SVIDS--></div>
@@ -1230,20 +1413,21 @@ events_body = r"""<section class="hero hero-corp">
 events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["phone"])
                .replace("{DUELS}", DUELS_SECTION)
                .replace("{HERO_SCREEN}", HERO_SCREEN)
+               .replace("{hero_photo(HERO_SCREEN)}", hero_photo(HERO_SCREEN))
                .replace("<!--SVIDS-->", svids_html())
                .replace("{VOICES}", voices_block(head="מי על הבמה", eyebrow="הנבחרת"))
-               .replace("{ADDONS}", addons_block(head="ערב שלם, לא רק הופעה: אנחנו מביאים את כל זה", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
+               .replace("{ADDONS}", addons_block(head="מה עוד אפשר להוסיף לערב", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
                .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))
 events_body = events_body.replace("<!--DEMO-->", demo_video())
 page("events.html", "Soundclash לאירועי חברה — קרב מוזיקלי שהעובדים מכריעים",
      "מופע קרב מוזיקלי חי לאירועי חברה וערבי גיבוש: סדרות נגד סרטים, שישה נגנים, סולן וסולנית, והעובדים מצביעים מהטלפון ומכריעים. הצעת מחיר תוך 24 שעות: 054-6738192.",
-     events_body, "events", theme="theme-screen", og_img=HERO_IMG)
+     events_body, "events", theme="theme-screen", og_img=OG["events"])
 
 # Y2K הוקפא (10.2026): הכתובת הישנה מפנה לדף הקרב הישראלי, כדי שקישורים ישנים לא יישברו
 with open(os.path.join(OUT, "y2k.html"), "w", encoding="utf-8") as fh:
     fh.write('<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
              '<meta http-equiv="refresh" content="0; url=israel.html"><link rel="canonical" href="https://soundclash.co.il/israel.html">'
              '<meta name="robots" content="noindex"><title>Soundclash</title></head>'
-             '<body><p><a href="israel.html">לדף הזירות של Soundclash</a></p></body></html>')
+             '<body><p><a href="israel.html">לדף המופעים של Soundclash</a></p></body></html>')
 
 print("נבנו הדפים:", ", ".join(sorted(f for f in os.listdir(OUT) if f.endswith(".html"))))
