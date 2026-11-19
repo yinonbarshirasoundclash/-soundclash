@@ -746,14 +746,31 @@ HOME_JSONLD = """<script type="application/ld+json">
 "address":{"@type":"PostalAddress","addressCountry":"IL"}}
 </script>""" % (SITE_URL, OG["home"], EMAIL)
 
+CROWD_MP4 = "assets/video/crowd-wonderbar.mp4?v=1"
+CROWD_POSTER = "assets/video/crowd-wonderbar.jpg?v=1"
+def crowd_clip():
+    """20 שניות מצילום טלפון בתוך הקהל, וונדרבר 5.9.2026. מתנגן בלי קול כשהוא על המסך."""
+    return f"""<figure class="demo-video crowd-clip">
+      <video src="{CROWD_MP4}" poster="{CROWD_POSTER}" muted loop playsinline preload="none" data-autoplay-visible
+        aria-label="הקהל בוונדרבר, חיפה, ידיים וטלפונים באוויר"></video>
+      <button type="button" class="demo-sound" aria-pressed="false" aria-label="הפעלת סאונד">
+        <span class="on">🔊 עם סאונד</span><span class="off">🔇 בלי סאונד</span></button>
+      <button type="button" class="demo-full" aria-label="צפייה במסך מלא, עם סאונד">⛶</button>
+    </figure>"""
+
 def proof_strip():
-    return """<section class="proof-strip">
-  <div class="wrap">
-    <figure class="ps-quote reveal">
-      <blockquote>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים.״</blockquote>
-      <figcaption>שחר הרוש · קהילת אלפא, אלפי מנשה · כ-200 משתתפים</figcaption>
-    </figure>
-    <div class="ps-venues reveal"><span>הופענו ב:</span> <b>תמונע</b> תל אביב · <b>וונדרבר</b> חיפה · <b>אלפא פאב</b> אלפי מנשה · <b>בלה צ'או</b> ראשון לציון</div>
+    return f"""<section class="proof-strip">
+  <div class="wrap ps-grid">
+    <div class="ps-text">
+      <div class="eyebrow">מהקהל</div>
+      <figure class="ps-quote reveal">
+        <blockquote>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים.״</blockquote>
+        <figcaption>שחר הרוש · קהילת אלפא, אלפי מנשה · כ-200 משתתפים</figcaption>
+      </figure>
+      <div class="ps-venues reveal"><span>הופענו ב:</span> <b>תמונע</b> תל אביב · <b>וונדרבר</b> חיפה · <b>אלפא פאב</b> אלפי מנשה · <b>בלה צ'או</b> ראשון לציון</div>
+      <p class="ps-cap">בסרטון: וונדרבר, חיפה, ספטמבר 2026. צילום טלפון מתוך הקהל.</p>
+    </div>
+    {crowd_clip()}
   </div>
 </section>"""
 
@@ -1022,6 +1039,14 @@ shows_body = f"""
 {static_shows()}
     </div>
     <noscript><p class="empty-state" style="margin-top:16px">לצפייה בתאריכים המעודכנים יש לאפשר JavaScript, או להתקשר ל-{PHONE_MAIN}.</p></noscript>
+    <div class="sx-crowd">
+      {crowd_clip()}
+      <div>
+        <div class="eyebrow">ככה זה נראה מהקהל</div>
+        <h2>וונדרבר, חיפה</h2>
+        <p>20 שניות מתוך ההופעה בספטמבר, מצולמות בטלפון מתוך הקהל. שיר מול שיר, הידיים באוויר, ובסוף כל סיבוב כולם מצביעים.</p>
+      </div>
+    </div>
     {shows_strip()}
   </div>
 </section>
