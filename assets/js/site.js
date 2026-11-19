@@ -85,7 +85,8 @@ window.SC_CONFIG = {
      אותה תבנית בדיוק כמו show_rows() ב-build.py (לוח בסגנון nbshira.com). */
   var MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
   var DAYS = ["יום ראשון","יום שני","יום שלישי","יום רביעי","יום חמישי","יום שישי","שבת"];
-  var PHOTOS = ["f10df775","97af6be2","234c6486","6b83c4a9","bb6e95f2"];
+  var PHOTOS_A = ["09307","09347","09303","09350"];   /* כמו ב-build.py */
+  var PHOTOS_B = ["09274","09260","09283","09250"];
   var MARK_MIC = '<path d="M50 12a14 14 0 0114 14v22a14 14 0 01-28 0V26a14 14 0 0114-14zM28 46a22 22 0 0044 0M50 68v16M38 86h24"/>';
   var MARK_VOTE = '<rect x="30" y="8" width="40" height="84" rx="8"/><path d="M40 70V58M50 70V40M60 70V50"/>';
   var WA_ICON = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>';
@@ -134,7 +135,7 @@ window.SC_CONFIG = {
           (flag ? '<span class="flag">' + flag + '</span>' : "") + '</div></div>' +
         '<div><div class="k">' + esc(fmtShort(s)) + '</div><div class="pl">' + esc(s.city || "") + '</div></div>' +
       '</div>' +
-      '<div class="sx-photo"><img src="assets/img/stage/' + PHOTOS[i % PHOTOS.length] + '-800.webp" alt="" loading="lazy" width="800" height="533"></div>' +
+      '<div class="sx-photo"><img src="assets/img/tmuna/' + (side === "a" ? PHOTOS_A : PHOTOS_B)[Math.floor(i / 2) % 4] + '-800.webp" alt="" loading="lazy" width="800" height="533"></div>' +
       '<div class="sx-title"><b>' + esc(s.venue) + '</b>' + (info ? '<span>' + info + '</span>' : "") +
         '<div class="sx-acts">' + main +
           '<a class="btn btn-ghost" href="' + s._cal + '">ליומן</a>' +

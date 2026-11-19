@@ -562,7 +562,9 @@ def formats_index():
 # ============================================================================
 #  5ב. הופעות: שורות, יומן, סימון לגוגל
 # ============================================================================
-SHOW_PHOTOS = ["f10df775", "97af6be2", "234c6486", "6b83c4a9", "bb6e95f2"]  # מתחלפות לפי הסדר
+T = "assets/img/tmuna/"   # צילומי ההופעה בתמונע (19.11.2026), <id>-800.webp / <id>-1600.webp
+SHOW_PHOTOS_A = ["09307", "09347", "09303", "09350"]   # תאורה אדומה, לשורות בצד האדום
+SHOW_PHOTOS_B = ["09274", "09260", "09283", "09250"]   # תאורה כחולה, לשורות בצד הכחול
 HE_DAYS = ["יום שני", "יום שלישי", "יום רביעי", "יום חמישי", "יום שישי", "שבת", "יום ראשון"]  # לפי weekday() של פייתון
 
 def load_shows(upcoming=True):
@@ -607,7 +609,8 @@ def show_rows(shows, prefix=""):
         y, m, d = (int(v) for v in x["date"].split("-"))
         wd = HE_DAYS[datetime.date(y, m, d).weekday()]
         side = "a" if i % 2 == 0 else "b"
-        photo = W + SHOW_PHOTOS[i % len(SHOW_PHOTOS)]
+        pool = SHOW_PHOTOS_A if side == "a" else SHOW_PHOTOS_B
+        photo = T + pool[(i // 2) % len(pool)]
         info = " · ".join(e(v) for v in (x.get("note"), x.get("address")) if v)
         main = (f'<a class="btn btn-solid" href="{e(x["tickets"])}" target="_blank" rel="noopener">כרטיסים</a>' if x.get("tickets")
                 else f'<a class="btn btn-wa" href="{e(show_wa(x))}" target="_blank" rel="noopener">{ICON["wa"]} שריון מקום בוואטסאפ</a>')
@@ -681,9 +684,11 @@ def shows_jsonld():
         evs.append(ev)
     return ('<script type="application/ld+json">%s</script>' % _j.dumps(evs, ensure_ascii=False)) if evs else ""
 
+STRIP = [("09363", "הסולנית עם הגיטרה החשמלית"), ("09224", "ינון בר שירה עם האקוסטית"),
+         ("09381", "הגיטריסט והקלידן"), ("09296", "שירה מול הדגל הבריטי")]
 def shows_strip():
-    pics = "".join(f'<div><img src="{img(W + i, 800)}" alt="Soundclash על הבמה" loading="lazy" width="800" height="533"></div>' for i in ("d115b17d", "6f1e7a0d", "97af6be2"))
-    return f'<div class="sx-rule"><span>מהבמה</span><i></i></div><div class="sx-strip">{pics}</div>'
+    pics = "".join(f'<div><img src="{img(T + i, 800)}" alt="{a}" loading="lazy" width="800" height="1200"></div>' for i, a in STRIP)
+    return f'<div class="sx-rule"><span>מהבמה · תמונע, תל אביב</span><i></i></div><div class="sx-strip">{pics}</div>'
 
 write_calendars()
 
