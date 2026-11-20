@@ -463,7 +463,7 @@
       for (let i = 0; i < 70; i++) { c.save(); c.translate(r() * W, r() * H); c.rotate(r() * 6); c.fillStyle = r() < .5 ? "rgba(255,170,190,.85)" : "rgba(255,240,240,.8)"; c.beginPath(); c.ellipse(0, 0, 6, 3, 0, 0, 7); c.fill(); c.restore(); }
       c.fillStyle = "#130b14"; c.fillRect(0, H * .88, W, H * .12);
     },
-    /* 08 · קח אותי — a childhood home at night in the rain, one warm window */
+    /* תשאירי לי מקום לחבק אותך (עד גרסה 15: קח אותי) — a home at night in the rain, one warm window */
     il_home(c, r) {
       fill(c, lin(c, 0, 0, 0, H, [[0, "#0b1220"], [1, "#1b2434"]]));
       c.fillStyle = "#0e141e"; poly(c, [[W * .3, H * .45], [W * .5, H * .22], [W * .7, H * .45]], "#0e141e"); c.fillRect(W * .32, H * .45, W * .36, H * .45);
@@ -637,6 +637,67 @@
       c.fillStyle = "#0a0410"; c.fillRect(0, H * .8, W, H * .2);
       for (let i = 0; i < 60; i++) { const x = r() * W, y = H * (.78 + r() * .2); c.fillStyle = "#0a0410"; c.fillRect(x, y - 40, 2, 40); c.fillStyle = ["#ffffff", "#2f63c4", "#ff3d3d", "#ffd23d", "#3dd67a"][i % 5]; c.fillRect(x + 2, y - 40, 22, 14); }
       for (let i = 0; i < 120; i++) { c.fillStyle = "rgba(255,240,255," + r() + ")"; c.fillRect(r() * W, r() * H * .75, 2, 2); }
+    },
+    /* גרסה 16 · שיר הפרחה — a dressing-room mirror ringed with bulbs, lipstick and heart sunglasses, late-seventies pink and gold */
+    il_frecha(c, r) {
+      fill(c, lin(c, 0, 0, W, H, [[0, "#2a0a24"], [.6, "#4a1438"], [1, "#1a0614"]]));
+      for (let i = 0; i < 9; i++) { c.fillStyle = "rgba(255,120,190," + (.05 + r() * .06) + ")"; c.fillRect(0, i * 60, W, 30); }
+      const mx = W * .5, my = H * .44, mw = 300, mh = 210;
+      c.fillStyle = "#c9a24a"; c.fillRect(mx - mw / 2 - 26, my - mh / 2 - 26, mw + 52, mh + 52);
+      c.fillStyle = lin(c, mx - mw / 2, my - mh / 2, mx + mw / 2, my + mh / 2, [[0, "#f5d6e4"], [.5, "#b98aa8"], [1, "#6a3a5a"]]); c.fillRect(mx - mw / 2, my - mh / 2, mw, mh);
+      c.fillStyle = "rgba(255,255,255,.35)"; poly(c, [[mx - mw / 2 + 30, my - mh / 2], [mx - mw / 2 + 90, my - mh / 2], [mx - mw / 2 + 10, my + mh / 2], [mx - mw / 2 - 0, my + mh / 2 - 40]], "rgba(255,255,255,.35)");
+      for (let i = 0; i < 7; i++) { const x = mx - mw / 2 - 13 + i * (mw + 26) / 6; [my - mh / 2 - 13, my + mh / 2 + 13].forEach(y => { glow(c, x, y, 26, "rgba(255,230,170,.85)"); c.fillStyle = "#fff6dc"; c.beginPath(); c.arc(x, y, 7, 0, 7); c.fill(); }); }
+      for (let i = 1; i < 5; i++) { const y = my - mh / 2 - 13 + i * (mh + 26) / 5; [mx - mw / 2 - 13, mx + mw / 2 + 13].forEach(x => { glow(c, x, y, 26, "rgba(255,230,170,.85)"); c.fillStyle = "#fff6dc"; c.beginPath(); c.arc(x, y, 7, 0, 7); c.fill(); }); }
+      c.fillStyle = "#3a1a10"; c.fillRect(0, H * .8, W, H * .2); c.fillStyle = "rgba(255,200,150,.12)"; c.fillRect(0, H * .8, W, 6);
+      // a lipstick and a pair of heart-shaped sunglasses on the table
+      c.fillStyle = "#d8b45a"; c.fillRect(W * .24, H * .7, 26, 48); c.fillStyle = "#e0245e"; poly(c, [[W * .24 + 3, H * .7], [W * .24 + 23, H * .7], [W * .24 + 23, H * .64], [W * .24 + 3, H * .67]], "#e0245e");
+      heart(c, W * .7, H * .7, 54, "#ff3d8a"); heart(c, W * .7 + 70, H * .7, 54, "#ff3d8a"); c.fillStyle = "#ff3d8a"; c.fillRect(W * .7 + 16, H * .7 + 18, 40, 5);
+      heart(c, W * .7, H * .7 + 8, 38, "rgba(40,0,20,.75)"); heart(c, W * .7 + 70, H * .7 + 8, 38, "rgba(40,0,20,.75)");
+      for (let i = 0; i < 40; i++) { glow(c, r() * W, r() * H * .75, 6 + r() * 10, "rgba(255,220,240,.6)"); }
+    },
+    /* גרסה 16 · תראו אותי — a single mic in a sunny spotlight, confetti and balloons: suddenly happy, everything like a dream */
+    il_lookatme(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#1a2a5a"], [.55, "#6a4a8a"], [1, "#2a1430"]]));
+      for (let i = 0; i < 6; i++) { c.fillStyle = "rgba(255,255,255," + (.05 + r() * .06) + ")"; c.beginPath(); c.ellipse(r() * W, H * (.1 + r() * .4), 140, 34, 0, 0, 7); c.fill(); }
+      beam(c, W * .5, -40, Math.PI / 2, .22, 640, "#fff2c0", .55);
+      c.fillStyle = rad(c, W / 2, H * .86, 10, 260, [[0, "rgba(255,240,190,.75)"], [1, "rgba(0,0,0,0)"]]); c.fillRect(0, H * .66, W, H * .34);
+      c.fillStyle = "#1a0c18"; c.fillRect(0, H * .9, W, H * .1);
+      c.fillStyle = "#120810"; c.fillRect(W / 2 - 3, H * .48, 6, H * .42); c.fillRect(W / 2 - 40, H * .89, 80, 8); c.beginPath(); c.ellipse(W / 2, H * .46, 14, 22, 0, 0, 7); c.fill();
+      [[W * .16, H * .3, "#ff5a8a"], [W * .26, H * .2, "#ffd23d"], [W * .8, H * .26, "#3dd6ff"], [W * .88, H * .16, "#8aff6a"]].forEach(([x, y, col]) => {
+        c.strokeStyle = "rgba(255,255,255,.5)"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(x, y + 44); c.quadraticCurveTo(x + 10, y + 120, x - 6, y + 200); c.stroke();
+        c.fillStyle = col; c.beginPath(); c.ellipse(x, y, 32, 42, 0, 0, 7); c.fill(); c.fillStyle = "rgba(255,255,255,.45)"; c.beginPath(); c.ellipse(x - 10, y - 14, 7, 12, -.4, 0, 7); c.fill(); });
+      for (let i = 0; i < 120; i++) { c.save(); c.translate(r() * W, r() * H * .85); c.rotate(r() * 3); c.fillStyle = ["#ff5a8a", "#ffd23d", "#3dd6ff", "#8aff6a", "#fff"][i % 5]; c.globalAlpha = .8; c.fillRect(-5, -2, 10, 4); c.restore(); } c.globalAlpha = 1;
+    },
+    /* גרסה 16 · זודיאק — the twelve signs on a wheel turning in a starry sky */
+    il_zodiac(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#02030f"], [1, "#160a32"]]));
+      stars(c, r, 260, "#fff", H);
+      const cx = W * .5, cy = H * .5;
+      glow(c, cx, cy, 260, "rgba(140,110,255,.35)");
+      c.strokeStyle = "rgba(220,200,255,.55)"; c.lineWidth = 3; [200, 150, 90].forEach(rr => { c.beginPath(); c.arc(cx, cy, rr, 0, 7); c.stroke(); });
+      const signs = ["\u2648", "\u2649", "\u264A", "\u264B", "\u264C", "\u264D", "\u264E", "\u264F", "\u2650", "\u2651", "\u2652", "\u2653"];
+      c.textAlign = "center"; c.textBaseline = "middle"; c.font = "bold 34px serif";
+      signs.forEach((g, i) => { const a = i / 12 * Math.PI * 2 - Math.PI / 2; c.strokeStyle = "rgba(220,200,255,.35)"; c.lineWidth = 2; c.beginPath(); c.moveTo(cx + Math.cos(a + Math.PI / 12) * 150, cy + Math.sin(a + Math.PI / 12) * 150); c.lineTo(cx + Math.cos(a + Math.PI / 12) * 200, cy + Math.sin(a + Math.PI / 12) * 200); c.stroke();
+        const x = cx + Math.cos(a) * 175, y = cy + Math.sin(a) * 175; glow(c, x, y, 28, "rgba(255,220,140,.45)"); c.fillStyle = "#ffe6a8"; c.fillText(g, x, y); });
+      c.textAlign = "start"; c.textBaseline = "alphabetic";
+      c.fillStyle = "#ffe6a8"; c.beginPath(); c.arc(cx, cy, 40, 0, 7); c.fill(); glow(c, cx, cy, 120, "rgba(255,230,160,.6)");
+      for (let k = 0; k < 4; k++) { c.strokeStyle = "rgba(255,255,255,.35)"; c.lineWidth = 1.5; c.beginPath(); let x = r() * W, y = r() * H * .3; c.moveTo(x, y); for (let j = 0; j < 4; j++) { x += (r() - .3) * 90; y += r() * 50; c.lineTo(x, y); c.fillStyle = "#fff"; c.fillRect(x - 2, y - 2, 4, 4); } c.stroke(); }
+    },
+    /* גרסה 16 · יעקב — a nineties girl-band dance floor: a boombox with neon equalizer bars on a checkerboard */
+    il_yaakov(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#120420"], [1, "#2a0a3a"]]));
+      for (let i = 0; i < 10; i++) beam(c, W * (.05 + i * .1), -30, Math.PI / 2 + (i - 4.5) * .06, .04, 640, ["#ff3dd0", "#3dffe0", "#ffe23d"][i % 3], .22);
+      for (let row = 0; row < 7; row++) for (let col = -7; col < 8; col++) {
+        const z0 = 1 + row * .7, z1 = z0 + .7, y0 = H * .62 + 160 / z0 - 40, y1 = H * .62 + 160 / z1 - 40;
+        poly(c, [[W / 2 + col * 120 / z0, y0], [W / 2 + (col + 1) * 120 / z0, y0], [W / 2 + (col + 1) * 120 / z1, y1], [W / 2 + col * 120 / z1, y1]], (row + col + 20) % 2 ? "#f2eef6" : "#120a1a");
+      }
+      const bx = W * .5, by = H * .38;
+      c.fillStyle = "#1c1c26"; c.fillRect(bx - 200, by - 70, 400, 140); c.fillStyle = "#2c2c3a"; c.fillRect(bx - 150, by - 100, 300, 34);
+      [-1, 1].forEach(sg => { const x = bx + sg * 125; c.fillStyle = "#0c0c12"; c.beginPath(); c.arc(x, by, 56, 0, 7); c.fill(); c.strokeStyle = "#3dffe0"; c.lineWidth = 4; c.beginPath(); c.arc(x, by, 46, 0, 7); c.stroke(); glow(c, x, by, 70, "rgba(61,255,224,.3)"); c.fillStyle = "#3dffe0"; c.beginPath(); c.arc(x, by, 12, 0, 7); c.fill(); });
+      for (let i = 0; i < 9; i++) { const hh = 14 + r() * 70; c.fillStyle = ["#ff3dd0", "#ffe23d", "#3dffe0"][i % 3]; c.fillRect(bx - 50 + i * 11, by + 40 - hh, 7, hh); }
+      glow(c, bx, by, 260, "rgba(255,61,208,.18)");
+      for (let i = 0; i < 6; i++) { c.fillStyle = "#fff"; c.globalAlpha = .7; c.font = "bold 36px serif"; c.fillText("\u266B", W * .12 + i * 140, H * .14 + Math.sin(i * 1.7) * 30); } c.globalAlpha = 1;
+      for (let i = 0; i < 80; i++) { c.fillStyle = "rgba(255,240,255," + r() + ")"; c.fillRect(r() * W, r() * H * .55, 2, 2); }
     },
   };
 

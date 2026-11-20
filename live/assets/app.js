@@ -88,6 +88,8 @@
   const baseSong = (r, side) => r === "enc" ? (SHOW.encores || {})[side] : SET[r][side];
   /* an edit is tied to the text it was made on: when the setlist file's text changes, older edits stop applying */
   const factSig = (s) => { const t = (s && (s.fact || "") + "|" + (s.scene || "")) || ""; let x = 5381; for (let i = 0; i < t.length; i++) x = ((x * 33) ^ t.charCodeAt(i)) >>> 0; return x.toString(36); };
+  /* lyrics live under the song's own key (song.lyr) when it moved between setlist versions, so the words travel with the song */
+  const lyrKey = (r, side) => { const s = baseSong(r, side); return (s && s.lyr) || videoKey(r, side); };
   const factEdit = (r, side, map) => { const s = baseSong(r, side), o = s && (map || FACTS)[videoKey(r, side)]; return o && o.base === factSig(s) ? o : null; };
   const songOf = (r, side) => {
     const s = baseSong(r, side), o = factEdit(r, side);
@@ -563,14 +565,14 @@
           h("p", { class: "muted" }, meta(s), s.sourceEn && !s.hebrew ? " (" + s.sourceEn + ")" : "", s.year ? " · " + s.year : ""),
           s.medley ? h("p", null, "במחרוזת: ", s.medley.join(" ← ")) : null,
           s.scene ? h("div", { class: "scene" }, h("span", { class: "scene-k" }, SIDE[data.side].sceneLabel), h("p", null, s.scene)) : null,
-          h("p", { class: "fact" }, "💡 ", s.fact),
+          h("p", { class: "fact" }, "💡 ", s.fact || "העובדה על השיר הזה תעלה בקרוב."),
           h("button", { class: "btn-ghost lyrics-btn", type: "button", onclick: () => this.openSheet("lyrics", data) }, "📝 למילים של השיר")];
       } else if (kind === "lyrics") {
         const s = songOf(data.r, data.side), box = h("div", { class: "lyrics", dir: s.hebrew ? "rtl" : "ltr" }, h("div", { class: "spinner", "aria-hidden": "true" }));
         body = [h("p", { class: "eyebrow" }, SIDE[data.side].team + " · " + roundLabel(data.r)),
           h("h2", { class: "aud-h2" + (s.hebrew ? "" : " latin-title") }, bdi(s.title)),
           h("p", { class: "muted" }, meta(s)), box];
-        this.be.getLyrics(videoKey(data.r, data.side)).then(l => {
+        this.be.getLyrics(lyrKey(data.r, data.side)).then(l => {
           if (l && l.text) setKids(box, l.text);
           else setKids(box, h("p", { class: "lyrics-empty" }, "המילים לשיר הזה יעלו בקרוב."));
         }).catch(() => setKids(box, h("p", { class: "lyrics-empty" }, "אין חיבור כרגע. נסו שוב בעוד רגע.")));
@@ -1500,8 +1502,8 @@
     renderLyrics() {
       if (!this.$lyrics || !this.st) return;
       const st = this.st, map = this.lyricsMap || {};
-      const keys = []; SET.forEach((d, i) => sideOrder(st, i).forEach(s => keys.push({ k: videoKey(i, s), s, song: songOf(i, s), i })));
-      if (SHOW.encores) ["tv", "film"].forEach(sd => keys.push({ k: videoKey("enc", sd), s: sd, song: songOf("enc", sd), i: "enc" }));
+      const keys = []; SET.forEach((d, i) => sideOrder(st, i).forEach(s => keys.push({ k: lyrKey(i, s), s, song: songOf(i, s), i })));
+      if (SHOW.encores) ["tv", "film"].forEach(sd => keys.push({ k: lyrKey("enc", sd), s: sd, song: songOf("enc", sd), i: "enc" }));
       if (!this.lyrKey) this.lyrKey = keys[0].k;
       const cur = keys.find(x => x.k === this.lyrKey) || keys[0];
       const sel = h("select", { id: "adm-lyr-song", class: "field field-sm", onchange: (e) => { this.lyrKey = e.target.value; this.renderLyrics(); } },
@@ -1747,7 +1749,7 @@
     if (!CFG.VIDEO_BASE_URL) CFG.VIDEO_BASE_URL = "media/demo";
     (async () => {
       await be.resetShow();
-      const keys = []; SET.forEach((d, i) => ["tv", "film"].forEach(sd => keys.push(videoKey(i, sd))));
+      const keys = []; SET.forEach((d, i) => ["tv", "film"].forEach(sd => keys.push(lyrKey(i, sd))));
       for (const k of keys) await be.setLyrics(k, LYR);
       safeStore.set(pkey, Object.assign({}, ME, { votes: {} }));
       new ScreenView(screenBox, be, {});
