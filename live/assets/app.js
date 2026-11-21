@@ -225,9 +225,24 @@
       this.sheetEl = h("div", { class: "aud-sheet", hidden: true });
       root.append(this.top, this.scoreBar, this.main, this.reactBar, this.fx, this.canvas, this.sheetEl);
       this.buildReactBar();
-      be.onState(st => { this.st = st; this.render(); });
+      be.onState(st => {
+        /* after the admin resets the show, the server forgets every player; a phone that joined before
+           the reset registers again by itself, otherwise its votes are refused */
+        const was = this.st; this.st = st;
+        if (this.me && was && was.phase !== "lobby" && st.phase === "lobby") this.ensurePlayer(true);
+        this.render();
+      });
       this.tick = setInterval(() => this.tickClock(), 250);
       if (!this.me && be.fetchPlayer) be.fetchPlayer().then(p => { if (p && !this.me) { this.me = { ticket: p.ticket, name: p.name || "", prediction: p.prediction || null, votes: {} }; this.save(); this.render(); } }).catch(() => {});
+      else if (this.me) this.ensurePlayer(true);
+    }
+    /* make sure the server knows this phone (the player doc); re-joins with the same ticket if it's missing */
+    async ensurePlayer(check) {
+      if (!this.me || !this.be.join) return;
+      try {
+        if (check && this.be.fetchPlayer) { const p = await this.be.fetchPlayer(); if (p) return; }
+        await this.be.join({ ticket: this.me.ticket, name: this.me.name || "", prediction: this.me.prediction || null });
+      } catch (e) { console.warn("join", e); }
     }
     save() { if (this.me) { this.me.votes = this.myVotes; safeStore.set(this.pkey, this.me); } }
     renderTop() {
@@ -382,7 +397,14 @@
       if (navigator.vibrate) navigator.vibrate(18);
       this._key = null; this.render();
       try { await this.be.vote(r, side, { ticket: this.me.ticket, name: this.me.name }); }
-      catch (e) { if (this.voteNote) this.voteNote.textContent = "ההצבעה כבר נסגרה."; }
+      catch (e) {
+        /* refused: most often the server lost this phone (show reset) — register again and retry once */
+        try {
+          if (!this.voteOpen()) throw e;
+          await this.ensurePlayer(false);
+          await this.be.vote(r, side, { ticket: this.me.ticket, name: this.me.name });
+        } catch (e2) { console.warn("vote", e2); if (this.voteNote) this.voteNote.textContent = this.voteOpen() ? "ההצבעה לא נקלטה. נסו ללחוץ שוב." : "ההצבעה כבר נסגרה."; }
+      }
     }
     songLinks(r, side) {
       const s = songOf(r, side);
