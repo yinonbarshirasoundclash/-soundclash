@@ -229,11 +229,22 @@
         /* after the admin resets the show, the server forgets every player; a phone that joined before
            the reset registers again by itself, otherwise its votes are refused */
         const was = this.st; this.st = st;
-        if (this.me && was && was.phase !== "lobby" && st.phase === "lobby") this.ensurePlayer(true);
+        /* every reset starts a new show session (st.sid). A phone from an older session — even one that was
+           closed during the reset — drops its old votes and registers again */
+        if (this.me && st.sid && this.me.sid !== st.sid) {
+          this.me.sid = st.sid; this.myVotes = {}; this.save();
+          if (this.be.forgetVotes) this.be.forgetVotes();
+          this.ensurePlayer(true); this._key = null;
+        }
+        if (this.me && was && was.phase !== "lobby" && st.phase === "lobby") {
+          this.ensurePlayer(true);
+          /* a reset also wipes the votes: forget this phone's old votes so nothing looks "already voted" */
+          if (!Object.keys(st.results || {}).length) { this.myVotes = {}; this.save(); if (this.be.forgetVotes) this.be.forgetVotes(); }
+        }
         this.render();
       });
       this.tick = setInterval(() => this.tickClock(), 250);
-      if (!this.me && be.fetchPlayer) be.fetchPlayer().then(p => { if (p && !this.me) { this.me = { ticket: p.ticket, name: p.name || "", prediction: p.prediction || null, votes: {} }; this.save(); this.render(); } }).catch(() => {});
+      if (!this.me && be.fetchPlayer) be.fetchPlayer().then(p => { if (p && !this.me) { this.me = { ticket: p.ticket, name: p.name || "", prediction: p.prediction || null, votes: {}, sid: (this.st && this.st.sid) || undefined }; this.myVotes = {}; this.save(); this.render(); } }).catch(() => {});
       else if (this.me) this.ensurePlayer(true);
     }
     /* make sure the server knows this phone (the player doc); re-joins with the same ticket if it's missing */
@@ -318,7 +329,8 @@
       const go = async (e) => {
         e.preventDefault();
         const ticket = String(1000 + Math.floor(Math.random() * 9000));
-        this.me = { ticket, name: input.value.trim().slice(0, 18), prediction: null, votes: {} };
+        this.me = { ticket, name: input.value.trim().slice(0, 18), prediction: null, votes: {}, sid: (this.st && this.st.sid) || undefined };
+        this.myVotes = {}; if (this.be.forgetVotes) this.be.forgetVotes();
         this.save(); this.render();
         try { await this.be.join({ ticket, name: this.me.name, prediction: null }); } catch (err) { console.warn(err); }
         try { if (navigator.wakeLock) navigator.wakeLock.request("screen").catch(() => {}); } catch (err) { /* ignore */ }
@@ -403,7 +415,12 @@
           if (!this.voteOpen()) throw e;
           await this.ensurePlayer(false);
           await this.be.vote(r, side, { ticket: this.me.ticket, name: this.me.name });
-        } catch (e2) { console.warn("vote", e2); if (this.voteNote) this.voteNote.textContent = this.voteOpen() ? "ההצבעה לא נקלטה. נסו ללחוץ שוב." : "ההצבעה כבר נסגרה."; }
+        } catch (e2) {
+          console.warn("vote", e2);
+          /* don't leave a "✓" on a vote the server didn't take */
+          if (this.myVotes[r] === side) { delete this.myVotes[r]; this.save(); this._key = null; this.render(); }
+          if (this.voteNote) this.voteNote.textContent = this.voteOpen() ? "ההצבעה לא נקלטה. נסו ללחוץ שוב." : "ההצבעה כבר נסגרה.";
+        }
       }
     }
     songLinks(r, side) {

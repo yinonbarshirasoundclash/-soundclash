@@ -15,7 +15,7 @@
 
   function initialState(cfg) {
     return {
-      v: 1, phase: "lobby", round: 0, order: {},
+      v: 1, sid: rid(8), phase: "lobby", round: 0, order: {},
       voteSeconds: cfg.VOTE_SECONDS || 20, votingEndsAt: 0, liveBars: cfg.SHOW_LIVE_BARS !== false, voteDuringSongs: true,
       results: {}, raffle: null,
       video: { key: "", cmd: "stop", seq: 0 },
@@ -185,10 +185,19 @@
     async vote(r, side, meta) {
       const uid = this.uid(), ref = this.show.collection("votes").doc(r + "_" + uid);
       const doc = { r, side, uid, ticket: meta.ticket || "", name: meta.name || "", at: this.FV.serverTimestamp() };
-      if (!this._first[r]) doc.firstAt = this.FV.serverTimestamp();
-      await ref.set(doc, { merge: true });
+      const withFirst = () => Object.assign({}, doc, { firstAt: this.FV.serverTimestamp() });
+      /* a first vote must carry firstAt (the server refuses it otherwise). The phone remembers which rounds it
+         already voted in, but after a show reset that memory is stale — so if a vote without firstAt is
+         refused, it is sent again as a first vote. */
+      if (!this._first[r]) await ref.set(withFirst(), { merge: true });
+      else {
+        try { await ref.set(doc, { merge: true }); }
+        catch (e) { await ref.set(withFirst(), { merge: true }); }
+      }
       this._first[r] = 1; try { localStorage.setItem("sc_first_" + this.cfg.SHOW_ID, JSON.stringify(this._first)); } catch (e) { /* ignore */ }
     }
+    /* called by the phone when the show was reset: every round is a first vote again */
+    forgetVotes() { this._first = {}; try { localStorage.removeItem("sc_first_" + this.cfg.SHOW_ID); } catch (e) { /* ignore */ } }
     async join(p) {
       await this.show.collection("players").doc(this.uid()).set(Object.assign({}, p, { uid: this.uid(), joinedAt: this.FV.serverTimestamp() }), { merge: true });
     }
