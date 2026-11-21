@@ -146,6 +146,8 @@
   const EMOJI = [["fire", "🔥"], ["love", "❤️"], ["wow", "😮"], ["clap", "👏"], ["pop", "🍿"]];
   function rxOf(st, key) {
     const v = ((st && st.rx) || {})[key], out = { total: 0, list: [] };
+    /* an admin page opened before 21.11 counts only a total per song (a number) — show that too */
+    if (typeof v === "number") { if (v > 0) { out.total = v; out.list.push(["✨", v]); } return out; }
     if (!v || typeof v !== "object") return out;
     EMOJI.forEach(([k, e]) => { const n = +v[k] || 0; if (n > 0) { out.list.push([e, n]); out.total += n; } });
     out.list.sort((a, b) => b[1] - a[1]);
