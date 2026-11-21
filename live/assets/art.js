@@ -361,7 +361,7 @@
       for (let i = 0; i < 9; i++) { c.beginPath(); c.moveTo(W * .1 + i * 26, H); c.lineTo(W * .1 + i * 26 + 160, 0); c.stroke(); }
       for (let i = 0; i < 5; i++) { c.fillStyle = "rgba(255,255,255," + (.04 + r() * .05) + ")"; c.beginPath(); c.ellipse(r() * W, H * (.6 + r() * .4), 260, 50, 0, 0, 7); c.fill(); }
     },
-    /* ================= מסיבה ישראלית · אייטיז נגד ניינטיז ================= */
+    /* ================= מסיבה ישראלית · 70–80 נגד ניינטיז ================= */
     /* 01 · רכבת לילה לקהיר — a night train crossing the desert, pyramids under the moon */
     il_train(c, r) {
       fill(c, lin(c, 0, 0, 0, H, [[0, "#070b22"], [.55, "#24204a"], [.7, "#6b3d4a"], [1, "#1a1210"]]));
