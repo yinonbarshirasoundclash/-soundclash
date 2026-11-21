@@ -142,11 +142,19 @@
     if (st.phase === "encore" && SHOW.encores && st.encoreSide) return videoKey("enc", st.encoreSide);
     return null;
   }
-  /* songs ranked by emoji reactions (st.rx: { "03-usa": 57, ... }, counted by the admin) */
-  function rxTop(st, n) {
-    const m = (st && st.rx) || {};
-    return Object.keys(m).map(k => ({ k, n: m[k], x: keyInfo(k) })).filter(o => o.x && o.n > 0)
-      .sort((a, b) => b.n - a.n).slice(0, n || 3).map(o => ({ key: o.k, n: o.n, side: o.x.side, song: songOf(o.x.r, o.x.side) }));
+  /* emoji reactions per song, counted by the admin: st.rx = { "03-usa": { fire: 12, love: 4 }, ... } */
+  const EMOJI = [["fire", "🔥"], ["love", "❤️"], ["wow", "😮"], ["clap", "👏"], ["pop", "🍿"]];
+  function rxOf(st, key) {
+    const v = ((st && st.rx) || {})[key], out = { total: 0, list: [] };
+    if (!v || typeof v !== "object") return out;
+    EMOJI.forEach(([k, e]) => { const n = +v[k] || 0; if (n > 0) { out.list.push([e, n]); out.total += n; } });
+    out.list.sort((a, b) => b[1] - a[1]);
+    return out;
+  }
+  /* "🔥 12  ❤️ 4" chips for one song, or null when it got none */
+  function rxChips(st, key, cls) {
+    const x = rxOf(st, key); if (!x.total) return null;
+    return h("div", { class: "rxchips " + (cls || "") }, x.list.map(([e, n]) => h("span", { class: "rxchip" }, e, h("b", null, n))));
   }
   const PHASES = ["lobby", "intro", "song1", "song2", "voting", "reveal", "final", "raffle", "encore"];
   function phaseTitle(st) {
@@ -375,8 +383,8 @@
             ? h("li", null, h("span", null, h("b", null, "המסך מכריע."), " התוצאה עולה מיד, ובסוף הערב יש אלוף" + (prizesOn(this.st) ? " והגרלה." : ".")))
             : h("li", null, h("span", null, h("b", null, "הקהל מכריע."), " התוצאה מופיעה מיד כאן בטלפון, ובסוף הערב יש אלוף" + (prizesOn(this.st) ? " והגרלה." : "."))),
           hasScreen(this.st)
-            ? h("li", null, h("span", null, h("b", null, "שולחים אימוג'ים."), " לוחצים על 🔥 ❤️ 😮 בתחתית המסך, והם עפים על המסך הגדול באולם. בסוף נגלה איזה שיר קיבל הכי הרבה."))
-            : h("li", null, h("span", null, h("b", null, "שולחים אימוג'ים."), " בזמן כל שיר לוחצים על 🔥 ❤️ 😮 בתחתית המסך. בסוף הערב נגלה איזה שיר קיבל הכי הרבה."))),
+            ? h("li", null, h("span", null, h("b", null, "שולחים אימוג'ים."), " לוחצים על 🔥 ❤️ 😮 בתחתית המסך, והם עפים על המסך הגדול באולם. אחרי כל הצבעה רואים כמה אימוג'ים קיבל כל שיר."))
+            : h("li", null, h("span", null, h("b", null, "שולחים אימוג'ים."), " בזמן כל שיר לוחצים על 🔥 ❤️ 😮 בתחתית המסך. אחרי כל הצבעה רואים כמה אימוג'ים קיבל כל שיר."))),
         this.followCard()
       );
     }
@@ -522,6 +530,7 @@
           h("div", { class: "split-tv", style: { flexGrow: Math.max(tv, 4) } }, h("b", null, tv + "%"), h("span", null, L.tv)),
           h("div", { class: "split-film", style: { flexGrow: Math.max(film, 4) } }, h("b", null, film + "%"), h("span", null, L.film))),
         h("p", { class: "verdict" + (mine && mine === w ? " is-good" : "") }, verdict),
+        this.rxRound(r),
         h("div", { class: "awards" }, this.award("fast", res.fastest), this.award("luck", res.lucky)),
         next ? h("p", { class: "aud-note" }, "הבא בתור: ", h("b", null, next.theme)) : h("p", { class: "aud-note" }, "זה היה הדו־קרב האחרון. עוד רגע האלופים."),
         this.followCard()
@@ -564,7 +573,6 @@
           h("span", { class: "champ-v" }, c === "tie" ? "שני המסכים" : SIDE[c].team),
           h("span", { class: "champ-score" }, L.tv + " ", h("b", null, s.tv), " : ", h("b", null, s.film), " " + L.film)),
         p ? h("p", { class: "verdict" + (p === c ? " is-good" : "") }, p === c ? "ניחשת נכון מההתחלה. כל הכבוד!" : "ניחשת " + SIDE[p].team + ". הקהל חשב אחרת.") : null,
-        this.rxCard(),
         h("div", { class: "card meter" },
           h("h3", { class: "aud-h3" }, "מד הטעם שלך"),
           tm.voted ? h("p", null, "הצבעת עם הרוב ב-", h("b", null, tm.withCrowd), " מתוך ", h("b", null, tm.voted), " סיבובים") : h("p", null, "לא הצבעת הערב."),
@@ -573,15 +581,15 @@
         prizesOn(st) ? h("p", { class: "aud-note" }, "עוד רגע ההגרלה. הכרטיס שלך: ", h("b", null, "#" + this.me.ticket)) : null,
         this.contactBlock());
     }
-    rxCard() {
-      const top = rxTop(this.st, 3); if (!top.length) return null;
-      const [w, ...rest] = top;
-      return h("div", { class: "card rxwin rxwin-" + w.side },
-        h("p", { class: "eyebrow" }, "שיר האימוג'ים של הערב"),
-        h("h3", { class: "aud-h2" + (w.song.hebrew ? "" : " latin-title") }, bdi(w.song.title)),
-        h("p", { class: "muted" }, meta(w.song), " · ", SIDE[w.side].team),
-        h("p", { class: "rxwin-n" }, "🔥 ❤️ 😮 ", h("b", null, w.n), " אימוג'ים"),
-        rest.length ? h("ol", { class: "rxwin-rest" }, rest.map(x => h("li", null, bdi(x.song.title), h("span", null, " · " + x.n)))) : null);
+    /* after the vote: which emojis each song of the round got, and how many */
+    rxRound(r) {
+      const st = this.st, ord = sideOrder(st, r);
+      if (!ord.some(sd => rxOf(st, videoKey(r, sd)).total)) return null;
+      return h("div", { class: "card rxround" },
+        h("p", { class: "eyebrow" }, "האימוג'ים של הסיבוב"),
+        ord.map(sd => h("div", { class: "rxround-row rxround-" + sd },
+          h("span", { class: "rxround-t" + (songOf(r, sd).hebrew ? " is-he" : "") }, bdi(songOf(r, sd).title)),
+          rxChips(st, videoKey(r, sd)) || h("span", { class: "muted rxround-none" }, "–"))));
     }
     vRaffle() {
       const st = this.st, rf = st.raffle;
@@ -607,12 +615,11 @@
       return h("section", { class: "aud-final" },
         h("h1", { class: "aud-h1 encore" }, "הדרן!"),
         h("p", { class: "aud-lead" }, "תודה ששיחקתם."),
-        this.rxCard(),
         this.contactBlock());
     }
     /* -- reactions -- */
     buildReactBar() {
-      const EMO = [["fire", "🔥"], ["love", "❤️"], ["wow", "😮"], ["clap", "👏"], ["pop", "🍿"]];
+      const EMO = EMOJI;
       this.rxLabel = h("span", { class: "rx-label" }, "");
       this.reactBar.append(this.rxLabel);
       if (!safeStore.get("sc_rx_seen", false)) this.reactBar.classList.add("is-new");
@@ -1113,7 +1120,7 @@
           h("div", { class: "s-rcol-pct" }, h("span", { class: "count", "data-to": p }, "0"), "%"),
           h("div", { class: "s-rcol-side" }, SIDE[side].team),
           h("div", { class: "s-rcol-title" + (songOf(r, side).hebrew ? " is-he" : "") }, bdi(songOf(r, side).title)),
-          null);
+          rxChips(st, videoKey(r, side), "s-rxchips"));
       };
       const aw = (k, a) => a ? h("div", { class: "s-award" }, h("span", { class: "s-award-ico" }, k === "fast" ? "⚡" : "👑"),
         h("div", null, h("small", null, k === "fast" ? "המצביע המהיר" : "כתר המזל"), h("b", null, "#" + a.ticket), a.name ? h("span", null, a.name) : null)) : null;
@@ -1149,7 +1156,6 @@
             h("span", { class: "s-fg-n" }, pad(i + 1)), h("span", { class: "s-fg-t" }, d.theme),
             h("span", { class: "s-fg-w" }, x ? (x.winner === "tie" ? "תיקו" : bdi(songOf(i, x.winner).title)) : "–"));
         })),
-        (() => { const w = rxTop(st, 1)[0]; return w ? h("div", { class: "s-final-rx" }, "שיר האימוג'ים של הערב: ", bdi(w.song.title), " · " + w.n + " 🔥") : null; })(),
         h("div", { class: "s-final-foot" }, "תודה שהצבעתם!"));
     }
     sRaffle() {
@@ -1296,15 +1302,20 @@
     }
     countReaction(r) {
       const key = stageSongKey(this.st); if (!key || !r || !r.c) return;
-      let n = 0; Object.keys(r.c).forEach(k => { n += Math.max(0, Math.min(12, +r.c[k] || 0)); }); if (!n) return;
-      this.rxPend[key] = (this.rxPend[key] || 0) + n;
-      if (this._rxFlushT) return;
+      const pend = this.rxPend[key] = this.rxPend[key] || {}; let n = 0;
+      Object.keys(r.c).forEach(k => { const c = Math.max(0, Math.min(12, +r.c[k] || 0)); if (c) { pend[k] = (pend[k] || 0) + c; n += c; } });
+      if (!n || this._rxFlushT) return;
+      /* counts per song and per emoji; flushed every 2 seconds so the reveal right after the vote is up to date */
       this._rxFlushT = setTimeout(() => {
         this._rxFlushT = null;
         const merged = Object.assign({}, (this.st && this.st.rx) || {}), p = this.rxPend; this.rxPend = {};
-        Object.keys(p).forEach(k => { merged[k] = (merged[k] || 0) + p[k]; });
+        Object.keys(p).forEach(key => {
+          const cur = merged[key] && typeof merged[key] === "object" ? Object.assign({}, merged[key]) : {};
+          Object.keys(p[key]).forEach(k => { cur[k] = (cur[k] || 0) + p[key][k]; });
+          merged[key] = cur;
+        });
         this.set({ rx: merged });
-      }, 3000);
+      }, 2000);
     }
     loginView() {
       const live = this.be.isLive();
@@ -1523,11 +1534,8 @@
         h("p", null, "איזה הדרן מנגנים?"),
         h("div", { class: "ctx-btns" }, ["tv", "film"].map(sd => h("button", { type: "button", class: st.encoreSide === sd ? "btn-primary" : "btn-ghost",
           onclick: () => this.set({ encoreSide: sd, video: this.vid(videoKey("enc", sd), "play") }) }, "🎤 " + SIDE[sd].latin + ": ", bdi(songOf("enc", sd).title))))));
-      if (["final", "raffle", "encore"].includes(st.phase)) {
-        const top = rxTop(st, 3);
-        kids.push(h("div", { class: "ctx-awards" }, h("p", null, "🔥 שיר האימוג'ים של הערב:"),
-          top.length ? h("ol", null, top.map(x => h("li", null, h("b", null, bdi(x.song.title)), " · " + SIDE[x.side].team + " · " + x.n + " אימוג'ים"))) : h("p", null, h("small", null, "עוד לא נשלחו אימוג'ים בזמן השירים"))));
-      }
+      if (st.phase === "reveal") kids.push(h("div", { class: "ctx-awards" }, h("p", null, "אימוג'ים בסיבוב:"),
+        sideOrder(st, r).map(sd => h("p", null, h("b", null, bdi(songOf(r, sd).title)), " ", rxChips(st, videoKey(r, sd), "rxchips-inline") || "–"))));
       if (st.phase === "raffle" && st.raffle) kids.push(h("div", { class: "ctx-awards" }, h("p", null, "🎟 זוכה: ", h("b", null, "#" + st.raffle.ticket + (st.raffle.name ? " " + st.raffle.name : ""))),
         h("button", { class: "btn-ghost", type: "button", onclick: () => this.drawRaffle() }, "הגרלה מחדש")));
       if (["intro", "song1", "song2"].includes(st.phase)) {

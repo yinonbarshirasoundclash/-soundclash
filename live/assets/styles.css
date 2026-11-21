@@ -1016,3 +1016,17 @@ html[data-view="booth"], html[data-view="booth"] body { height: 100%; overflow: 
 .aud-react .rx { width: 48px; height: 48px; font-size: 23px; }
 .aud-react .rx-label { font-size: 10px; padding: 3px 10px; }
 .aud.has-react .aud-main { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); }
+
+/* 21.11.2026 — emoji counts per song, shown after each vote */
+.rxchips { display: inline-flex; flex-wrap: wrap; gap: 6px; direction: ltr; }
+.rxchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; background: var(--ink-3); border: 1px solid var(--line-2); font-size: 15px; }
+.rxchip b { font-family: var(--f-latin); font-weight: 400; font-size: 17px; }
+.rxround { gap: 10px; }
+.rxround-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.rxround-t { font-family: var(--f-latin); font-size: 18px; letter-spacing: .02em; }
+.rxround-t.is-he { font-family: var(--f-display); }
+.rxround-tv .rxround-t { color: var(--tv-hi); } .rxround-film .rxround-t { color: var(--film-hi); }
+.s-rxchips { justify-content: center; gap: 12px; margin-top: 14px; }
+.s-rxchips .rxchip { font-size: 34px; padding: 6px 18px; gap: 8px; }
+.s-rxchips .rxchip b { font-size: 38px; }
+.rxchips-inline .rxchip { font-size: 13px; padding: 1px 7px; }
