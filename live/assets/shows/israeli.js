@@ -53,7 +53,7 @@ window.SC_SHOWS["israeli"] = {
               fact: "" },
       film: { title: "באה מאהבה", artist: "יהודית רביץ וגידי גוב", year: 1994, hebrew: true, lyr: "04-80s", art: "il_chuppah",
               fact: "השיר הוקלט פעמיים: בפעם הראשונה כשיר הנושא של האלבום מ-1987, שרוב שיריו נכתבו בידי יענקל'ה רוטבליט, וב-1994 בגרסת טראנס עם גידי גוב, שנתנה לשיר חיים חדשים." } },
-    { theme: "יש אחת שמחכה לי", first: "film", singer: "ינון / ינון",
+    { theme: "יש אחת שמחכה לי", first: "tv", singer: "ינון / ינון",
       tv:   { title: "ערב של יום בהיר", artist: "אפרים שמיר", year: 1977, hebrew: true, lyr: "17-80s", art: "il_rainbow",
               fact: "" },
       film: { title: "תשאירי לי מקום לחבק אותך", artist: "אבטיפוס", year: 1995, hebrew: true, lyr: "12-90s", art: "il_home",
