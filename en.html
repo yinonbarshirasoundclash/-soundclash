@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soundclash · A live music battle your team decides</title>
+<meta name="description" content="Soundclash is a live music battle for company events in Israel: six musicians, hit against hit, and your team votes from their phones to decide every round. Quote within 24 hours.">
+<link rel="canonical" href="https://soundclash.co.il/en.html">
+<link rel="alternate" hreflang="he" href="https://soundclash.co.il/events.html">
+<link rel="alternate" hreflang="en" href="https://soundclash.co.il/en.html">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Soundclash">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Soundclash · A live music battle your team decides">
+<meta property="og:description" content="Six musicians, hit against hit, and your team votes from their phones. For company events in Israel.">
+<meta property="og:image" content="https://soundclash.co.il/assets/img/og/events.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0a09;--card:#15130f;--line:#2b2620;--fg:#f4efe6;--dim:#c9c0b2;--gold:#f2c14e;--tv:#3ec6cf;--film:#e0a93d}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.65 Inter,system-ui,sans-serif}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+header.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.logo{font:400 30px/1 'Bebas Neue';letter-spacing:.05em;text-decoration:none}
+.logo b{color:var(--gold);font-weight:400}
+.he{font-size:15px;color:var(--dim);text-decoration:underline}
+.hero{position:relative;border-radius:22px;overflow:hidden;min-height:440px;display:flex;align-items:flex-end;margin-bottom:34px;
+  background:linear-gradient(180deg,rgba(11,10,9,.15),rgba(11,10,9,.92) 78%),url("assets/video/crowd-wonderbar.jpg?v=1") center 30%/cover}
+.hero .in{padding:34px 30px}
+.eyebrow{font:600 14px Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+h1{font:400 clamp(46px,7vw,82px)/.95 'Bebas Neue';letter-spacing:.02em;margin:0 0 14px}
+h2{font:400 clamp(34px,4.6vw,48px)/1 'Bebas Neue';letter-spacing:.03em;margin:0 0 14px}
+.lede{font-size:19px;color:var(--dim);max-width:640px;margin:0 0 20px}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;font-weight:600;text-decoration:none}
+.btn.wa{background:#25d366;color:#08220f}
+.btn.gold{background:var(--gold);color:#1d1606}
+.btn.ghost{border:1px solid var(--line)}
+section{padding:34px 0}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px}
+.card .n{font:400 40px/1 'Bebas Neue';color:var(--gold)}
+.card h3{margin:6px 0 6px;font-size:19px}
+.card p{margin:0;color:var(--dim)}
+.duels{display:grid;gap:10px}
+.duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 18px}
+.duel .theme{grid-column:1/-1;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.duel .s b{display:block;font-size:18px}
+.duel .s small{color:var(--dim)}
+.duel .s .tag{font:400 18px 'Bebas Neue';letter-spacing:.08em}
+.duel .tv .tag{color:var(--tv)} .duel .film .tag{color:var(--film)}
+.duel .film{text-align:right}
+.vs{font:400 22px 'Bebas Neue';color:var(--gold)}
+.vids{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.vids figure{margin:0;text-align:center}
+.vids video{width:min(260px,42vw);aspect-ratio:9/16;object-fit:cover;border-radius:20px;border:1px solid var(--line);background:#000}
+.vids figcaption{font-size:14px;color:var(--dim);margin-top:6px}
+.note{font-size:15px;color:var(--dim);max-width:720px;margin:14px auto 0;text-align:center}
+.list{margin:0;padding-left:20px;color:var(--dim)} .list li{margin:6px 0} .list b{color:var(--fg)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.band{background:linear-gradient(120deg,#1d1606,#0b0a09);border:1px solid var(--line);border-radius:22px;padding:30px;text-align:center}
+footer{padding:30px 0 50px;color:var(--dim);font-size:14px;text-align:center}
+@media (max-width:760px){.steps,.two{grid-template-columns:1fr}.hero{min-height:420px}.hero .in{padding:24px 20px}.duel{grid-template-columns:1fr;text-align:left}.duel .film{text-align:left}.vs{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="index.html">SOUND<b>CLASH</b></a>
+    <a class="he" href="events.html" lang="he" dir="rtl">לעברית</a>
+  </header>
+
+  <div class="hero">
+    <div class="in">
+      <div class="eyebrow">For company events in Israel</div>
+      <h1>A live music battle your team decides</h1>
+      <p class="lede">Six musicians on stage play hit against hit. After every round, the whole room votes from their phones, and the result goes up on the big screen. 90 minutes, ten rounds, one winner.</p>
+      <div class="btns">
+        <a class="btn wa" href="https://wa.me/972546738192?text=Hi%2C%20we%27d%20like%20a%20quote%20for%20Soundclash%20at%20our%20company%20event" target="_blank" rel="noopener">WhatsApp us</a>
+        <a class="btn ghost" href="mailto:stageart.pnima@gmail.com?subject=Soundclash%20quote">Email for a quote</a>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="eyebrow">How it works</div>
+    <h2>Scan, vote, cheer</h2>
+    <div class="steps">
+      <div class="card"><div class="n">1</div><h3>Scan the QR</h3><p>Everyone scans the code on the screen and joins from their phone. No app to download.</p></div>
+      <div class="card"><div class="n">2</div><h3>Two hits per round</h3><p>The band plays one song from a TV series and one from a movie, around a shared theme. Original AI visuals play on the screen.</p></div>
+      <div class="card"><div class="n">3</div><h3>The room decides</h3><p>One tap to vote, a 20-second countdown, and the winner is revealed on the screen and on every phone.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">TV vs. Film · from the setlist</div>
+    <h2>What a round looks like</h2>
+    <div class="duels">
+      <div class="duel"><div class="theme">Dance party</div><div class="s tv"><span class="tag">TV</span><b>Bad Romance</b><small>Gossip Girl</small></div><div class="vs">VS</div><div class="s film"><span class="tag">FILM</span><b>It's Raining Men</b><small>Bridget Jones's Diary</small></div></div>
+      <div class="duel"><div class="theme">The dance</div><div class="s tv"><span class="tag">TV</span><b>Fame</b><small>Fame</small></div><div class="vs">VS</div><div class="s film"><span class="tag">FILM</span><b>Stayin' Alive</b><small>Saturday Night Fever</small></div></div>
+      <div class="duel"><div class="theme">I'll be there for you</div><div class="s tv"><span class="tag">TV</span><b>I'll Be There for You</b><small>Friends</small></div><div class="vs">VS</div><div class="s film"><span class="tag">FILM</span><b>I'm a Believer</b><small>Shrek</small></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">See it</div>
+    <h2>The room, and the show</h2>
+    <div class="vids">
+      <figure><video src="assets/video/crowd-wonderbar.mp4?v=1" poster="assets/video/crowd-wonderbar.jpg?v=1" muted loop playsinline controls preload="none"></video><figcaption>The crowd at Wonderbar, Haifa</figcaption></figure>
+      <figure><video src="assets/video/tvfilm-vote-clean.mp4" poster="assets/video/tvfilm-vote.jpg?v=1" muted loop playsinline controls preload="none"></video><figcaption>TV vs. Film, from scan to winner</figcaption></figure>
+    </div>
+    <p class="note">The app in the demo is the real show app. The crowd and the singer are from our 90s show, and the result is from a demo. Captions in the videos are in Hebrew.</p>
+  </section>
+
+  <section class="two">
+    <div class="card">
+      <h3>Not a Hebrew speaker?</h3>
+      <p>Most of the songs are English-language hits everyone knows, and voting is a single tap on the song you prefer. The host speaks Hebrew. Tell us if part of your team doesn't, and we'll plan the evening with that in mind.</p>
+    </div>
+    <div class="card">
+      <h3>What we bring</h3>
+      <ul class="list">
+        <li><b>Six musicians</b>, male and female lead vocals</li>
+        <li><b>The voting app</b>, run live from the stage</li>
+        <li><b>Original AI visuals</b> for every song</li>
+        <li><b>Sound, lights, screen and a sound engineer</b> if the venue doesn't have them, at extra cost</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="band">
+      <div class="eyebrow">Quote within 24 hours</div>
+      <h2>Bring Soundclash to your event</h2>
+      <p class="lede" style="margin:0 auto 20px">Tell us the date, the city and how many people. We'll send a full quote, including tech, within a day.</p>
+      <div class="btns" style="justify-content:center">
+        <a class="btn wa" href="https://wa.me/972546738192?text=Hi%2C%20we%27d%20like%20a%20quote%20for%20Soundclash%20at%20our%20company%20event" target="_blank" rel="noopener">WhatsApp us</a>
+        <a class="btn gold" href="tel:+972546738192">Call +972-54-673-8192</a>
+      </div>
+    </div>
+  </section>
+</div>
+<footer>Soundclash · Yinon Bar Shira · <a href="mailto:stageart.pnima@gmail.com">stageart.pnima@gmail.com</a> · <a href="events.html" lang="he">עברית</a></footer>
+<script>
+/* play muted when visible */
+const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.play().catch(()=>{})}else v.pause()}),{threshold:.4});
+document.querySelectorAll('video').forEach(v=>io.observe(v));
+</script>
+</body>
+</html>
