@@ -750,7 +750,7 @@ CROWD_MP4 = "assets/video/crowd-wonderbar.mp4?v=1"
 CROWD_POSTER = "assets/video/crowd-wonderbar.jpg?v=1"
 VOTE_MP4 = "assets/video/vote-proof.mp4?v=1"     # 28 שניות: במה, הצבעה בטלפון, תוצאה, קהל (21.11.2026)
 VOTE_POSTER = "assets/video/vote-proof.jpg?v=1"
-TVVOTE_MP4 = "assets/video/tvfilm-vote.mp4?v=2"   # 47 שניות: האפליקציה של סדרות נגד סרטים, הבמה והקהל (21.11.2026)
+TVVOTE_MP4 = "assets/video/tvfilm-vote.mp4?v=3"   # 47 שניות: האפליקציה של סדרות נגד סרטים, הבמה והקהל (21.11.2026)
 TVVOTE_POSTER = "assets/video/tvfilm-vote.jpg?v=1"
 def crowd_clip(src=None, poster=None, label="הקהל בוונדרבר, חיפה, ידיים וטלפונים באוויר"):
     """20 שניות מצילום טלפון בתוך הקהל, וונדרבר 5.9.2026. מתנגן בלי קול כשהוא על המסך.
