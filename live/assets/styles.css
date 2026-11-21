@@ -1008,3 +1008,11 @@ html[data-view="booth"], html[data-view="booth"] body { height: 100%; overflow: 
 .rxwin-tv { border-color: var(--tv); } .rxwin-film { border-color: var(--film); }
 .rxwin-n { font-size: 15px; } .rxwin-n b { font-size: 22px; }
 .rxwin-rest { margin: 6px 0 0; padding: 0; list-style: none; font-size: 13px; color: var(--paper-3); display: flex; flex-direction: column; gap: 2px; }
+
+/* 21.11.2026 — the emoji bar must never swallow a tap on a vote button:
+   only the emoji buttons themselves catch taps, and the bar is slimmer on phones */
+.aud-react { pointer-events: none; padding-top: 6px; gap: 6px; background: linear-gradient(180deg, transparent, rgba(11,10,9,.85) 55%); }
+.aud-react .rx, .aud-react .rx-label { pointer-events: auto; }
+.aud-react .rx { width: 48px; height: 48px; font-size: 23px; }
+.aud-react .rx-label { font-size: 10px; padding: 3px 10px; }
+.aud.has-react .aud-main { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); }
