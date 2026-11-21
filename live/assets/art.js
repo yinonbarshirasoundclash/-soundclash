@@ -475,7 +475,7 @@
       for (let i = 0; i < 260; i++) { const x = r() * W, y = r() * H; c.beginPath(); c.moveTo(x, y); c.lineTo(x - 5, y + 18); c.stroke(); }
       for (let i = 0; i < 12; i++) { c.fillStyle = "rgba(255,190,110," + (.08 + r() * .1) + ")"; c.fillRect(W * .32 + r() * W * .3, H * .91 + r() * 20, 40 + r() * 60, 2); }
     },
-    /* 09 · זמנך עבר — an old school classroom: chalkboard, clock, Purim masks and confetti */
+    /* (לא בסטליסט מאז 21.11.2026) זמנך עבר — an old school classroom: chalkboard, clock, Purim masks and confetti */
     il_school(c, r) {
       fill(c, lin(c, 0, 0, 0, H, [[0, "#2a2a22"], [1, "#16150f"]]));
       c.fillStyle = "#5a3e22"; c.fillRect(W * .12, H * .16, W * .58, H * .48); c.fillStyle = "#1f3a2c"; c.fillRect(W * .13, H * .18, W * .56, H * .44);
@@ -698,6 +698,25 @@
       glow(c, bx, by, 260, "rgba(255,61,208,.18)");
       for (let i = 0; i < 6; i++) { c.fillStyle = "#fff"; c.globalAlpha = .7; c.font = "bold 36px serif"; c.fillText("\u266B", W * .12 + i * 140, H * .14 + Math.sin(i * 1.7) * 30); } c.globalAlpha = 1;
       for (let i = 0; i < 80; i++) { c.fillStyle = "rgba(255,240,255," + r() + ")"; c.fillRect(r() * W, r() * H * .55, 2, 2); }
+    },
+    /* 05 · ערב של יום בהיר — after the rain: a moon in the puddles, a rainbow, and one lit window where someone is waiting */
+    il_rainbow(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#141d3a"], [.55, "#2c3d68"], [1, "#1a2238"]]));
+      for (let i = 0; i < 9; i++) { c.fillStyle = "rgba(120,140,190," + (.12 + r() * .12) + ")"; c.beginPath(); c.ellipse(r() * W, H * (.05 + r() * .25), 160 + r() * 200, 40 + r() * 30, 0, 0, 7); c.fill(); }
+      const mx = W * .78, my = H * .2; glow(c, mx, my, 150, "rgba(255,244,210,.55)"); c.fillStyle = "#fff4d6"; c.beginPath(); c.arc(mx, my, 46, 0, 7); c.fill();
+      const cols = ["#ff5a5a", "#ff9f3d", "#ffe23d", "#5dff9a", "#3dc8ff", "#7a6bff", "#c86bff"];
+      c.lineWidth = 14; c.globalAlpha = .55;
+      cols.forEach((col, i) => { c.strokeStyle = col; c.beginPath(); c.arc(W * .38, H * .78, 420 - i * 14, Math.PI * 1.04, Math.PI * 1.96); c.stroke(); });
+      c.globalAlpha = 1;
+      const blds = [[W * .02, .5, 150], [W * .14, .42, 120], [W * .58, .46, 170], [W * .8, .54, 160]];
+      c.fillStyle = "#0d1324"; blds.forEach(([x, top, w]) => c.fillRect(x, H * top, w, H));
+      blds.forEach(([x, top, w]) => { for (let k = 0; k < 6; k++) { c.fillStyle = "rgba(255,200,120," + (.15 + r() * .2) + ")"; c.fillRect(x + 12 + r() * (w - 36), H * top + 16 + r() * (H * .78 - H * top - 40), 12, 16); } });
+      const wx = W * .62, wy = H * .55; c.fillStyle = "#ffcf7a"; c.fillRect(wx, wy, 70, 90); glow(c, wx + 35, wy + 45, 170, "rgba(255,190,110,.55)");
+      c.fillStyle = "#3a2a1a"; c.fillRect(wx + 33, wy, 4, 90); c.fillRect(wx, wy + 43, 70, 4);
+      c.fillStyle = lin(c, 0, H * .8, 0, H, [[0, "#1c2440"], [1, "#0c1020"]]); c.fillRect(0, H * .8, W, H * .2);
+      for (let i = 0; i < 7; i++) { const px = W * (.08 + i * .13 + r() * .04), py = H * (.86 + r() * .08), pw = 70 + r() * 90; c.fillStyle = "rgba(90,120,190,.35)"; c.beginPath(); c.ellipse(px, py, pw, 10 + r() * 6, 0, 0, 7); c.fill(); }
+      c.fillStyle = "rgba(255,244,214,.75)"; c.beginPath(); c.ellipse(mx - 40, H * .9, 24, 6, 0, 0, 7); c.fill(); glow(c, mx - 40, H * .9, 60, "rgba(255,244,214,.35)");
+      c.strokeStyle = "rgba(190,210,255,.18)"; c.lineWidth = 1.2; for (let i = 0; i < 80; i++) { const x = r() * W, y = r() * H * .7; c.beginPath(); c.moveTo(x, y); c.lineTo(x - 3, y + 14); c.stroke(); }
     },
   };
 
