@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}.opt.locked{cursor:default}.opt.locked .mark{opacity:.75}
+</style>
 <title>Soundclash לאירועי עירייה</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/icon-32.png">
@@ -198,13 +199,13 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
   </div>
 
   <footer class="foot">
-    <div><b>מה כלול תמיד:</b> שישה נגנים, אפליקציית ההצבעה שלנו והפעלתה מהבמה, סרטוני הווידאו המקוריים, הקמה ופירוק, ונסיעה עד 60 ק"מ.</div><div><b>מה צריך מהאירוע:</b> במה, הגברה ותאורה ברמת הופעה, וקליטה סלולרית סבירה ברחבה.</div><div><b>אקו"ם:</b> באחריות מפיק האירוע.</div><div><b>תשלום:</b> לפי נוהל הרשות, בתשלום שוטף, בלי מקדמה.</div><div><b>ביטול:</b> בלי עלות עד 30 יום לפני האירוע.</div><div><b>חשבונית:</b> מופקת על ידי שחר חוויות חינוכיות בע"מ.</div><div><b>במחיר ההשקה</b> אנחנו מבקשים רשות לצלם את האירוע, ואפשרות להזמין שניים או שלושה אנשי מקצוע לצפות.</div><div>המחירים בתוקף להזמנות שייחתמו עד 31.3.2027.</div>
+    <div><b>מה כלול תמיד:</b> שישה נגנים, אפליקציית ההצבעה שלנו והפעלתה מהבמה, סרטוני הווידאו המקוריים, הקמה ופירוק, ונסיעה עד 60 ק"מ.</div><div><b>מה צריך מהאירוע:</b> במה, הגברה ותאורה ברמת הופעה עם איש סאונד, וקליטה סלולרית סבירה ברחבה.</div><div><b>אקו"ם:</b> באחריות מפיק האירוע.</div><div><b>תשלום:</b> לפי נוהל הרשות, בתשלום שוטף, בלי מקדמה.</div><div><b>ביטול:</b> בלי עלות עד 30 יום לפני האירוע.</div><div><b>חשבונית:</b> מופקת על ידי שחר חוויות חינוכיות בע"מ.</div><div><b>במחיר ההשקה</b> אנחנו מבקשים רשות לצלם את האירוע, ואפשרות להזמין שניים או שלושה אנשי מקצוע לצפות.</div><div>המחירים בתוקף להזמנות שייחתמו עד 31.3.2027.</div>
   </footer>
 </div>
 <div class="bar" dir="rtl"><div><small>סה"כ לפני מע"מ</small><span class="bt num" id="barTotal"></span></div><a href="#lines" id="barLink">לפירוט</a></div>
 
 <script>
-const CFG = {"kind": "אירוע עירוני", "vat": 0.18, "peakItem": null, "peakPct": 0.1, "paTiers": [{"max": 200, "price": 4200}, {"max": 400, "price": 7000}, {"max": 600, "price": 11500}], "perLabel": null, "guests": {"label": "כמה אנשים צפויים ברחבה?", "min": 300, "max": 5000, "step": 100, "default": 1500, "hint": "כל אחד מצביע מהטלפון שלו, בלי להוריד אפליקציה. אין צורך במסך כדי לשחק.", "short": "קהל צפוי"}, "steps": [{"title": "המופע", "guests": true, "items": [{"id": "show", "type": "radio", "role": "show", "default": "full", "options": [{"id": "full", "label": "המופע בגרסת במה עירונית, 90 דקות", "sub": "הרבה ריקודים, מעט דיבורים. הקהל מצביע מהטלפון, וההכרעה מוכרזת מהבמה", "price": 10500, "list": 12000, "short": "קרב להיטים (90 דק׳)"}]}, {"id": "ext", "type": "toggle", "role": "other", "default": false, "price": 2500, "label": "הלהקה ממשיכה עוד חצי שעה", "sub": "סט מסיבה חי אחרי ההכרזה על המנצח, בלי הצבעות. רק להיטים לרקוד", "short": "סט מסיבה חי נוסף (30 דק׳)", "rec": "מומלץ לאירוע עירוני"}]}, {"title": "מסך", "intro": "אפשר בלי מסך בכלל: כל מי שהצביע רואה את התוצאה בטלפון, והמנצח מוכרז מהבמה. אם יש באירוע מסך לד, נעלה אליו את התוצאות ואת הסרטונים.", "items": [{"id": "screen", "type": "radio", "role": "tech", "default": "none", "options": [{"id": "none", "label": "בלי מסך", "sub": "התוצאות בטלפונים, ההכרזה מהבמה", "price": 0}, {"id": "event", "label": "מסך הלד של האירוע", "sub": "נחבר אליו את המחשב שלנו", "price": 0}, {"id": "led32", "label": "מסך לד 3×2 מ׳", "sub": "כולל טכנאי", "price": 4200, "short": "מסך לד 3×2"}, {"id": "led425", "label": "מסך לד 4×2.5 מ׳", "sub": "לקהל גדול. כולל טכנאי", "price": 7000, "short": "מסך לד 4×2.5"}]}]}, {"title": "הטכניקה", "intro": "באירוע עירוני ההגברה, התאורה והבמה בדרך כלל באחריות הפקת האירוע. אם צריך, נביא הצעה.", "items": [{"id": "eng", "type": "toggle", "role": "tech", "default": false, "price": 1500, "rec": true, "label": "איש סאונד שלנו", "sub": "מכיר את המופע ואת הסאונד של שישה נגנים על הבמה", "short": "איש סאונד"}, {"id": "pa_open", "type": "toggle", "role": "other", "default": false, "ask": true, "askPrice": "בהצעה", "label": "הגברה ותאורה לבמת האירוע", "sub": "לפי גודל הרחבה. נתאם עם ספק", "short": "הגברה ותאורה"}, {"id": "stage_open", "type": "toggle", "role": "other", "default": false, "ask": true, "askPrice": "בהצעה", "label": "במה", "sub": "לפי גודל האירוע. נתאם עם ספק", "short": "במה"}]}, {"title": "במתנה ותוספות", "items": [{"id": "promo", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 1000, "label": "ערכת קידום לאירוע", "sub": "סרטון של 30 שניות, פוסטר, ושלושה פוסטים מוכנים לרשתות", "short": "ערכת קידום"}, {"id": "magic", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 2000, "label": "בונוס השקה: מופע קוסם לילדים", "sub": "חינם לתקופת ההשקה (הזמנות עד 31.3.2027): מופע קוסם של ינון בר שירה לאירוע ילדים של הרשות, בחנוכה, בפסח או בקייטנה. תאריך בתיאום, למימוש בתוך שנה", "short": "מופע קוסם לילדים"}, {"id": "bench", "type": "stepper", "role": "exp", "default": 0, "price": 1500, "max": 3, "unit": "לדו־קרב", "label": "דו־קרב לבחירתכם", "sub": "אתם בוחרים זוג שירים מתוך הרשימה שלנו, למשל להיט ישראלי לערב החג", "short": "דו־קרב לבחירתכם"}]}, {"title": "הגעה", "items": [{"id": "travel", "type": "radio", "role": "other", "label": "מרחק מהמרכז", "options": [{"id": "near", "label": "עד 60 ק\"מ", "price": 0}, {"id": "mid", "label": "60–150 ק\"מ", "price": 1500, "short": "נסיעה 60–150 ק\"מ"}, {"id": "far", "label": "מעל 150 ק\"מ", "sub": "ולינה לפי עלות, אם המופע נגמר אחרי 23:00", "price": 3000, "short": "נסיעה מעל 150 ק\"מ"}], "default": "near"}]}]};
+const CFG = {"kind": "אירוע עירוני", "vat": 0.18, "peakItem": null, "peakPct": 0.1, "paTiers": [{"max": 200, "price": 5500}, {"max": 400, "price": 8500}, {"max": 600, "price": 13000}], "perLabel": null, "guests": {"label": "כמה אנשים צפויים ברחבה?", "min": 300, "max": 5000, "step": 100, "default": 1500, "hint": "כל אחד מצביע מהטלפון שלו, בלי להוריד אפליקציה. אין צורך במסך כדי לשחק.", "short": "קהל צפוי"}, "steps": [{"title": "המופע", "guests": true, "items": [{"id": "show", "type": "radio", "role": "show", "default": "full", "options": [{"id": "full", "label": "המופע בגרסת במה עירונית, 90 דקות", "sub": "הרבה ריקודים, מעט דיבורים. הקהל מצביע מהטלפון, וההכרעה מוכרזת מהבמה", "price": 10500, "list": 12000, "short": "קרב להיטים (90 דק׳)"}]}, {"id": "ext", "type": "toggle", "role": "other", "default": false, "price": 2500, "label": "הלהקה ממשיכה עוד חצי שעה", "sub": "סט מסיבה חי אחרי ההכרזה על המנצח, בלי הצבעות. רק להיטים לרקוד", "short": "סט מסיבה חי נוסף (30 דק׳)", "rec": "מומלץ לאירוע עירוני"}]}, {"title": "מסך", "intro": "אפשר בלי מסך בכלל: כל מי שהצביע רואה את התוצאה בטלפון, והמנצח מוכרז מהבמה. אם יש באירוע מסך לד, נעלה אליו את התוצאות ואת הסרטונים.", "items": [{"id": "screen", "type": "radio", "role": "tech", "default": "none", "options": [{"id": "none", "label": "בלי מסך", "sub": "התוצאות בטלפונים, ההכרזה מהבמה", "price": 0}, {"id": "event", "label": "מסך הלד של האירוע", "sub": "נחבר אליו את המחשב שלנו", "price": 0}, {"id": "led32", "label": "מסך לד 3×2 מ׳", "sub": "כולל טכנאי", "price": 4200, "short": "מסך לד 3×2"}, {"id": "led425", "label": "מסך לד 4×2.5 מ׳", "sub": "לקהל גדול. כולל טכנאי", "price": 7000, "short": "מסך לד 4×2.5"}]}]}, {"title": "הטכניקה", "intro": "באירוע עירוני ההגברה, התאורה והבמה בדרך כלל באחריות הפקת האירוע. אם צריך, נביא הצעה.", "items": [{"id": "eng", "type": "toggle", "role": "tech", "default": false, "price": 1500, "rec": true, "label": "איש סאונד שלנו", "sub": "מכיר את המופע ואת הסאונד של שישה נגנים על הבמה. אחרת, איש הסאונד של הפקת האירוע", "short": "איש סאונד"}, {"id": "pa_open", "type": "toggle", "role": "other", "default": false, "ask": true, "askPrice": "בהצעה", "label": "הגברה ותאורה לבמת האירוע", "sub": "לפי גודל הרחבה. נתאם עם ספק", "short": "הגברה ותאורה"}, {"id": "stage_open", "type": "toggle", "role": "other", "default": false, "ask": true, "askPrice": "בהצעה", "label": "במה", "sub": "לפי גודל האירוע. נתאם עם ספק", "short": "במה"}]}, {"title": "במתנה ותוספות", "items": [{"id": "promo", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 1000, "label": "ערכת קידום לאירוע", "sub": "סרטון של 30 שניות, פוסטר, ושלושה פוסטים מוכנים לרשתות", "short": "ערכת קידום"}, {"id": "magic", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 2000, "label": "בונוס השקה: מופע קוסם לילדים", "sub": "חינם לתקופת ההשקה (הזמנות עד 31.3.2027): מופע קוסם של ינון בר שירה לאירוע ילדים של הרשות, בחנוכה, בפסח או בקייטנה. תאריך בתיאום, למימוש בתוך שנה", "short": "מופע קוסם לילדים"}, {"id": "bench", "type": "stepper", "role": "exp", "default": 0, "price": 1500, "max": 3, "unit": "לדו־קרב", "label": "דו־קרב לבחירתכם", "sub": "אתם בוחרים זוג שירים מתוך הרשימה שלנו, למשל להיט ישראלי לערב החג", "short": "דו־קרב לבחירתכם"}]}, {"title": "הגעה", "items": [{"id": "travel", "type": "radio", "role": "other", "label": "מרחק מהמרכז", "options": [{"id": "near", "label": "עד 60 ק\"מ", "price": 0}, {"id": "mid", "label": "60–150 ק\"מ", "price": 1500, "short": "נסיעה 60–150 ק\"מ"}, {"id": "far", "label": "מעל 150 ק\"מ", "sub": "ולינה לפי עלות, אם המופע נגמר אחרי 23:00", "price": 3000, "short": "נסיעה מעל 150 ק\"מ"}], "default": "near"}]}]};
 const fmt = n => Math.round(n).toLocaleString('he-IL') + ' ₪';
 const state = {};
 const $ = id => document.getElementById(id);
@@ -212,7 +213,7 @@ const $ = id => document.getElementById(id);
 function init(){
   CFG.steps.forEach(st => st.items.forEach(it => { state[it.id] = it.default; }));
   state.guests = CFG.guests.default;
-  render(); calc();
+  render(); enforce(); calc();
 }
 
 function itemPrice(it, v){
@@ -294,8 +295,19 @@ function renderItem(it){
     <span class="mark" aria-hidden="true"></span>
     <span class="otext"><span class="otitle">${it.label}${tags(it)}</span>${it.sub?`<div class="osub">${it.sub}</div>`:''}</span>
     <span class="price num" data-price></span>`;
-  lab.querySelector('input').addEventListener('change', e => { state[it.id]=e.target.checked; lab.classList.toggle('on', e.target.checked); refreshPrices(); calc(); });
+  lab.querySelector('input').addEventListener('change', e => { state[it.id]=e.target.checked; lab.classList.toggle('on', e.target.checked); enforce(); refreshPrices(); calc(); });
   return lab;
+}
+// איש סאונד חובה כשאנחנו מביאים הגברה (ינון, 21.11.2026)
+function enforce(){
+  CFG.steps.forEach(st => st.items.forEach(it => {
+    if (!it.requiredBy) return;
+    const inp = document.getElementById(it.id); if (!inp) return;
+    const lock = !!state[it.requiredBy];
+    if (lock) state[it.id] = true;
+    inp.checked = !!state[it.id]; inp.disabled = lock;
+    const lab = inp.closest('label'); lab.classList.toggle('on', !!state[it.id]); lab.classList.toggle('locked', lock);
+  }));
 }
 function tags(o){
   let t='';
