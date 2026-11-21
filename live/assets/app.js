@@ -5,6 +5,10 @@
 (function () {
   "use strict";
   const CFG = window.SC_CONFIG;
+  /* the live/ folder, wherever the page sits (live/, live/screen/, live/admin/) */
+  const LIVE_ROOT = ((document.currentScript && document.currentScript.src) || "").replace(/assets\/app\.js.*$/, "");
+  /* the show file can name a "winner of the evening" picture per side (the 90's has USA / UK) */
+  const champImg = (side, cls) => SHOW.winnerImg && SHOW.winnerImg[side] ? h("img", { class: cls, src: LIVE_ROOT + SHOW.winnerImg[side], alt: "", loading: "lazy", decoding: "async" }) : null;
   /* the active show (chosen by the admin) decides setlist, sides and wording */
   let SHOW, SET, N, SIDE, L;
   function useShow(id) {
@@ -127,6 +131,23 @@
     if (s.tvVotes !== s.filmVotes) return s.tvVotes > s.filmVotes ? "tv" : "film";
     return "tie";
   }
+  /* the evening's setup: is there a stage screen, are there prizes for the audience.
+     The show file sets the default (screen: false / prizes: false); the admin can change it in the settings. */
+  const hasScreen = (st) => st && typeof st.hasScreen === "boolean" ? st.hasScreen : SHOW.screen !== false;
+  const prizesOn = (st) => st && typeof st.prizes === "boolean" ? st.prizes : SHOW.prizes !== false;
+  /* the song on stage right now (emoji reactions are counted for it), or null */
+  function stageSongKey(st) {
+    if (!st) return null;
+    if (st.phase === "song1" || st.phase === "song2") return videoKey(st.round, playingSide(st));
+    if (st.phase === "encore" && SHOW.encores && st.encoreSide) return videoKey("enc", st.encoreSide);
+    return null;
+  }
+  /* songs ranked by emoji reactions (st.rx: { "03-usa": 57, ... }, counted by the admin) */
+  function rxTop(st, n) {
+    const m = (st && st.rx) || {};
+    return Object.keys(m).map(k => ({ k, n: m[k], x: keyInfo(k) })).filter(o => o.x && o.n > 0)
+      .sort((a, b) => b.n - a.n).slice(0, n || 3).map(o => ({ key: o.k, n: o.n, side: o.x.side, song: songOf(o.x.r, o.x.side) }));
+  }
   const PHASES = ["lobby", "intro", "song1", "song2", "voting", "reveal", "final", "raffle", "encore"];
   function phaseTitle(st) {
     const r = st.round, d = SET[r];
@@ -196,12 +217,13 @@
       root.classList.add("aud");
       root.setAttribute("dir", "rtl");
       this.top = h("header", { class: "aud-top" });
+      this.scoreBar = h("div", { class: "aud-scorebar", hidden: true });
       this.main = h("main", { class: "aud-main", id: "aud-main" });
       this.reactBar = h("nav", { class: "aud-react", "aria-label": "תגובות" });
       this.fx = h("div", { class: "aud-fx", "aria-hidden": "true" });
       this.canvas = h("canvas", { class: "aud-confetti", "aria-hidden": "true" });
       this.sheetEl = h("div", { class: "aud-sheet", hidden: true });
-      root.append(this.top, this.main, this.reactBar, this.fx, this.canvas, this.sheetEl);
+      root.append(this.top, this.scoreBar, this.main, this.reactBar, this.fx, this.canvas, this.sheetEl);
       this.buildReactBar();
       be.onState(st => { this.st = st; this.render(); });
       this.tick = setInterval(() => this.tickClock(), 250);
@@ -221,8 +243,14 @@
       this.renderTop();
       const ph = st.phase;
       this.root.dataset.phase = ph;
-      const showReact = this.me && (ph === "lobby" || ph === "intro" || ph === "song1" || ph === "song2" || ph === "encore");
+      /* the score stays in view at the top of the phone, no scrolling needed */
+      const showScore = !!this.me && ph !== "lobby";
+      this.scoreBar.hidden = !showScore;
+      if (showScore) setKids(this.scoreBar, this.scoreStrip());
+      /* with a screen the emojis fly on it, so they're open all evening; without one they count for the song on stage */
+      const showReact = this.me && (hasScreen(st) ? (ph === "lobby" || ph === "intro" || ph === "song1" || ph === "song2" || ph === "encore") : !!stageSongKey(st));
       this.reactBar.hidden = !showReact;
+      if (showReact && !this.rxLabel.classList.contains("is-sent")) this.rxLabel.textContent = this.rxIdle();
       this.root.classList.toggle("has-react", !!showReact);
       let view;
       if (!this.me) view = this.vJoin();
@@ -235,7 +263,7 @@
       else view = this.vEncore();
       const promoOn = this.promoActive();
       if (promoOn) view = h("div", { class: "promo-wrap" }, this.promoCard(), view);
-      const key = (promoOn ? "promo" + st.promo.seq : "") + (this.me ? "in" : "out") + ph + st.round + (ph === "lobby" ? (this.me && this.me.prediction) : "") + (ph === "raffle" ? JSON.stringify(st.raffle) : "") + (["voting", "song1", "song2"].includes(ph) ? (this.myVotes[st.round] || "") + (st.voteDuringSongs !== false) : "") + (ph === "reveal" ? JSON.stringify((st.results || {})[st.round] || {}) : "") + (ph === "encore" ? st.encoreSide || "" : "");
+      const key = (promoOn ? "promo" + st.promo.seq : "") + (this.me ? "in" : "out") + hasScreen(st) + prizesOn(st) + ph + st.round + (ph === "lobby" ? (this.me && this.me.prediction) : "") + (ph === "raffle" ? JSON.stringify(st.raffle) : "") + (["voting", "song1", "song2"].includes(ph) ? (this.myVotes[st.round] || "") + (st.voteDuringSongs !== false) : "") + (ph === "reveal" ? JSON.stringify((st.results || {})[st.round] || {}) : "") + (ph === "encore" ? st.encoreSide || "" : "");
       if (key !== this._key) {
         this._key = key;
         setKids(this.main, view);
@@ -289,7 +317,7 @@
           input,
           h("button", { class: "btn-primary", type: "submit" }, "הכנס לזירה")
         ),
-        h("p", { class: "aud-fine" }, "בלי הרשמה ובלי הורדה. כל מי שנכנס מקבל כרטיס להגרלה בסוף הערב."),
+        h("p", { class: "aud-fine" }, prizesOn(this.st) ? "בלי הרשמה ובלי הורדה. כל מי שנכנס מקבל כרטיס להגרלה בסוף הערב." : "בלי הרשמה ובלי הורדה."),
         this.followCard()
       );
     }
@@ -297,7 +325,7 @@
       return h("div", { class: "stub" },
         h("div", { class: "stub-l" }, h("span", { class: "stub-k" }, "ADMIT ONE"), h("span", { class: "stub-n" }, "#" + this.me.ticket)),
         h("div", { class: "stub-r" }, h("span", { class: "stub-k" }, "שם"), h("span", { class: "stub-v" }, this.me.name || "אורח/ת"),
-          h("span", { class: "stub-k" }, "הגרלה"), h("span", { class: "stub-v" }, "בסוף המופע")));
+          prizesOn(this.st) ? [h("span", { class: "stub-k" }, "הגרלה"), h("span", { class: "stub-v" }, "בסוף המופע")] : null));
     }
     /* -- lobby -- */
     vLobby() {
@@ -316,8 +344,12 @@
         h("ol", { class: "how" },
           h("li", null, h("span", null, h("b", null, "שיר מול שיר."), " " + SHOW.howPair)),
           h("li", null, h("span", null, h("b", null, "מצביעים."), " אחרי השיר השני נפתחת ההצבעה לכמה שניות.")),
-          h("li", null, h("span", null, h("b", null, "המסך מכריע."), " התוצאה עולה מיד, ובסוף הערב יש אלוף והגרלה.")),
-          h("li", null, h("span", null, h("b", null, "שולחים ריאקשנים."), " לוחצים על 🔥 ❤️ 😮 בתחתית המסך, והם עפים על המסך הגדול באולם."))),
+          hasScreen(this.st)
+            ? h("li", null, h("span", null, h("b", null, "המסך מכריע."), " התוצאה עולה מיד, ובסוף הערב יש אלוף" + (prizesOn(this.st) ? " והגרלה." : ".")))
+            : h("li", null, h("span", null, h("b", null, "הקהל מכריע."), " התוצאה מופיעה מיד כאן בטלפון, ובסוף הערב יש אלוף" + (prizesOn(this.st) ? " והגרלה." : "."))),
+          hasScreen(this.st)
+            ? h("li", null, h("span", null, h("b", null, "שולחים אימוג'ים."), " לוחצים על 🔥 ❤️ 😮 בתחתית המסך, והם עפים על המסך הגדול באולם. בסוף נגלה איזה שיר קיבל הכי הרבה."))
+            : h("li", null, h("span", null, h("b", null, "שולחים אימוג'ים."), " בזמן כל שיר לוחצים על 🔥 ❤️ 😮 בתחתית המסך. בסוף הערב נגלה איזה שיר קיבל הכי הרבה."))),
         this.followCard()
       );
     }
@@ -387,7 +419,6 @@
           h("div", null, open ? h("p", { class: "onair" }, h("i"), "ההצבעה פתוחה") : null, this.duelHead(st))),
         this.voteList(r, states),
         this.voteNote,
-        this.scoreStrip(),
         this.followCard()
       );
     }
@@ -432,7 +463,7 @@
         h("span", { class: "award-ico", "aria-hidden": "true" }, kind === "fast" ? "⚡" : "👑"),
         h("span", { class: "award-k" }, kind === "fast" ? "המצביע המהיר" : "כתר המזל"),
         h("span", { class: "award-v" }, me ? "זה את/ה! " : "", "#" + a.ticket, a.name ? " · " + a.name : ""),
-        me ? h("span", { class: "award-cta" }, "גשו לעמדת הלהקה בסוף המופע") : null);
+        me && prizesOn(this.st) ? h("span", { class: "award-cta" }, "גשו לעמדת הלהקה בסוף המופע") : null);
     }
     vReveal() {
       const st = this.st, r = st.round, res = (st.results || {})[r];
@@ -443,7 +474,8 @@
       const next = r + 1 < N ? SET[r + 1] : null;
       return h("section", { class: "aud-reveal" },
         this.duelHead(st),
-        h("div", { class: "winner winner-" + w },
+        h("div", { class: "winner winner-" + w + (w !== "tie" ? " has-art" : "") },
+          w !== "tie" ? window.SCArt.img(videoKey(r, w), "winner-art") : null,
           h("span", { class: "winner-k" }, w === "tie" ? "תוצאה" : "ניצח בדו־קרב"),
           h("span", { class: "winner-v" }, w === "tie" ? "תיקו" : SIDE[w].team),
           w !== "tie" ? h("span", { class: "winner-song" }, bdi(songOf(r, w).title)) : null),
@@ -452,7 +484,6 @@
           h("div", { class: "split-film", style: { flexGrow: Math.max(film, 4) } }, h("b", null, film + "%"), h("span", null, L.film))),
         h("p", { class: "verdict" + (mine && mine === w ? " is-good" : "") }, verdict),
         h("div", { class: "awards" }, this.award("fast", res.fastest), this.award("luck", res.lucky)),
-        this.scoreStrip(),
         next ? h("p", { class: "aud-note" }, "הבא בתור: ", h("b", null, next.theme)) : h("p", { class: "aud-note" }, "זה היה הדו־קרב האחרון. עוד רגע האלופים."),
         this.followCard()
       );
@@ -489,17 +520,29 @@
       return h("section", { class: "aud-final" },
         h("p", { class: "eyebrow" }, "סוף הקרב"),
         h("div", { class: "champ champ-" + c },
+          c !== "tie" ? champImg(c, "champ-img") : null,
           h("span", { class: "champ-k" }, c === "tie" ? "תיקו מושלם" : "האלופים של הערב"),
           h("span", { class: "champ-v" }, c === "tie" ? "שני המסכים" : SIDE[c].team),
           h("span", { class: "champ-score" }, L.tv + " ", h("b", null, s.tv), " : ", h("b", null, s.film), " " + L.film)),
         p ? h("p", { class: "verdict" + (p === c ? " is-good" : "") }, p === c ? "ניחשת נכון מההתחלה. כל הכבוד!" : "ניחשת " + SIDE[p].team + ". הקהל חשב אחרת.") : null,
+        this.rxCard(),
         h("div", { class: "card meter" },
           h("h3", { class: "aud-h3" }, "מד הטעם שלך"),
           tm.voted ? h("p", null, "הצבעת עם הרוב ב-", h("b", null, tm.withCrowd), " מתוך ", h("b", null, tm.voted), " סיבובים") : h("p", null, "לא הצבעת הערב."),
           h("div", { class: "meter-bar" }, h("i", { style: { width: tm.p + "%" } })),
           h("p", { class: "muted" }, tm.p >= 70 ? "יש לך אוזן של קהל. מסכים איתך כמעט תמיד." : tm.p >= 40 ? "טעם עצמאי עם נגיעות מיינסטרים." : tm.voted ? "מורד אמיתי. הולך עם הלב." : "")),
-        h("p", { class: "aud-note" }, "עוד רגע ההגרלה. הכרטיס שלך: ", h("b", null, "#" + this.me.ticket)),
+        prizesOn(st) ? h("p", { class: "aud-note" }, "עוד רגע ההגרלה. הכרטיס שלך: ", h("b", null, "#" + this.me.ticket)) : null,
         this.contactBlock());
+    }
+    rxCard() {
+      const top = rxTop(this.st, 3); if (!top.length) return null;
+      const [w, ...rest] = top;
+      return h("div", { class: "card rxwin rxwin-" + w.side },
+        h("p", { class: "eyebrow" }, "שיר האימוג'ים של הערב"),
+        h("h3", { class: "aud-h2" + (w.song.hebrew ? "" : " latin-title") }, bdi(w.song.title)),
+        h("p", { class: "muted" }, meta(w.song), " · ", SIDE[w.side].team),
+        h("p", { class: "rxwin-n" }, "🔥 ❤️ 😮 ", h("b", null, w.n), " אימוג'ים"),
+        rest.length ? h("ol", { class: "rxwin-rest" }, rest.map(x => h("li", null, bdi(x.song.title), h("span", null, " · " + x.n)))) : null);
     }
     vRaffle() {
       const st = this.st, rf = st.raffle;
@@ -524,22 +567,24 @@
         this.contactBlock());
       return h("section", { class: "aud-final" },
         h("h1", { class: "aud-h1 encore" }, "הדרן!"),
-        h("p", { class: "aud-lead" }, "תודה ששיחקתם. שלחו תגובות ללהקה מהכפתורים למטה."),
+        h("p", { class: "aud-lead" }, "תודה ששיחקתם."),
+        this.rxCard(),
         this.contactBlock());
     }
     /* -- reactions -- */
     buildReactBar() {
       const EMO = [["fire", "🔥"], ["love", "❤️"], ["wow", "😮"], ["clap", "👏"], ["pop", "🍿"]];
-      this.rxLabel = h("span", { class: "rx-label" }, "⬆ לחצו, וזה יעוף על המסך הגדול");
+      this.rxLabel = h("span", { class: "rx-label" }, "");
       this.reactBar.append(this.rxLabel);
       if (!safeStore.get("sc_rx_seen", false)) this.reactBar.classList.add("is-new");
       EMO.forEach(([k, e]) => this.reactBar.append(h("button", { type: "button", class: "rx", "aria-label": "תגובה " + e, onclick: (ev) => this.react(k, e, ev) }, e)));
     }
+    rxIdle() { return hasScreen(this.st) ? "⬆ לחצו, וזה יעוף על המסך הגדול" : "⬆ שלחו אימוג'ים לשיר שעל הבמה"; }
     react(k, e, ev) {
       this.pending[k] = (this.pending[k] || 0) + 1;
       if (this.reactBar.classList.contains("is-new")) { this.reactBar.classList.remove("is-new"); safeStore.set("sc_rx_seen", true); }
-      this.rxLabel.textContent = "נשלח למסך ✓"; this.rxLabel.classList.add("is-sent");
-      clearTimeout(this._rxT); this._rxT = setTimeout(() => { this.rxLabel.textContent = "⬆ לחצו, וזה יעוף על המסך הגדול"; this.rxLabel.classList.remove("is-sent"); }, 1300);
+      this.rxLabel.textContent = hasScreen(this.st) ? "נשלח למסך ✓" : "נספר לשיר ✓"; this.rxLabel.classList.add("is-sent");
+      clearTimeout(this._rxT); this._rxT = setTimeout(() => { this.rxLabel.textContent = this.rxIdle(); this.rxLabel.classList.remove("is-sent"); }, 1300);
       if (navigator.vibrate) navigator.vibrate(8);
       const b = ev.currentTarget.getBoundingClientRect(), rr = this.root.getBoundingClientRect();
       const f = h("span", { class: "float", style: { left: (b.left - rr.left + b.width / 2) + "px", top: (b.top - rr.top) + "px" } }, e);
@@ -1053,7 +1098,9 @@
     }
     sFinal() {
       const st = this.st, c = champion(st), s = scoreboard(st), res = st.results || {};
-      return h("div", { class: "s-final s-final-" + c },
+      const fimg = c !== "tie" ? champImg(c, "s-final-img") : null;
+      return h("div", { class: "s-final s-final-" + c + (fimg ? " has-img" : "") },
+        fimg,
         h("div", { class: "s-final-k" }, c === "tie" ? "תיקו מושלם" : "האלופים של הערב"),
         h("div", { class: "s-final-w" }, c === "tie" ? "שני המסכים" : SIDE[c].team),
         h("div", { class: "s-final-score" }, h("span", { class: "tv" }, L.tv + " ", h("b", null, s.tv)), h("span", { class: "sep" }, ":"), h("span", { class: "film" }, h("b", null, s.film), " " + L.film)),
@@ -1063,6 +1110,7 @@
             h("span", { class: "s-fg-n" }, pad(i + 1)), h("span", { class: "s-fg-t" }, d.theme),
             h("span", { class: "s-fg-w" }, x ? (x.winner === "tie" ? "תיקו" : bdi(songOf(i, x.winner).title)) : "–"));
         })),
+        (() => { const w = rxTop(st, 1)[0]; return w ? h("div", { class: "s-final-rx" }, "שיר האימוג'ים של הערב: ", bdi(w.song.title), " · " + w.n + " 🔥") : null; })(),
         h("div", { class: "s-final-foot" }, "תודה שהצבעתם!"));
     }
     sRaffle() {
@@ -1203,7 +1251,21 @@
       this.preview = new ScreenView(this.previewHost, this.be, { mini: true });
       this.lyricsMap = {}; this.be.onLyricsList(m => { this.lyricsMap = m || {}; this.renderLyrics(); });
       this.factsMap = {}; this.be.onFactsList(m => { this.factsMap = m || {}; this.renderFacts(); });
+      /* emoji reactions are counted here, per song on stage, so they work with or without a screen */
+      this.rxPend = {}; this.be.onReactions(r => this.countReaction(r));
       if (this.st) this.onState(null);
+    }
+    countReaction(r) {
+      const key = stageSongKey(this.st); if (!key || !r || !r.c) return;
+      let n = 0; Object.keys(r.c).forEach(k => { n += Math.max(0, Math.min(12, +r.c[k] || 0)); }); if (!n) return;
+      this.rxPend[key] = (this.rxPend[key] || 0) + n;
+      if (this._rxFlushT) return;
+      this._rxFlushT = setTimeout(() => {
+        this._rxFlushT = null;
+        const merged = Object.assign({}, (this.st && this.st.rx) || {}), p = this.rxPend; this.rxPend = {};
+        Object.keys(p).forEach(k => { merged[k] = (merged[k] || 0) + p[k]; });
+        this.set({ rx: merged });
+      }, 3000);
     }
     loginView() {
       const live = this.be.isLive();
@@ -1248,14 +1310,14 @@
         case "song2": return { label: "השיר השני נגמר ← 🗳 ספירה לאחור להצבעה (" + (st.voteSeconds || 20) + " שניות)", run: () => this.openVoting() };
         case "voting": return { label: "⏹ סגירת ההצבעה וחשיפת התוצאה", run: () => this.closeVoting() };
         case "reveal": return r + 1 < N ? { label: "לדו־קרב " + (r + 2) + " · " + SET[r + 1].theme, run: () => this.goIntro(r + 1) } : { label: "🏆 הכרזת האלופים", run: () => this.set({ phase: "final", video: this.vid("", "stop") }) };
-        case "final": return { label: "🎟 ההגרלה הגדולה", run: () => this.set({ phase: "raffle", raffle: null }) };
+        case "final": return prizesOn(st) ? { label: "🎟 ההגרלה הגדולה", run: () => this.set({ phase: "raffle", raffle: null }) } : { label: "הדרן", run: () => this.set({ phase: "encore", encoreSide: null }) };
         case "raffle": return st.raffle ? { label: "הדרן", run: () => this.set({ phase: "encore", encoreSide: null }) } : { label: "🎟 הגרלת זוכה", run: () => this.drawRaffle() };
         default: return { label: "המופע הסתיים", run: null };
       }
     }
     back() {
       const st = this.st, r = st.round;
-      const map = { intro: r > 0 ? { phase: "reveal", round: r - 1 } : { phase: "lobby" }, song1: { phase: "intro" }, song2: { phase: "song1" }, voting: { phase: "song2" }, reveal: { phase: "song2" }, final: { phase: "reveal", round: N - 1 }, raffle: { phase: "final" }, encore: { phase: "raffle" } };
+      const map = { intro: r > 0 ? { phase: "reveal", round: r - 1 } : { phase: "lobby" }, song1: { phase: "intro" }, song2: { phase: "song1" }, voting: { phase: "song2" }, reveal: { phase: "song2" }, final: { phase: "reveal", round: N - 1 }, raffle: { phase: "final" }, encore: { phase: prizesOn(st) ? "raffle" : "final" } };
       const m = map[st.phase]; if (!m) return;
       const patch = Object.assign({}, m);
       if (patch.phase === "song1" || patch.phase === "song2") {
@@ -1422,6 +1484,11 @@
         h("p", null, "איזה הדרן מנגנים?"),
         h("div", { class: "ctx-btns" }, ["tv", "film"].map(sd => h("button", { type: "button", class: st.encoreSide === sd ? "btn-primary" : "btn-ghost",
           onclick: () => this.set({ encoreSide: sd, video: this.vid(videoKey("enc", sd), "play") }) }, "🎤 " + SIDE[sd].latin + ": ", bdi(songOf("enc", sd).title))))));
+      if (["final", "raffle", "encore"].includes(st.phase)) {
+        const top = rxTop(st, 3);
+        kids.push(h("div", { class: "ctx-awards" }, h("p", null, "🔥 שיר האימוג'ים של הערב:"),
+          top.length ? h("ol", null, top.map(x => h("li", null, h("b", null, bdi(x.song.title)), " · " + SIDE[x.side].team + " · " + x.n + " אימוג'ים"))) : h("p", null, h("small", null, "עוד לא נשלחו אימוג'ים בזמן השירים"))));
+      }
       if (st.phase === "raffle" && st.raffle) kids.push(h("div", { class: "ctx-awards" }, h("p", null, "🎟 זוכה: ", h("b", null, "#" + st.raffle.ticket + (st.raffle.name ? " " + st.raffle.name : ""))),
         h("button", { class: "btn-ghost", type: "button", onclick: () => this.drawRaffle() }, "הגרלה מחדש")));
       if (["intro", "song1", "song2"].includes(st.phase)) {
@@ -1453,6 +1520,8 @@
         h("div", { class: "set-row" }, h("label", { for: "adm-secs" }, "זמן הצבעה"), secs),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-during", type: "checkbox", checked: st.voteDuringSongs !== false, onchange: (e) => this.set({ voteDuringSongs: e.target.checked }) }), "ההצבעה פתוחה כבר מתחילת השיר הראשון")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-live", type: "checkbox", checked: st.liveBars !== false, onchange: (e) => this.set({ liveBars: e.target.checked }) }), "להציג אחוזים חיים על המסך בזמן ההצבעה")),
+        h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-hasscreen", type: "checkbox", checked: hasScreen(st), onchange: (e) => this.set({ hasScreen: e.target.checked }) }), "יש מסך הערב (אימוג'ים עפים על המסך; בלי מסך הם נספרים לכל שיר)")),
+        h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-prizes", type: "checkbox", checked: prizesOn(st), onchange: (e) => this.set({ prizes: e.target.checked }) }), "יש פרסים לקהל הערב (הגרלה, \"גשו לעמדת הלהקה\")")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-qr", type: "checkbox", checked: !!(st.screen && st.screen.qr), onchange: (e) => this.set({ screen: Object.assign({}, st.screen, { qr: e.target.checked }) }) }), "QR קבוע בפינת המסך (למאחרים)")),
         this.dangerZone());
     }

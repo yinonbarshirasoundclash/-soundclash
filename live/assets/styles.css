@@ -980,3 +980,31 @@ html[data-view="booth"], html[data-view="booth"] body { height: 100%; overflow: 
 /* lobby / final loop behind the text: darken so the title, QR and predictions stay readable */
 .scr-stage.has-video .s-lobby,
 .scr-stage.has-video .s-final { background: radial-gradient(ellipse at center, rgba(11,10,9,.5) 0%, rgba(11,10,9,.78) 100%); }
+
+/* =========================================================================
+   21.11.2026 — score pinned under the header, emoji song of the evening,
+   winner pictures
+   ========================================================================= */
+.aud-scorebar { flex: none; padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
+  border-bottom: 1px solid var(--line); background: rgba(11,10,9,.78); backdrop-filter: blur(10px); }
+.aud-scorebar[hidden] { display: none; }
+.aud-scorebar .score { padding: 6px 12px; border-radius: 12px; }
+.aud-scorebar .score-side { font-size: 15px; }
+.aud-scorebar .score-side b { font-size: 24px; }
+.aud-scorebar .dot { width: 10px; height: 10px; }
+
+.winner.has-art { position: relative; overflow: hidden; }
+.winner-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .32; pointer-events: none; }
+.winner.has-art > *:not(.winner-art) { position: relative; z-index: 1; }
+
+.champ-img { width: 100%; border-radius: 18px; margin-bottom: 8px; box-shadow: 0 10px 40px -12px rgba(0,0,0,.7); }
+
+.s-final.has-img { position: relative; }
+.s-final-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .38; z-index: 0; pointer-events: none; }
+.s-final.has-img > *:not(.s-final-img) { position: relative; z-index: 1; }
+.s-final-rx { font-size: 34px; font-weight: 800; color: var(--paper-2); margin-top: 6px; }
+
+.rxwin { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.rxwin-tv { border-color: var(--tv); } .rxwin-film { border-color: var(--film); }
+.rxwin-n { font-size: 15px; } .rxwin-n b { font-size: 22px; }
+.rxwin-rest { margin: 6px 0 0; padding: 0; list-style: none; font-size: 13px; color: var(--paper-3); display: flex; flex-direction: column; gap: 2px; }
