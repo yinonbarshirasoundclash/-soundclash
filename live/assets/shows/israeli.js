@@ -28,7 +28,7 @@ window.SC_SHOWS["israeli"] = {
   confetti: { tv: ["#4a8dff", "#a9c8ff", "#2f63c4", "#f4efe6"], film: ["#f2b33d", "#ffd98a", "#c98a26", "#f4efe6"], tie: ["#4a8dff", "#f2b33d", "#f4efe6"] },
   beams: { tv: "rgba(74,141,255,A)", film: "rgba(242,179,61,A)", dust: "rgba(230,236,246,.55)" },
   sides: {
-    tv:   { slug: "80s", he: "70–80",  team: "צד ה-70–80",  latin: "70s–80s", short: "70–80",  badge: "סיבוב", sceneLabel: "" },
+    tv:   { slug: "80s", he: "70–80",  team: "צד ה-70–80",  latin: "70–80", short: "70–80",  badge: "סיבוב", sceneLabel: "" },
     film: { slug: "90s", he: "ניינטיז", team: "צד הניינטיז", latin: "90s", short: "ניינטיז", badge: "סיבוב", sceneLabel: "" }
   },
   encores: null,
