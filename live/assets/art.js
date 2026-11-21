@@ -718,6 +718,34 @@
       c.fillStyle = "rgba(255,244,214,.75)"; c.beginPath(); c.ellipse(mx - 40, H * .9, 24, 6, 0, 0, 7); c.fill(); glow(c, mx - 40, H * .9, 60, "rgba(255,244,214,.35)");
       c.strokeStyle = "rgba(190,210,255,.18)"; c.lineWidth = 1.2; for (let i = 0; i < 80; i++) { const x = r() * W, y = r() * H * .7; c.beginPath(); c.moveTo(x, y); c.lineTo(x - 3, y + 14); c.stroke(); }
     },
+    /* 07 · שלח לי מלאך — a grey, rainy city where one pair of glowing wings lights up a single street lamp and two figures */
+    il_angel(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#3a3f4a"], [.6, "#545a66"], [1, "#2a2d34"]]));
+      for (let i = 0; i < 14; i++) { c.fillStyle = "rgba(30,32,40," + (.5 + r() * .4) + ")"; const w = 80 + r() * 140, x = r() * W, top = H * (.35 + r() * .25); c.fillRect(x, top, w, H); }
+      c.strokeStyle = "rgba(200,210,230,.18)"; c.lineWidth = 1.2; for (let i = 0; i < 160; i++) { const x = r() * W, y = r() * H; c.beginPath(); c.moveTo(x, y); c.lineTo(x - 4, y + 16); c.stroke(); }
+      const ax = W * .5, ay = H * .3;
+      glow(c, ax, ay, 320, "rgba(255,236,190,.45)");
+      [-1, 1].forEach(sg => { for (let k = 0; k < 7; k++) { c.save(); c.translate(ax, ay); c.rotate(sg * (.35 + k * .17)); c.fillStyle = "rgba(255,246,222," + (.85 - k * .09) + ")"; c.beginPath(); c.ellipse(sg * (70 + k * 6), -10 + k * 8, 95 - k * 6, 18, 0, 0, 7); c.fill(); c.restore(); } });
+      c.fillStyle = "#fff6dc"; c.beginPath(); c.arc(ax, ay - 6, 16, 0, 7); c.fill(); c.strokeStyle = "rgba(255,226,140,.9)"; c.lineWidth = 4; c.beginPath(); c.ellipse(ax, ay - 34, 24, 7, 0, 0, 7); c.stroke();
+      const lx = W * .5; c.fillStyle = "#1c1e24"; c.fillRect(lx - 4, H * .5, 8, H * .4); c.fillRect(lx - 30, H * .5, 60, 8);
+      glow(c, lx, H * .53, 170, "rgba(255,214,140,.5)"); c.fillStyle = "rgba(255,214,140,.12)"; poly(c, [[lx - 22, H * .52], [lx + 22, H * .52], [lx + 140, H * .9], [lx - 140, H * .9]], "rgba(255,214,140,.12)");
+      c.fillStyle = "#15161b"; [[lx - 52, 1], [lx + 40, .94]].forEach(([x, sc]) => { c.beginPath(); c.arc(x, H * .7, 13 * sc, 0, 7); c.fill(); c.fillRect(x - 14 * sc, H * .72, 28 * sc, 70 * sc); });
+      c.fillStyle = lin(c, 0, H * .88, 0, H, [[0, "#22252c"], [1, "#121318"]]); c.fillRect(0, H * .88, W, H * .12);
+      for (let i = 0; i < 6; i++) { c.fillStyle = "rgba(255,214,140," + (.06 + r() * .1) + ")"; c.beginPath(); c.ellipse(lx + (r() - .5) * 400, H * (.91 + r() * .06), 60 + r() * 80, 6, 0, 0, 7); c.fill(); }
+    },
+    /* 07 · על קו הזינוק — a running track at dusk: lanes, a starting line and two pairs of sneakers ready to go */
+    il_race(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#1d2a5a"], [.45, "#e0784a"], [.62, "#f4b860"], [1, "#3a1f1a"]]));
+      glow(c, W * .5, H * .58, 260, "rgba(255,200,120,.6)"); c.fillStyle = "#ffd48a"; c.beginPath(); c.arc(W * .5, H * .6, 70, Math.PI, 0); c.fill();
+      c.fillStyle = "#24140f"; c.fillRect(0, H * .6, W, H * .4);
+      const vx = W * .5, vy = H * .6;
+      c.fillStyle = "#b8452f"; poly(c, [[vx - 20, vy], [vx + 20, vy], [W * 1.1, H], [-W * .1, H]], "#b8452f");
+      c.strokeStyle = "rgba(255,255,255,.85)"; c.lineWidth = 4;
+      for (let k = -4; k <= 4; k++) { c.beginPath(); c.moveTo(vx + k * 5, vy); c.lineTo(vx + k * W * .15, H); c.stroke(); }
+      c.lineWidth = 10; c.beginPath(); const ly = H * .8; c.moveTo(vx - (ly - vy) / (H - vy) * W * .6, ly); c.lineTo(vx + (ly - vy) / (H - vy) * W * .6, ly); c.stroke();
+      [[-1, "#3dc8ff"], [1, "#ff5a8a"]].forEach(([sg, col]) => { const x = vx + sg * 70, y = H * .86; c.fillStyle = col; c.beginPath(); c.ellipse(x - 18, y, 26, 11, 0, 0, 7); c.ellipse(x + 18, y + 6, 26, 11, 0, 0, 7); c.fill(); c.fillStyle = "#fff"; c.fillRect(x - 40, y + 6, 30, 4); c.fillRect(x - 4, y + 12, 30, 4); });
+      for (let i = 0; i < 40; i++) { c.fillStyle = "rgba(255,240,220," + r() * .6 + ")"; c.fillRect(r() * W, r() * H * .4, 2, 2); }
+    },
   };
 
   function artNameFor(key) {
