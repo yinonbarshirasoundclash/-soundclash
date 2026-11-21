@@ -748,21 +748,24 @@ HOME_JSONLD = """<script type="application/ld+json">
 
 CROWD_MP4 = "assets/video/crowd-wonderbar.mp4?v=1"
 CROWD_POSTER = "assets/video/crowd-wonderbar.jpg?v=1"
-def crowd_clip():
-    """20 שניות מצילום טלפון בתוך הקהל, וונדרבר 5.9.2026. מתנגן בלי קול כשהוא על המסך."""
+VOTE_MP4 = "assets/video/vote-proof.mp4?v=1"     # 28 שניות: במה, הצבעה בטלפון, תוצאה, קהל (21.11.2026)
+VOTE_POSTER = "assets/video/vote-proof.jpg?v=1"
+def crowd_clip(src=None, poster=None, label="הקהל בוונדרבר, חיפה, ידיים וטלפונים באוויר"):
+    """20 שניות מצילום טלפון בתוך הקהל, וונדרבר 5.9.2026. מתנגן בלי קול כשהוא על המסך.
+    עם src אחר: אותו נגן לסרטון אנכי אחר (למשל סרטון ההצבעה)."""
     return f"""<figure class="demo-video crowd-clip">
-      <video src="{CROWD_MP4}" poster="{CROWD_POSTER}" muted loop playsinline preload="none" data-autoplay-visible
-        aria-label="הקהל בוונדרבר, חיפה, ידיים וטלפונים באוויר"></video>
+      <video src="{src or CROWD_MP4}" poster="{poster or CROWD_POSTER}" muted loop playsinline preload="none" data-autoplay-visible
+        aria-label="{label}"></video>
       <button type="button" class="demo-sound" aria-pressed="false" aria-label="הפעלת סאונד">
         <span class="on">🔊 עם סאונד</span><span class="off">🔇 בלי סאונד</span></button>
       <button type="button" class="demo-full" aria-label="צפייה במסך מלא, עם סאונד">⛶</button>
     </figure>"""
 
 def crowd_card(head="וונדרבר, חיפה", text="20 שניות מתוך ההופעה בספטמבר, מצולמות בטלפון מתוך הקהל. שיר מול שיר, הידיים באוויר, ובסוף כל סיבוב כולם מצביעים.",
-               eyebrow="ככה זה נראה מהקהל", wrap=False):
+               eyebrow="ככה זה נראה מהקהל", wrap=False, clip=None):
     """כרטיס עם סרטון הקהל מוונדרבר ומלל לידו. wrap=True עוטף אותו במקטע משלו."""
     card = f"""<div class="sx-crowd reveal">
-      {crowd_clip()}
+      {clip or crowd_clip()}
       <div>
         <div class="eyebrow">{eyebrow}</div>
         <h2>{head}</h2>
@@ -770,6 +773,11 @@ def crowd_card(head="וונדרבר, חיפה", text="20 שניות מתוך ה�
       </div>
     </div>"""
     return f'<section class="crowd-sec"><div class="wrap">{card}</div></section>' if wrap else card
+
+def vote_card(text, head="הקהל מכריע מהטלפון", eyebrow="ככה מצביעים", wrap=False):
+    """סרטון ההצבעה: הבמה שואלת, הקהל מצביע בטלפון, התוצאה עולה והאולם מגיב."""
+    return crowd_card(head=head, text=text, eyebrow=eyebrow, wrap=wrap,
+        clip=crowd_clip(VOTE_MP4, VOTE_POSTER, "הלהקה שואלת מי תעדיפו, הקהל מצביע בטלפון, התוצאה עולה והאולם מגיב"))
 
 def proof_strip():
     return f"""<section class="proof-strip">
@@ -1021,7 +1029,7 @@ for f in FORMATS:
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{(DUELS_SECTION + voices_block() + crowd_card(head="ככה נראה קהל של Soundclash", text="20 שניות מתוך הופעת הניינטיז בוונדרבר, חיפה, מצולמות בטלפון מתוך הקהל. אותו מנגנון בדיוק רץ בסדרות נגד סרטים: שיר מול שיר, וכל האולם מצביע. סרטון של סדרות נגד סרטים יעלה לכאן באמצע דצמבר.", eyebrow="מהקהל", wrap=True) + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
+{(DUELS_SECTION + voices_block() + vote_card("28 שניות ממופע הניינטיז: שואלים את הקהל, כל אחד מצביע מהטלפון, התוצאה עולה בזמן אמת והאולם מגיב. בסדרות נגד סרטים המנגנון זהה. סרטון של המופע עצמו יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
 {vids}
 {crowd_card(head="הקהל בוונדרבר, חיפה", text="ככה נראה ערב ניינטיז מתוך הקהל: 20 שניות מספטמבר, מצולמות בטלפון. הידיים באוויר, כולם שרים, ובסוף כל סיבוב מצביעים.", wrap=True) if f["slug"] == "90s" else ""}
@@ -1500,9 +1508,7 @@ events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["pho
                .replace("{ADDONS}", addons_block(head="מה עוד אפשר להוסיף לערב", sub="מוסיפים מה שמתאים לאירוע שלכם. כל התוספות מגיעות איתנו, בלי ספק נוסף לתאם.", cta=False))
                .replace("{CORP_WA}", html.escape(wa_link(CORP_WA_TEXT), quote=True)))
 events_body = events_body.replace("<!--DEMO-->", demo_video())
-events_body = events_body.replace("<!--CROWD-->", crowd_card(head="ככה נראה קהל של Soundclash",
-    text="20 שניות מתוך הופעת הניינטיז בוונדרבר, חיפה, מצולמות בטלפון מתוך הקהל. אותו מנגנון בדיוק רץ בסדרות נגד סרטים: שיר מול שיר, וכל האולם מצביע.",
-    eyebrow="מהקהל"))
+events_body = events_body.replace("<!--CROWD-->", vote_card("28 שניות ממופעי הניינטיז: שואלים את הקהל, כל אחד מצביע מהטלפון, התוצאה עולה בזמן אמת והאולם מגיב. בלי להוריד אפליקציה. בסדרות נגד סרטים המנגנון זהה."))
 page("events.html", "Soundclash לאירועי חברה — קרב מוזיקלי שהעובדים מכריעים",
      "מופע קרב מוזיקלי חי לאירועי חברה וערבי גיבוש: סדרות נגד סרטים, שישה נגנים, סולן וסולנית, והעובדים מצביעים מהטלפון ומכריעים. הצעת מחיר תוך 24 שעות: 054-6738192.",
      events_body, "events", theme="theme-screen", og_img=OG["events"])
