@@ -107,6 +107,8 @@
     onFactsList(cb) { const f = () => cb(Object.assign({}, this.db.facts || {})); setTimeout(f, 0); return this.on("facts", f); }
     async setScreenMeta(m) { this._op({ k: "screen", v: Object.assign({}, m, { at: Date.now() }) }); }
     async resetShow() { this._op({ k: "reset", v: initialState(this.cfg) }); }
+    /* pre-event check (demo: nothing to check) */
+    async preflight() { return { demo: true }; }
     /* admin */
     adminUser() { return { email: "demo" }; }
     async signIn() { return true; }
@@ -240,6 +242,33 @@
         }
       }
       await this.show.set(Object.assign(initialState(this.cfg), { updatedAt: this.FV.serverTimestamp() }));
+    }
+    /* pre-event check, run from the admin page before doors open:
+       1. read the show from the server (not the cache) and time it;
+       2. a phone-like visitor: a separate Firebase app signs in anonymously and reads the show
+          (fails with auth/too-many-requests when the sign-up quota for this IP is used up), then deletes itself;
+       3. the stage screen's last report (meta/screen). */
+    async preflight() {
+      const out = { project: (this.cfg.FIREBASE || {}).projectId || "" };
+      const t0 = performance.now();
+      try { await this.show.get({ source: "server" }); out.server = { ok: true, ms: Math.round(performance.now() - t0) }; }
+      catch (e) { out.server = { ok: false, err: e.code || e.message }; }
+      const fb = window.firebase; let app2 = null;
+      try {
+        const t1 = performance.now();
+        app2 = fb.initializeApp(this.cfg.FIREBASE, "preflight-" + Date.now());
+        const a2 = app2.auth(); await a2.signInAnonymously();
+        await app2.firestore().collection("shows").doc(this.cfg.SHOW_ID).get({ source: "server" });
+        out.visitor = { ok: true, ms: Math.round(performance.now() - t1) };
+        try { await a2.currentUser.delete(); } catch (e) { /* leaving one test user is harmless */ }
+      } catch (e) { out.visitor = { ok: false, err: e.code || e.message }; }
+      finally { if (app2) app2.delete().catch(() => {}); }
+      try {
+        const s = await this.show.collection("meta").doc("screen").get({ source: "server" });
+        const m = s.exists ? s.data() : null, at = m && m.at && m.at.toMillis ? m.at.toMillis() : 0;
+        out.screen = m ? { at, videos: (m.videos || []).length, status: m.status || "" } : null;
+      } catch (e) { out.screen = { err: e.code || e.message }; }
+      return out;
     }
     adminUser() { const u = this.auth.currentUser; return u && !u.isAnonymous ? { email: u.email } : null; }
     async signIn(email, pw) { await this.auth.signInWithEmailAndPassword(email, pw); return true; }

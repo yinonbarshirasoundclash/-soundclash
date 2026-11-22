@@ -1272,6 +1272,7 @@
       this.$vnow = h("div", { class: "vnow" });
       this.$crowd = h("div", { class: "crowd" });
       this.$settings = h("div", { class: "settings" });
+      this.$pre = h("div", { class: "pre" });
       this.previewHost = h("div", { class: "preview-host" });
       setKids(this.root, 
         h("header", { class: "adm-top" },
@@ -1286,7 +1287,7 @@
             h("div", { class: "go-row" }, this.$next, this.$back),
             this.$part,
             h("p", { class: "kbd-hint" }, "רווח = הצעד הבא · V = נגן/עצור סרטון · N = הסרטון הבא במחרוזת · B = אחורה"),
-            this.$ctx, this.$tally, this.$manual, this.$promo, this.$settings),
+            this.$ctx, this.$tally, this.$manual, this.$promo, this.$settings, this.$pre),
           h("section", { class: "adm-col adm-side", "aria-label": "מסך ווידאו" },
             h("div", { class: "adm-h-row" }, h("h2", { class: "adm-h" }, "מה רואים על המסך"),
               h("label", { class: "chk chk-sm" }, h("input", { id: "adm-safe", type: "checkbox", onchange: (e) => this.previewHost.classList.toggle("show-safe", e.target.checked) }), "קו האזור הבטוח")),
@@ -1297,6 +1298,7 @@
             h("h2", { class: "adm-h" }, "עובדות על השירים"), this.$facts = h("div", { class: "lyr" }),
             this.crowd ? h("h2", { class: "adm-h" }, "חזרה עם קהל וירטואלי") : null, this.crowd ? this.$crowd : null)));
       this.preview = new ScreenView(this.previewHost, this.be, { mini: true });
+      this.renderPreflight();
       this.lyricsMap = {}; this.be.onLyricsList(m => { this.lyricsMap = m || {}; this.renderLyrics(); });
       this.factsMap = {}; this.be.onFactsList(m => { this.factsMap = m || {}; this.renderFacts(); });
       /* emoji reactions are counted here, per song on stage, so they work with or without a screen */
@@ -1474,6 +1476,63 @@
         h("div", { class: "manual-head" }, "גיבוי: תוצאה ידנית (דגלונים או מחיאות כפיים)"),
         h("div", { class: "manual-row" }, h("label", null, "% ל", h("bdi", { dir: "ltr" }, L.tv)), inp, out, go),
         h("p", { class: "manual-note" }, "רק כשההצבעה בטלפונים לא עובדת. מחליף את התוצאה של הסיבוב הזה."));
+    }
+    /* "בדיקה לפני אירוע": a live check of the system plus what to set up for the expected audience.
+       Usage figures are rough estimates (see claude/אפליקציית-המופע.md): about 300 reads and 30 writes per phone a night. */
+    renderPreflight(res) {
+      if (!this.$pre) return;
+      const keep = (k, d) => { try { return localStorage.getItem(k) || d; } catch (e) { return d; } };
+      const save = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* storage blocked */ } };
+      const ppl = h("input", { class: "field field-sm", type: "number", min: 10, step: 10, value: keep("sc_pre_people", "150"), inputmode: "numeric", "aria-label": "כמה אנשים צפויים" });
+      const wifi = h("input", { type: "checkbox", checked: keep("sc_pre_wifi", "") === "1" });
+      const btn = h("button", { class: "btn-ghost", type: "button" }, "הרצת בדיקה");
+      const list = h("ul", { class: "pre-list" });
+      const run = async () => {
+        save("sc_pre_people", ppl.value); save("sc_pre_wifi", wifi.checked ? "1" : "");
+        btn.disabled = true; btn.textContent = "בודק…"; setKids(list, h("li", null, "בודק את החיבור…"));
+        let r; try { r = await this.be.preflight(); } catch (e) { r = { error: e.message }; }
+        btn.disabled = false; btn.textContent = "הרצת בדיקה שוב";
+        this.fillPreflight(list, r, Math.max(0, +ppl.value || 0), wifi.checked);
+      };
+      btn.onclick = run;
+      setKids(this.$pre,
+        h("h2", { class: "adm-h" }, "בדיקה לפני אירוע"),
+        h("p", { class: "pre-note" }, "להריץ במקום עצמו, אחרי ההקמה, כשמסך הבמה פתוח. הבדיקה נכנסת כמו טלפון של קהל, קוראת מהשרת ומוחקת את עצמה. לא משנה כלום במופע."),
+        h("div", { class: "set-row" }, h("label", null, "כמה אנשים צפויים"), ppl),
+        h("div", { class: "set-row" }, h("label", { class: "chk" }, wifi, "רוב הקהל יתחבר ל-Wi-Fi של המקום")),
+        h("div", { class: "set-row" }, btn), list);
+    }
+    fillPreflight(list, r, people, wifi) {
+      const items = [], proj = (r && r.project) || "soundclash-live", cons = "https://console.firebase.google.com/project/" + proj;
+      const it = (lvl, txt, ...more) => items.push(h("li", { class: "pre-" + lvl }, h("span", { class: "pre-ic", "aria-hidden": "true" }, lvl === "ok" ? "✓" : lvl === "warn" ? "!" : "✗"), h("span", null, txt, ...more)));
+      const link = (href, txt) => h("a", { href, target: "_blank", rel: "noopener" }, txt);
+      if (!r || r.error) { it("bad", "הבדיקה נכשלה: " + ((r && r.error) || "שגיאה לא ידועה")); setKids(list, ...items); return; }
+      if (r.demo) { it("warn", "זה מצב הדגמה, בלי Firebase. את הבדיקה מריצים באדמין האמיתי."); setKids(list, ...items); return; }
+      const s = r.server || {};
+      if (s.ok) it(s.ms < 800 ? "ok" : "warn", "חיבור לשרת: " + s.ms + " אלפיות שנייה" + (s.ms < 800 ? "" : ". איטי, כדאי לבדוק את האינטרנט של מחשב האדמין"));
+      else it("bad", "אין חיבור לשרת (" + s.err + "). לבדוק את האינטרנט של מחשב האדמין.");
+      const v = r.visitor || {};
+      if (v.ok) it(v.ms < 2500 ? "ok" : "warn", "כניסה כמו טלפון של קהל: עובדת (" + v.ms + " אלפיות שנייה)");
+      else if (/too-many-requests|quota/i.test(v.err || "")) it("bad", "טלפונים חדשים לא מצליחים להיכנס מהרשת הזו: מגבלת הכניסות לכתובת IP נוצלה. להגדיל זמנית את מכסת ההרשמות ", link(cons + "/authentication/settings", "בהגדרות Authentication"), ".");
+      else it("bad", "כניסה כמו טלפון של קהל נכשלה (" + v.err + ").");
+      const sc = r.screen;
+      if (sc && sc.at) {
+        const mins = Math.round((Date.now() - sc.at) / 60000);
+        if (mins <= 3) it(sc.videos ? "ok" : "warn", "מסך הבמה מחובר" + (sc.videos ? ", " + sc.videos + " סרטונים טעונים" : ". לא נטענה תיקיית סרטונים (בלי סרטונים יוצגו איורים)"));
+        else it("warn", "מסך הבמה דיווח לאחרונה לפני " + mins + " דקות. אם יש מסך הערב, לפתוח או לרענן אותו.");
+      } else it("warn", "לא זוהה מסך במה. אם אין מסך הערב, זה בסדר.");
+      if (people) {
+        const reads = people * 300, writes = people * 30;
+        if (reads > 50000 || writes > 20000) it("warn", "לפי ההערכה הערב יצרוך כ-" + Math.round(reads / 1000) + " אלף קריאות, יותר מהמכסה החינמית (50 אלף ביום). צריך חבילה בתשלום (Blaze). לבדוק ", link(cons + "/usage/details", "בדף השימוש והחיוב"), ".");
+        else it("ok", "לפי ההערכה הערב יצרוך כ-" + Math.round(reads / 1000) + " אלף קריאות, בתוך המכסה החינמית.");
+        const need = wifi ? people > 90 : people > 300;
+        if (need) {
+          const q = Math.ceil(people * 1.3 / 100) * 100;
+          it("warn", "להגדיל זמנית את מכסת ההרשמות ל-" + q + " בשעה, משעה לפני פתיחת הדלתות ולמשך 6 שעות: ", link(cons + "/authentication/settings", "Authentication ← Settings"), ".");
+        } else it("ok", "מגבלת הכניסות (100 טלפונים חדשים בשעה לכל רשת) לא אמורה להפריע בקהל כזה.");
+      }
+      it("warn", "תזכורת: דף אדמין פתוח במכשיר אחד בלבד לאורך המופע (בשביל ספירת האימוג'ים).");
+      setKids(list, ...items);
     }
     promo() {
       const p = this.st.promo || {}, on = p.at && p.at + 25000 > Date.now();
