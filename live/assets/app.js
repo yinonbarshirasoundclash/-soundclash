@@ -1449,9 +1449,15 @@
       const rx = this.takeRx(); if (rx) patch.rx = rx;
       await this.set(patch);
     }
+    manualOn() { try { return localStorage.getItem("sc_manual_backup") === "1"; } catch (e) { return false; } }
+    setManualOn(v) {
+      try { if (v) localStorage.setItem("sc_manual_backup", "1"); else localStorage.removeItem("sc_manual_backup"); } catch (e) { /* storage blocked */ }
+      this._manualKey = null; if (this.$manual) this.$manual.hidden = true; this.renderManual();
+    }
     renderManual() {
       if (!this.$manual || !this.st) return;
-      const st = this.st, show = ["song2", "voting", "reveal"].includes(st.phase);
+      /* off unless the admin turns it on in the settings (kept on this device only) */
+      const st = this.st, show = this.manualOn() && ["song2", "voting", "reveal"].includes(st.phase);
       if (!show) { this.$manual.hidden = true; return; }
       const key = st.phase + ":" + st.round;
       if (!this.$manual.hidden && this._manualKey === key) return; /* keep what was typed */
@@ -1613,6 +1619,7 @@
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-hasscreen", type: "checkbox", checked: hasScreen(st), onchange: (e) => this.set({ hasScreen: e.target.checked }) }), "יש מסך הערב (אימוג'ים עפים על המסך; בלי מסך הם נספרים לכל שיר)")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-prizes", type: "checkbox", checked: prizesOn(st), onchange: (e) => this.set({ prizes: e.target.checked }) }), "יש פרסים לקהל הערב (הגרלה, \"גשו לעמדת הלהקה\")")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-qr", type: "checkbox", checked: !!(st.screen && st.screen.qr), onchange: (e) => this.set({ screen: Object.assign({}, st.screen, { qr: e.target.checked }) }) }), "QR קבוע בפינת המסך (למאחרים)")),
+        h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-manual", type: "checkbox", checked: this.manualOn(), onchange: (e) => this.setManualOn(e.target.checked) }), "גיבוי: תוצאה ידנית (רק כשההצבעה בטלפונים לא עובדת). מופיע מתחת לספירה החיה, מהשיר השני ועד החשיפה")),
         this.dangerZone());
     }
     dangerZone() {
