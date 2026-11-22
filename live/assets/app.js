@@ -1267,6 +1267,7 @@
       this.$part = h("button", { class: "btn-part", type: "button", hidden: true, onclick: () => this.goNextPart(), title: "קיצור: N" });
       this.$ctx = h("div", { class: "ctx" });
       this.$tally = h("div", { class: "tally" });
+      this.$manual = h("div", { class: "manual", hidden: true });
       this.$videos = h("div", { class: "vids" });
       this.$vnow = h("div", { class: "vnow" });
       this.$crowd = h("div", { class: "crowd" });
@@ -1285,7 +1286,7 @@
             h("div", { class: "go-row" }, this.$next, this.$back),
             this.$part,
             h("p", { class: "kbd-hint" }, "רווח = הצעד הבא · V = נגן/עצור סרטון · N = הסרטון הבא במחרוזת · B = אחורה"),
-            this.$ctx, this.$tally, this.$promo, this.$settings),
+            this.$ctx, this.$tally, this.$manual, this.$promo, this.$settings),
           h("section", { class: "adm-col adm-side", "aria-label": "מסך ווידאו" },
             h("div", { class: "adm-h-row" }, h("h2", { class: "adm-h" }, "מה רואים על המסך"),
               h("label", { class: "chk chk-sm" }, h("input", { id: "adm-safe", type: "checkbox", onchange: (e) => this.previewHost.classList.toggle("show-safe", e.target.checked) }), "קו האזור הבטוח")),
@@ -1307,17 +1308,24 @@
       const pend = this.rxPend[key] = this.rxPend[key] || {}; let n = 0;
       Object.keys(r.c).forEach(k => { const c = Math.max(0, Math.min(12, +r.c[k] || 0)); if (c) { pend[k] = (pend[k] || 0) + c; n += c; } });
       if (!n || this._rxFlushT) return;
-      /* counts per song and per emoji; flushed every 2 seconds so the reveal right after the vote is up to date */
+      /* counts per song and per emoji. Every phone listens to the show state, so each write of rx costs one
+         read per phone. The counts are only shown at the reveal, so they ride along with the reveal write
+         (closeVoting / manualResult); this slow flush is only a safety net, so a reload loses at most a minute. */
       this._rxFlushT = setTimeout(() => {
         this._rxFlushT = null;
-        const merged = Object.assign({}, (this.st && this.st.rx) || {}), p = this.rxPend; this.rxPend = {};
-        Object.keys(p).forEach(key => {
-          const cur = merged[key] && typeof merged[key] === "object" ? Object.assign({}, merged[key]) : {};
-          Object.keys(p[key]).forEach(k => { cur[k] = (cur[k] || 0) + p[key][k]; });
-          merged[key] = cur;
-        });
-        this.set({ rx: merged });
-      }, 2000);
+        const rx = this.takeRx(); if (rx) this.set({ rx });
+      }, 60000);
+    }
+    /* the show's rx with this page's pending counts merged in, or null when nothing is pending */
+    takeRx() {
+      const p = this.rxPend || {}; if (!Object.keys(p).length) return null;
+      const merged = Object.assign({}, (this.st && this.st.rx) || {}); this.rxPend = {};
+      Object.keys(p).forEach(key => {
+        const cur = merged[key] && typeof merged[key] === "object" ? Object.assign({}, merged[key]) : {};
+        Object.keys(p[key]).forEach(k => { cur[k] = (cur[k] || 0) + p[key][k]; });
+        merged[key] = cur;
+      });
+      return merged;
     }
     loginView() {
       const live = this.be.isLive();
@@ -1348,7 +1356,7 @@
       this.$promo.classList.toggle("is-on", !!prOn);
       clearTimeout(this._prT); if (prOn) this._prT = setTimeout(() => this.onState(this.st), pr.at + 25100 - Date.now());
       if (!this._lyrDone) { this._lyrDone = true; this.renderLyrics(); this.renderFacts(); }
-      this.renderRun(); this.renderNow(); this.renderCtx(); this.renderTally(); this.renderVideos(); this.renderSettings(); this.renderCrowd();
+      this.renderRun(); this.renderNow(); this.renderCtx(); this.renderTally(); this.renderManual(); this.renderVideos(); this.renderSettings(); this.renderCrowd();
       if (this.crowd) this.crowd.onState(st);
     }
     updateCounts() { if (this.$players) this.$players.textContent = this.players.length; this.renderCrowd(); }
@@ -1425,8 +1433,41 @@
         const fastest = redrawLucky && prevRes ? prevRes.fastest : pick(sorted[0]);
         const pool = votes.filter(v => !fastest || v.uid !== fastest.uid);
         const lucky = pick(pool[Math.floor(Math.random() * pool.length)]);
-        await this.set({ phase: "reveal", votingEndsAt: 0, video: redrawLucky ? this.st.video : this.vid("", "stop"), results: { [r]: { tv: t.tv, film: t.film, total: t.total, winner, fastest, lucky } } });
+        const patch = { phase: "reveal", votingEndsAt: 0, video: redrawLucky ? this.st.video : this.vid("", "stop"), results: { [r]: { tv: t.tv, film: t.film, total: t.total, winner, fastest, lucky } } };
+        const rx = this.takeRx(); if (rx) patch.rx = rx;
+        await this.set(patch);
       } finally { this._closing = false; }
+    }
+    /* backup when the venue's reception fails: the result is decided by flags or applause and typed in here.
+       Phones and screen show it like any result (percent only); there is no fastest voter or lucky winner. */
+    async manualResult(tvPct) {
+      const r = this.st.round, p = Math.max(0, Math.min(100, Math.round(+tvPct)));
+      if (!(p >= 0)) { this.toast("צריך להזין אחוז בין 0 ל-100."); return; }
+      const winner = p === 50 ? "tie" : p > 50 ? "tv" : "film";
+      const patch = { phase: "reveal", votingEndsAt: 0, video: this.vid("", "stop"),
+        results: { [r]: { tv: p, film: 100 - p, total: 100, winner, fastest: null, lucky: null, manual: true } } };
+      const rx = this.takeRx(); if (rx) patch.rx = rx;
+      await this.set(patch);
+    }
+    renderManual() {
+      if (!this.$manual || !this.st) return;
+      const st = this.st, show = ["song2", "voting", "reveal"].includes(st.phase);
+      if (!show) { this.$manual.hidden = true; return; }
+      const key = st.phase + ":" + st.round;
+      if (!this.$manual.hidden && this._manualKey === key) return; /* keep what was typed */
+      this._manualKey = key; this.$manual.hidden = false;
+      const inp = h("input", { class: "field field-sm manual-in", type: "number", min: 0, max: 100, step: 5, value: 50, inputmode: "numeric", "aria-label": "אחוז ל" + L.tv });
+      const out = h("span", { class: "manual-out" }, "");
+      const upd = () => { const p = Math.max(0, Math.min(100, Math.round(+inp.value || 0))); out.textContent = L.tv + " " + p + "% · " + L.film + " " + (100 - p) + "%"; };
+      inp.addEventListener("input", upd); upd();
+      const go = h("button", { class: "btn-ghost btn-warn", type: "button", onclick: () => {
+        if (!confirmManual()) return; this.manualResult(inp.value);
+      } }, "הכרזה ידנית");
+      const confirmManual = () => { this._manualArm = !this._manualArm; if (this._manualArm) { go.textContent = "לחיצה נוספת לאישור"; setTimeout(() => { this._manualArm = false; go.textContent = "הכרזה ידנית"; }, 4000); return false; } return true; };
+      setKids(this.$manual,
+        h("div", { class: "manual-head" }, "גיבוי: תוצאה ידנית (דגלונים או מחיאות כפיים)"),
+        h("div", { class: "manual-row" }, h("label", null, "% ל", h("bdi", { dir: "ltr" }, L.tv)), inp, out, go),
+        h("p", { class: "manual-note" }, "רק כשההצבעה בטלפונים לא עובדת. מחליף את התוצאה של הסיבוב הזה."));
     }
     promo() {
       const p = this.st.promo || {}, on = p.at && p.at + 25000 > Date.now();
@@ -1556,9 +1597,9 @@
       const t = st.phase === "reveal" && (st.results || {})[r] ? st.results[r] : tally(this.votes.filter(v => v.r === r));
       const tv = pct(t.tv, t.total);
       setKids(this.$tally, 
-        h("div", { class: "tally-head" }, h("span", null, st.phase === "reveal" ? "תוצאה סופית" : "ספירה חיה (רק את/ה רואה את האחוזים כאן)"), h("b", null, t.total + " קולות")),
+        h("div", { class: "tally-head" }, h("span", null, st.phase === "reveal" ? "תוצאה סופית" : "ספירה חיה (רק את/ה רואה את האחוזים כאן)"), h("b", null, t.manual ? "תוצאה ידנית" : t.total + " קולות")),
         h("div", { class: "tally-bar" }, h("i", { class: "tv", style: { width: (t.total ? tv : 50) + "%" } }), h("i", { class: "film", style: { width: (t.total ? 100 - tv : 50) + "%" } })),
-        h("div", { class: "tally-lab" }, h("span", { class: "tv" }, h("bdi", { dir: "ltr" }, L.tv + " " + (t.total ? tv : 0) + "% · " + t.tv)), h("span", { class: "film" }, h("bdi", { dir: "ltr" }, L.film + " " + (t.total ? 100 - tv : 0) + "% · " + t.film))));
+        h("div", { class: "tally-lab" }, h("span", { class: "tv" }, h("bdi", { dir: "ltr" }, L.tv + " " + (t.total ? tv : 0) + "%" + (t.manual ? "" : " · " + t.tv))), h("span", { class: "film" }, h("bdi", { dir: "ltr" }, L.film + " " + (t.total ? 100 - tv : 0) + "%" + (t.manual ? "" : " · " + t.film)))));
     }
     renderSettings() {
       const st = this.st;

@@ -661,6 +661,12 @@ html[data-view="screen"] .scr-viewport.show-cursor { cursor: default; }
 .tally-bar .tv { background: var(--tv); } .tally-bar .film { background: var(--film); }
 .tally-lab { display: flex; justify-content: space-between; font-family: var(--f-latin); font-size: 20px; letter-spacing: .04em; }
 .tally-lab .tv { color: var(--tv-hi); } .tally-lab .film { color: var(--film-hi); }
+.manual { padding: 12px 16px; border-radius: 20px; border: 1px dashed var(--line-2); display: flex; flex-direction: column; gap: 8px; }
+.manual-head { font-size: 14px; font-weight: 700; color: var(--paper-2); }
+.manual-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 14px; }
+.manual-in { width: 84px; }
+.manual-out { font-family: var(--f-latin); letter-spacing: .03em; color: var(--paper-2); }
+.manual-note { margin: 0; font-size: 12px; color: var(--paper-3); }
 .settings { display: flex; flex-direction: column; gap: 10px; padding-top: 6px; }
 .set-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; color: var(--paper-2); }
 .danger { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; font-size: 14px; }
