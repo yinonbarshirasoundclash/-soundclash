@@ -65,6 +65,14 @@ button svg{width:22px;height:22px}
       </label>
       <label>מועד משוער <small>חודש או תאריך</small><input name="when"></label>
     </div>
+    <label>איזה מופע מעניין אתכם?
+      <select name="show">
+        <option>מסיבה ישראלית</option>
+        <option>סדרות נגד סרטים</option>
+        <option>ניינטיז</option>
+        <option selected>עוד לא בטוחים, תמליצו לנו</option>
+      </select>
+    </label>
     <label>משהו נוסף? <small>לא חובה</small><textarea name="more"></textarea></label>
     <p class="err" id="err" role="alert"></p>
     <button type="submit"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg>שליחה</button>
@@ -72,7 +80,7 @@ button svg{width:22px;height:22px}
   </form>
 
   <div class="alt">מעדיפים לדבר? ינון בר שירה, <a href="tel:+972546738192" dir="ltr">054-6738192</a><br>
-  כל המופעים: <a href="https://soundclash.co.il">soundclash.co.il</a></div>
+  כל המופעים לרשויות: <a href="https://soundclash.co.il/authorities.html">soundclash.co.il/authorities.html</a></div>
 </main>
 <script>
 document.getElementById("f").addEventListener("submit", function (e) {
@@ -84,7 +92,7 @@ document.getElementById("f").addEventListener("submit", function (e) {
   var lines = ["היי, השארתי פרטים בדף של Soundclash:",
     "שם: " + v("name"), "רשות או ארגון: " + v("org")];
   if (v("role")) lines.push("תפקיד: " + v("role"));
-  lines.push("טלפון: " + v("phone"), "אירוע: " + v("event"));
+  lines.push("טלפון: " + v("phone"), "אירוע: " + v("event"), "מופע: " + v("show"));
   if (v("when")) lines.push("מועד משוער: " + v("when"));
   if (v("more")) lines.push("עוד: " + v("more"));
   location.href = "https://wa.me/972546738192?text=" + encodeURIComponent(lines.join("\n"));
