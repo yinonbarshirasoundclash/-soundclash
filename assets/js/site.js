@@ -152,7 +152,7 @@ window.SC_CONFIG = {
     fetch("shows.json", { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (data) {
-        var shows = parseShows(data.shows || []);
+        var shows = parseShows(data.shows || []), allShows = shows;
 
         /* רצועת ההופעה הקרובה */
         if (ribbonEl) {
@@ -176,6 +176,8 @@ window.SC_CONFIG = {
         /* לוח ההופעות (בעמוד ההופעות, ושלוש הקרובות בדף הבית) */
         lists.forEach(function (listEl) {
           var limit = parseInt(listEl.getAttribute("data-limit"), 10) || 0;
+          var fmt = listEl.getAttribute("data-format");   /* רק הופעות של מופע אחד (בעמוד הניינטיז) */
+          var shows = fmt ? allShows.filter(function (x) { return String(x.format || "").indexOf(fmt) > -1; }) : allShows;
           var section = listEl.closest("[data-shows-section]");
           if (!shows.length) {
             if (section) { section.hidden = true; return; }
@@ -346,3 +348,15 @@ document.querySelectorAll(".demo-video").forEach(function (fig) {
   }, { threshold: 0.35 });
   vids.forEach(function (v) { io.observe(v); });
 })();
+
+/* יוטיוב שנטען רק בלחיצה: עד אז רק תמונה וכפתור (24.11.2026) */
+document.querySelectorAll(".yt-lite").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var f = document.createElement("iframe");
+    f.src = "https://www.youtube.com/embed/" + b.getAttribute("data-yt") + "?rel=0&autoplay=1&playsinline=1";
+    f.title = b.getAttribute("data-title") || "";
+    f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    f.setAttribute("allowfullscreen", "");
+    b.replaceWith(f);
+  });
+});

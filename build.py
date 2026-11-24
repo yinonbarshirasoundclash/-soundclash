@@ -4,7 +4,7 @@
 כל התוכן, הקישורים ופרטי הקשר יושבים כאן. משנים כאן — מריצים `python3 build.py` —
 וכל הדפים מתעדכנים יחד. אין תלות בשום ספרייה חיצונית.
 """
-import os, html, datetime
+import os, re, html, datetime
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 
@@ -129,10 +129,15 @@ def demo_video(cls="hero-video", caption=DEMO_CAPTION, caption_html=DEMO_CAPTION
     </figure>
     <p class="demo-cap">{caption_html}</p>"""
 
+def yt_lite(vid, title):
+    """תמונה וכפתור במקום נגן יוטיוב. הנגן נטען רק בלחיצה (site.js), כדי שהעמוד לא יהיה כבד בטלפון (ליה, 24.11.2026)."""
+    t = html.escape(title)
+    return (f'<button type="button" class="yt-lite" data-yt="{vid}" data-title="{t}" aria-label="הפעלת הסרטון: {t}" '
+            f'style="background-image:url(\'https://i.ytimg.com/vi/{vid}/hqdefault.jpg\')"><span class="yt-play" aria-hidden="true"></span></button>')
+
 def trailer_video(cls="hero-video"):
     return f"""<div class="{cls}">
-      <iframe src="https://www.youtube.com/embed/{TRAILER}?rel=0" title="Soundclash ניינטיז — טריילר"
-        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      {yt_lite(TRAILER, "Soundclash ניינטיז, טריילר")}
     </div>"""
 
 # ============================================================================
@@ -478,7 +483,8 @@ def crew_html():
     return "".join(f'<li><img src="assets/img/tmuna/face-{k}.webp" alt="{n}" loading="lazy" width="400" height="400">'
                    f'<b>{n}</b><span>{r}{(" · " + x) if x else ""}</span></li>' for k, n, r, x in CREW)
 
-def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow="על הבמה", crew=True, nicole=True, note=""):
+def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow="על הבמה", crew=True, nicole=True, note="",
+                 lead=None, yinon_role="שירה", yinon_img=YINON_PHOTO, yinon_pos="center 30%"):
     """שני הסולנים של סדרות נגד סרטים, עם תמונה וביוגרפיה קצרה."""
     def card(img, alt, name, role, bio, pos="center 20%"):
         return (f'<article class="voice reveal"><img src="{img}" alt="{alt}" loading="lazy" style="object-position:{pos}">'
@@ -490,8 +496,8 @@ def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow=
       <h2>{head}</h2>
     </div>
     <div class="voices"{'' if nicole else ' style="grid-template-columns:minmax(0,420px);justify-content:center"'}>
-      {card(NICOLE_PHOTO, "ניקול רודוי, הסולנית של Soundclash", "ניקול רודוי", "שירה", NICOLE_BIO) if nicole else ""}
-      {card(YINON_PHOTO, "ינון בר שירה שר על הבמה", "ינון בר שירה", "שירה", YINON_BIO, pos="center 30%")}
+      {card(*lead) if lead else (card(NICOLE_PHOTO, "ניקול רודוי, הסולנית של Soundclash", "ניקול רודוי", "שירה", NICOLE_BIO) if nicole else "")}
+      {card(yinon_img, "ינון בר שירה שר על הבמה", "ינון בר שירה", yinon_role, YINON_BIO, pos=yinon_pos)}
     </div>
     {('<p class="center mt-32" style="color:var(--text-dim)">' + note + '</p>') if note else ''}
     {('<div class="crew reveal"><div class="crew-label">ולצידם על הבמה</div><ul class="crew-list">' + crew_html() + '</ul></div>') if crew else ''}
@@ -525,8 +531,7 @@ DEFAULT_SPEC = [
 
 def video_section(vids, head="צפו בקרב מקרוב", eyebrow="בפעולה", sub="", limit=3):
     cards = "".join(f"""<article class="video-card reveal">
-        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/{vid}?rel=0" title="{html.escape(t)}"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+        <div class="video-thumb">{yt_lite(vid, t)}</div>
         <div class="video-info"><h3>{html.escape(t)}</h3></div>
       </article>""" for vid, t in vids[:limit])
     yt = SOCIAL.get("youtube", "").strip()
@@ -932,6 +937,94 @@ def il_faq_section():
   </div>
 </section>"""
 
+# ======== הניינטיז: אותו מבנה כמו סדרות נגד סרטים והמסיבה הישראלית (ינון, 24.11.2026) ========
+NINETIES_STATS = [
+    ("6", "על הבמה, עם סולן וסולנית"),
+    ("18", "להיטים שכולם מכירים"),
+    ("9", "סיבובים"),
+    ("90", "דקות מופע"),
+    ("APP", "אפליקציית הצבעה משלנו"),
+]
+REUT_PHOTO = "assets/img/tmuna/09363-800.webp"
+REUT_BIO = "זמרת וגיטריסטית יוצרת. מנגנת גיטרה ב״הכל בגלל ג׳ני״, ומוציאה את האלבום השני שלה כזמרת יוצרת."
+REUT_CARD = (REUT_PHOTO, "רעות זורמן שרה ומנגנת על הבמה", "רעות זורמן", "שירה וגיטרה חשמלית", REUT_BIO, "center 25%")
+YINON_90_PHOTO = "assets/img/tmuna/09296-800.webp"
+
+def _nd_row(theme, a, aa, b, bb):
+    return f"""      <div class="duel-row reveal">
+        <div class="theme">{theme}</div>
+        <div class="side tv"><span class="who latin">USA</span><b dir="ltr">{a}</b><small>{aa}</small></div>
+        <div class="mini-vs latin">VS</div>
+        <div class="side film"><span class="who latin">UK</span><b dir="ltr">{b}</b><small>{bb}</small></div>
+      </div>"""
+# ארבעה סיבובים מתוך live/assets/shows/nineties.js
+NINETIES_DUELS_SECTION = f"""<section id="duels">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">מהרפרטואר</div>
+      <h2>ככה נראה סיבוב</h2>
+      <p>בכל סיבוב שיר של להקה אמריקאית מול שיר של להקה בריטית, סביב נושא משותף. ארבע דוגמאות מתוך תשעה.</p>
+    </div>
+    <div class="duel-list">
+{_nd_row("מרד נעורים", "Smells Like Teen Spirit", "נירוונה", "Creep", "רדיוהד")}
+{_nd_row("מלחמת העולם של הזמרות", "You Oughta Know", "אלאניס מוריסט", "Zombie", "הקרנבריז")}
+{_nd_row("קרב הצבעים", "Black", "פרל ג׳ם", "Yellow", "קולדפליי")}
+{_nd_row("לחיות את החיים כמו שהם", "It's My Life", "בון ג׳ובי", "Don't Look Back in Anger", "אואזיס")}
+    </div>
+    <p class="center mt-32" style="color:var(--text-dim)">להיטים שכל האולם שר. אחרי כל סיבוב התוצאה עולה בטלפון של כל אחד מהקהל.</p>
+  </div>
+</section>"""
+
+N_VOTE_MP4 = "assets/video/nineties-vote.mp4?v=1"   # האפליקציה של הניינטיז בטלפון, הבמה והקהל (24.11.2026)
+N_VOTE_POSTER = "assets/video/nineties-vote.jpg?v=1"
+def nineties_app_card():
+    """סרטון האפליקציה של הניינטיז, בלי מסך, הכול בטלפון. סרטון הקהל כבר מופיע למעלה, ברצועת ההוכחה."""
+    return crowd_card(head="מהכניסה ועד ההכרעה", eyebrow="ככה זה עובד בניינטיז", wrap=True,
+        text="סורקים QR ונכנסים מהטלפון, בלי להוריד אפליקציה. על כל שיר יש סיפור קצר, בזמן השירים שולחים אימוג׳ים, "
+             "ובסוף הסיבוב מצביעים בלחיצה. התוצאה עולה מיד אצל כל אחד מהקהל. האפליקציה אמיתית, הקהל והלהקה מהופעות הניינטיז, והתוצאה מתוך הדגמה.",
+        clip=crowd_clip(N_VOTE_MP4, N_VOTE_POSTER, "הדגמה: נכנסים מהטלפון, סיפור על כל שיר, אימוג׳ים, הצבעה וההכרעה, עם הלהקה והקהל"))
+
+N_PHONES = [("n-phone-fact", "💡 על כל שיר", "הסיפור שמאחורי השיר"),
+            ("n-phone-song", "🔥 בזמן השיר", "אימוג׳ים, והמילים כדי לשיר יחד"),
+            ("n-phone-result", "🏆 הכרעה", "התוצאה עולה מיד")]
+def phones_section(phones, sub):
+    items = "".join(f'<figure class="svid reveal"><img src="assets/img/{f}.webp?v=1" alt="{h}: {t}" loading="lazy" width="390" height="844" '
+                    f'style="width:100%;height:auto;border-radius:22px;border:1px solid rgba(255,255,255,.12)">'
+                    f'<figcaption><b>{h}</b> {t}</figcaption></figure>' for f, h, t in phones)
+    return f"""<section id="on-phone">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">בטלפון</div>
+      <h2>כל האולם מחובר</h2>
+      <p>{sub}</p>
+    </div>
+    <div class="svids">{items}</div>
+  </div>
+</section>"""
+
+# תוספות שמתאימות לניינטיז (בלי פופקורן ודמויות מהמסך)
+N_ADDONS = ["עוד חצי שעה של ריקודים", "חידון מונחה לפני המופע", "פסלוני זהב", "הלוגו שלכם בפתיח", "זוג שירים משלכם"]
+N_ADDON_TEXT = {"עוד חצי שעה של ריקודים": "הלהקה ממשיכה לנגן להיטי ניינטיז לרחבה אחרי ההכרזה על המנצח",
+                "חידון מונחה לפני המופע": "שאלות על הניינטיז, וכל האולם עונה מהטלפון"}
+
+def nineties_shows():
+    """ההופעות הקרובות של הניינטיז: המופע היחיד שאפשר לבוא ולראות לפני שמזמינים."""
+    shows = [x for x in load_shows() if "ניינטיז" in x.get("format", "")]
+    if not shows:
+        return ""
+    return f"""<section id="next-shows" class="home-shows" data-shows-section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">ההופעות הקרובות של הניינטיז</div>
+      <h2>באים לראות לפני שמזמינים</h2>
+    </div>
+    <div class="sx-list" data-shows-list data-limit="3" data-format="ניינטיז">
+{show_rows(shows[:3])}
+    </div>
+    <div class="cta-row center mt-32"><a class="btn btn-outline" href="shows.html">ללוח ההופעות המלא</a></div>
+  </div>
+</section>"""
+
 def proof_strip():
     return f"""<section class="proof-strip">
   <div class="wrap ps-grid">
@@ -1032,15 +1125,15 @@ FORMAT_PAGES = {
  "90s": dict(
    title="Soundclash ניינטיז — קרב הלהיטים של שנות ה-90, ארה״ב נגד בריטניה",
    desc="מופע קרב חי על להיטי שנות ה-90: גראנג׳ וגלאם אמריקאי מול בריטפופ ואינדי בריטי, שיר מול שיר, והקהל מכריע בהצבעה מהטלפון. להזמנות 054-6738192.",
-   sub="הקרב הגדול על השליטה בניינטיז",
-   arc="מהגראנג׳ של סיאטל ועד ל<em>בריטפופ</em> של מנצ׳סטר, מהגלאם האמריקאי ועד לאינדי הבריטי — עשור אחד, ושני צדדים של האוקיינוס שלא הסכימו על כלום.",
-   lede=("בצד אחד <b>הסאונד המלוכלך של הגראנג׳ והלהיטים הגדולים של אמריקה</b>. "
-         "בצד השני <span class='b-side'>החוצפה, המלודיות והסטייל של בריטניה</span>. "
-         "שיר מול שיר, סיבוב מול סיבוב — והקהל מכריע."),
-   side_a=("TEAM USA", "הצד האמריקאי", "העוצמה, הריף והגיטרה המעוותת — העשור שבו אמריקה כתבה את הרוק הכבד של הרדיו.",
-           ["גראנג׳", "גלאם רוק", "רוק אלטרנטיבי אמריקאי", "פוסט-גראנג׳"]),
-   side_b=("TEAM UK", "הצד הבריטי", "המלודיה, ההברה והסטייל — העשור שבו בריטניה החזירה לעצמה את הרדיו העולמי.",
-           ["בריטפופ", "אינדי בריטי", "אגדות הרוק הבריטי", "אלטרנטיב בריטי"]),
+   sub="אמריקה נגד בריטניה. הקהל מכריע.",
+   arc="מהגראנג׳ של סיאטל ועד ה<em>בריטפופ</em> של מנצ׳סטר: עשור אחד, ושני צדדים של האוקיינוס שלא הסכימו על כלום.",
+   lede=("9 סיבובים ו-18 להיטים שכולם מכירים: <b>להקה אמריקאית</b> מול <span class='b-side'>להקה בריטית</span>, סביב נושא משותף. "
+         "מצביעים מהטלפון, והתוצאה עולה מיד אצל כל אחד מהקהל. סולן וסולנית בפרונט, וכל האולם שר."),
+   # שמות שירים במקום ז׳אנרים: קונה מזהה שירים, לא ז׳אנרים (ליה ואיתי, 24.11.2026)
+   side_a=("TEAM USA", "הצד האמריקאי", "נירוונה, פרל ג׳ם, גרין דיי ובון ג׳ובי. הגיטרות שמילאו את הרדיו של שנות ה-90.",
+           ["Smells Like Teen Spirit", "Black", "Basket Case", "It's My Life"]),
+   side_b=("TEAM UK", "הצד הבריטי", "רדיוהד, אואזיס, בלר וקולדפליי. הפזמונים שכל העולם שר בקול.",
+           ["Creep", "Song 2", "Yellow", "Don't Look Back in Anger"]),
    avail="מופע הניינטיז כבר עולה על הבמות, ומוכן לתאריכים מיידיים."),
 
  "80s": dict(
@@ -1125,7 +1218,7 @@ ISRAEL_DUELS_SECTION = """<section id="duels">
 def duel_block(a, b, photos=None):
     def card(side, cls):
         tag, h, p, chips = side
-        chips_html = "".join('<span class="chip">%s</span>' % c for c in chips)
+        chips_html = "".join(('<span class="chip latin" dir="ltr">%s</span>' if re.match(r"[A-Za-z]", c) else '<span class="chip">%s</span>') % c for c in chips)
         ph = (photos or {}).get(cls)
         style = f' style="--dc:url(\'/{T}{ph}-800.webp\')"' if ph else ""
         return (f'<div class="duel-card {cls}{" has-photo" if ph else ""} reveal"{style}><span class="tag latin">{tag}</span>'
@@ -1195,12 +1288,17 @@ for f in FORMATS:
   <div class="wrap"><p class="arc reveal">{d['arc']}</p></div>
 </section>
 
-{stats_bar(DEFAULT_STATS)}
-{(DUELS_SECTION + voices_block() + proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי. קליפ מצולם של סדרות נגד סרטים, עם ניקול והלהקה, יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else (ISRAEL_DUELS_SECTION + voices_block(head="הקולות של המסיבה הישראלית") + il_proof_pair("משמאל: הקהל בהופעת הניינטיז בוונדרבר. מימין: האפליקציה של המסיבה הישראלית, מהכניסה ועד ההכרעה. צילומי הבמה והקהל מהופעת הניינטיז, והתוצאה מתוך הדגמה.", wrap=True) + addons_block(only=IL_ADDONS, texts=IL_ADDON_TEXT, cta_href="contact.html").replace('<section id="addons">', '<section id="addons"><style>@media (min-width:900px){#addons .addons{grid-template-columns:repeat(3,1fr)}}</style>', 1) + il_packages_section()) if f["slug"] == "israel" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None)}
+{stats_bar(NINETIES_STATS if f["slug"] == "90s" else DEFAULT_STATS)}
+{proof_strip() if f["slug"] == "90s" else ""}
+{(DUELS_SECTION + voices_block() + proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי. קליפ מצולם של סדרות נגד סרטים, עם ניקול והלהקה, יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else (ISRAEL_DUELS_SECTION + voices_block(head="הקולות של המסיבה הישראלית") + il_proof_pair("משמאל: הקהל בהופעת הניינטיז בוונדרבר. מימין: האפליקציה של המסיבה הישראלית, מהכניסה ועד ההכרעה. צילומי הבמה והקהל מהופעת הניינטיז, והתוצאה מתוך הדגמה.", wrap=True) + addons_block(only=IL_ADDONS, texts=IL_ADDON_TEXT, cta_href="contact.html").replace('<section id="addons">', '<section id="addons"><style>@media (min-width:900px){#addons .addons{grid-template-columns:repeat(3,1fr)}}</style>', 1) + il_packages_section()) if f["slug"] == "israel" else (duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"}) + NINETIES_DUELS_SECTION
+       + voices_block(head="הקולות של הניינטיז", lead=REUT_CARD, yinon_role="שירה וגיטרה אקוסטית", yinon_img=YINON_90_PHOTO, yinon_pos="center 20%")
+       + nineties_app_card()
+       + phones_section(N_PHONES, "בלי מסך ובלי להוריד אפליקציה: סורקים QR, ובטלפון של כל אחד יש סיפור על כל שיר, המילים, אימוג׳ים בזמן השירים, הצבעה ותוצאה.")
+       + addons_block(only=N_ADDONS, texts=N_ADDON_TEXT)) if f["slug"] == "90s" else duel_block(d['side_a'], d['side_b'])}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
 {vids}
-{crowd_card(head="הקהל בוונדרבר, חיפה", text="ככה נראה ערב ניינטיז מתוך הקהל: 20 שניות מספטמבר, מצולמות בטלפון. הידיים באוויר, כולם שרים, ובסוף כל סיבוב מצביעים.", wrap=True) if f["slug"] == "90s" else ""}
 {screen_videos_section() if f["slug"] == "screen" else (il_phones_section() if f["slug"] == "israel" else gallery_section(IMAGES[3:6], head="תמונות מהבמה"))}
+{nineties_shows() if f["slug"] == "90s" else ""}
 {spec_block(spec, title="המפרט של המופע")}
 {il_faq_section() if f["slug"] == "israel" else ""}
 {contact_band("רוצים את " + f['name_html'] + " אצלכם?",
