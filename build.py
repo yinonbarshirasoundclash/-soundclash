@@ -1363,66 +1363,28 @@ events_body = r"""<section class="hero hero-corp">
       <div class="eyebrow">כבר הופענו</div>
       <h2>הקהל מכריע, והאולם מלא עד הסוף</h2>
     </div>
-    <div class="proof-grid">
-      <div class="proof-main reveal">
-        <div class="proof-num latin">200</div>
-        <h3>קהילת אלפא, אלפי מנשה</h3>
-        <p>הזמינה את Soundclash לערב קהילתי באלפא פאב, עם כ-200 משתתפים.</p>
-        <blockquote class="quote">
-          <p>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים. תמסור לצוות שלך תודה רבה מקהילת אלפא, ואתם מוזמנים תמיד.״</p>
-          <cite>שחר הרוש · קהילת אלפא, אלפי מנשה</cite>
-        </blockquote>
-      </div>
-      <div class="proof-venues reveal">
-        <div class="pv-label">במות שבהן הופענו</div>
-        <ul data-past-venues>
-          <li><b>תמונע</b><span>תל אביב</span></li>
-          <li><b>וונדרבר</b><span>חיפה</span></li>
-          <li><b>אלפא פאב</b><span>אלפי מנשה</span></li>
-          <li><b>בלה צ'או</b><span>ראשון לציון</span></li>
-        </ul>
-      </div>
+    <div class="proof-main proof-solo reveal">
+      <div class="proof-num latin">200</div>
+      <h3>קהילת אלפא, אלפי מנשה</h3>
+      <p>הזמינה את Soundclash לערב קהילתי באלפא פאב, עם כ-200 משתתפים.</p>
+      <blockquote class="quote">
+        <p>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים. תמסור לצוות שלך תודה רבה מקהילת אלפא, ואתם מוזמנים תמיד.״</p>
+        <cite>שחר הרוש · קהילת אלפא, אלפי מנשה</cite>
+      </blockquote>
+    </div>
+    <div class="venues-line reveal"><span class="vl-label">הופענו גם ב:</span>
+      <ul data-past-venues>
+        <li><b>תמונע</b><span>תל אביב</span></li>
+        <li><b>וונדרבר</b><span>חיפה</span></li>
+        <li><b>אלפא פאב</b><span>אלפי מנשה</span></li>
+        <li><b>בלה צ'או</b><span>ראשון לציון</span></li>
+      </ul>
     </div>
     <!--CROWD-->
   </div>
 </section>
 
-<section id="why">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">למה זה עובד בחברה</div>
-      <h2>המופע שבו אף אחד לא נשאר בצד</h2>
-      <p>ברוב ערבי החברה המוזיקה נשארת ברקע, וחצי מהאולם מדבר ליד הבר. כאן כל עובד הוא חלק מהתוצאה.</p>
-    </div>
-    <div class="audience">
-      <div class="aud-card reveal"><h3>כולם משתתפים</h3><p>כל אחד בחדר פותח את הטלפון, מצביע לאורך כל דו־קרב ורואה את הקול שלו מזיז את התוצאה על המסך. מי שהצביע בסיבוב הראשון נשאר עד ההכרעה.</p></div>
-      <div class="aud-card reveal"><h3>מחבר בין דורות</h3><p>חברים, טיטאניק, פוקימון, רוקי וריקי גל. הרפרטואר מגיע מהמסך, ולכן גם עובד בן 25 וגם מנהלת בת 50 מזהים את השיר מהתו הראשון.</p></div>
-      <div class="aud-card reveal"><h3>יש מתח ויש מנצח</h3><p>שני צדדים, שיר מול שיר, והתוצאה מתעדכנת על המסך אחרי כל סיבוב. בהופעות של מופע הניינטיז, הקרב נשאר צמוד עד הדו־קרב האחרון.</p></div>
-      <div class="aud-card reveal"><h3>בלי ספק נוסף לתאם</h3><p>את אפליקציית ההצבעה, מסך התוצאות וההפעלה מול הקהל אנחנו מביאים ומפעילים. אין מה להוריד, אין הרשמה, ואין עוד מפעיל שצריך להזמין.</p></div>
-    </div>
-  </div>
-</section>
-
-{DUELS}
-
-{VOICES}
-
 {ADDONS}
-
-<section id="flow">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">מה קורה באולם</div>
-      <h2>ארבעה שלבים, מהשיר הראשון ועד ההכרזה</h2>
-    </div>
-    <div class="mechanism">
-      <div class="step reveal"><h3>סורקים קוד</h3><p>העובדים סורקים קוד מהמסך ונכנסים להצבעה מהטלפון, בלי הורדה ובלי הרשמה.</p></div>
-      <div class="step reveal"><h3>שיר מול שיר</h3><p>הלהקה מנגנת שיר מסדרה ומיד אחריו שיר מסרט, בביצוע חי ונאמן למקור.</p></div>
-      <div class="step reveal"><h3>הקהל מכריע</h3><p>ההצבעה פתוחה לאורך שני השירים. בסוף הדו־קרב יש ספירה לאחור של 20 שניות, והתוצאה עולה למסך.</p></div>
-      <div class="step reveal"><h3>מנצח ופרסים</h3><p>הניקוד המצטבר קובע את הצד המנצח, ובין המצביעים מוגרלים פרסים.</p></div>
-    </div>
-  </div>
-</section>
 
 <section id="packages">
   <div class="wrap">
@@ -1472,6 +1434,10 @@ events_body = r"""<section class="hero hero-corp">
   </div>
 </section>
 
+{VOICES}
+
+{DUELS}
+
 <section id="screen-demo">
   <div class="wrap">
     <div class="section-head reveal">
@@ -1481,6 +1447,36 @@ events_body = r"""<section class="hero hero-corp">
     <div class="mt-32"><!--DEMO--></div>
     <div class="mt-32"><!--SVIDS--></div>
     <p class="center mt-32" style="color:var(--text-dim)">על המסך: סרטון אווירה מקורי לכל שיר. שלוש דוגמאות מתוך עשרים שיצרנו למופע.</p>
+  </div>
+</section>
+
+<section id="flow">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">מה קורה באולם</div>
+      <h2>ארבעה שלבים, מהשיר הראשון ועד ההכרזה</h2>
+    </div>
+    <div class="mechanism">
+      <div class="step reveal"><h3>סורקים קוד</h3><p>העובדים סורקים קוד מהמסך ונכנסים להצבעה מהטלפון, בלי הורדה ובלי הרשמה.</p></div>
+      <div class="step reveal"><h3>שיר מול שיר</h3><p>הלהקה מנגנת שיר מסדרה ומיד אחריו שיר מסרט, בביצוע חי ונאמן למקור.</p></div>
+      <div class="step reveal"><h3>הקהל מכריע</h3><p>ההצבעה פתוחה לאורך שני השירים. בסוף הדו־קרב יש ספירה לאחור של 20 שניות, והתוצאה עולה למסך.</p></div>
+      <div class="step reveal"><h3>מנצח ופרסים</h3><p>הניקוד המצטבר קובע את הצד המנצח, ובין המצביעים מוגרלים פרסים.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">למה זה עובד בחברה</div>
+      <h2>המופע שבו אף אחד לא נשאר בצד</h2>
+    </div>
+    <ul class="why-list reveal">
+      <li><b>מחבר בין דורות.</b> חברים, טיטאניק, פוקימון ורוקי וריקי גל: גם עובד בן 25 וגם מנהלת בת 50 מזהים את השיר מהתו הראשון.</li>
+      <li><b>כולם משתתפים.</b> כל אחד מצביע מהטלפון ורואה את הקול שלו מזיז את התוצאה על המסך.</li>
+      <li><b>יש מתח ויש מנצח.</b> שני צדדים, שיר מול שיר, והקרב נשאר צמוד עד הדו־קרב האחרון.</li>
+      <li><b>בלי ספק נוסף לתאם.</b> את האפליקציה, מסך התוצאות וההפעלה מול הקהל אנחנו מביאים ומפעילים.</li>
+    </ul>
   </div>
 </section>
 
