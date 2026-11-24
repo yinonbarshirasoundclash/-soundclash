@@ -848,3 +848,8 @@ body.theme-screen .duel-row .side.film .who{color:#e8a33d;}
   .addon-body{padding:0 12px 14px; margin-top:-6px; gap:4px;}
 }
 @media (prefers-reduced-motion: reduce){ .addon-img img{transition:none;} .addon.has-img:hover .addon-img img{transform:none;} }
+/* חבילות: שדרוג חצי שעת המסיבה (24.11.2026) */
+.pkg-up{margin-top:auto; border:1px dashed color-mix(in srgb, var(--accent-2, #c99a2e) 70%, transparent); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:4px; background:color-mix(in srgb, var(--accent-2, #c99a2e) 8%, transparent);}
+.pkg-up b{color:var(--accent-2, #f2c14e); font-size:16px;}
+.pkg-up span{font-size:14.5px; color:var(--text-dim); line-height:1.5;}
+.pkg li b{color:var(--text);}
