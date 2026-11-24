@@ -404,11 +404,11 @@ def addon_card(h, t, img):
             'alt="%s" loading="lazy" decoding="async" width="640" height="480"></div>'
             '<div class="addon-body"><b>%s</b><span>%s</span></div></div>') % (img, ADDON_IMG_V, h, h, t)
 
-def addons_block(head="ערב בכיכובכם", sub="להיטים מקפיצים ומרקידים שמרימים את כל האולם. רוצים יותר? בונים את הערב מתוספות שאנחנו מביאים:", cta=True, only=None, texts=None):
+def addons_block(head="ערב בכיכובכם", sub="להיטים מקפיצים ומרקידים שמרימים את כל האולם. רוצים יותר? בונים את הערב מתוספות שאנחנו מביאים:", cta=True, only=None, texts=None, cta_href="events.html#quote"):
     items = [a for a in ADDONS if a[0] in only] if only else ADDONS
     if only: items.sort(key=lambda a: only.index(a[0]))
     cards = "".join(addon_card(h, (texts or {}).get(h, t), i) for h, t, i in items)
-    btn = ('<div class="cta-row center mt-32"><a class="btn btn-outline" href="events.html#quote">לבניית הערב שלכם</a></div>' if cta else "")
+    btn = (f'<div class="cta-row center mt-32"><a class="btn btn-outline" href="{cta_href}">לבניית הערב שלכם</a></div>' if cta else "")
     return f"""<section id="addons">
   <div class="wrap">
     <div class="section-head reveal">
@@ -490,7 +490,7 @@ def voices_block(head="הקולות של סדרות נגד סרטים", eyebrow=
       <h2>{head}</h2>
     </div>
     <div class="voices"{'' if nicole else ' style="grid-template-columns:minmax(0,420px);justify-content:center"'}>
-      {card(NICOLE_PHOTO, "ניקול רודוי, הסולנית של סדרות נגד סרטים", "ניקול רודוי", "שירה", NICOLE_BIO) if nicole else ""}
+      {card(NICOLE_PHOTO, "ניקול רודוי, הסולנית של Soundclash", "ניקול רודוי", "שירה", NICOLE_BIO) if nicole else ""}
       {card(YINON_PHOTO, "ינון בר שירה שר על הבמה", "ינון בר שירה", "שירה", YINON_BIO, pos="center 30%")}
     </div>
     {('<p class="center mt-32" style="color:var(--text-dim)">' + note + '</p>') if note else ''}
@@ -811,7 +811,7 @@ def proof_pair(text, head="ככה נראה ערב של Soundclash", eyebrow="מ�
     </div>"""
     return f'<section class="crowd-sec"><div class="wrap">{card}</div></section>' if wrap else card
 
-IL_VOTE_MP4 = "assets/video/israeli-vote.mp4?v=2"   # 47 שניות: האפליקציה של המסיבה הישראלית בטלפון, הבמה והקהל (24.11.2026)
+IL_VOTE_MP4 = "assets/video/israeli-vote.mp4?v=3"   # 47 שניות: האפליקציה של המסיבה הישראלית בטלפון, הבמה והקהל (24.11.2026)
 IL_VOTE_POSTER = "assets/video/israeli-vote.jpg?v=1"
 def il_proof_pair(text, head="ככה נראה ערב של Soundclash", eyebrow="מהקהל", wrap=False):
     """כמו proof_pair, עם סרטון האפליקציה של המסיבה הישראלית (בלי מסך, הכול בטלפון)."""
@@ -825,6 +825,10 @@ def il_proof_pair(text, head="ככה נראה ערב של Soundclash", eyebrow="
         <div class="eyebrow">{eyebrow}</div>
         <h2>{head}</h2>
         <p>{text}</p>
+        <figure class="ps-quote" style="margin-top:22px">
+          <blockquote>״החבר׳ה אצלנו עפו עליכם. קיבלתם פירגון עד השמיים.״</blockquote>
+          <figcaption>שחר הרוש · קהילת אלפא, אלפי מנשה · כ-200 משתתפים, בהופעת הניינטיז</figcaption>
+        </figure>
       </div>
     </div>"""
     return f'<section class="crowd-sec"><div class="wrap">{card}</div></section>' if wrap else card
@@ -845,6 +849,8 @@ def il_phones_section():
       <p>בלי מסך ובלי להוריד אפליקציה: סורקים QR, ובטלפון של כל אחד יש עובדה על כל שיר, אימוג׳ים בזמן השירים, הצבעה ותוצאה.</p>
     </div>
     <div class="svids">{items}</div>
+    <p class="swipe-hint" style="text-align:center;color:var(--text-dim);font-size:14px;margin-top:6px">החליקו הצידה לעוד מסכים ←</p>
+    <style>@media (min-width:821px){{.swipe-hint{{display:none}}}}</style>
   </div>
 </section>"""
 
@@ -852,6 +858,79 @@ def il_phones_section():
 IL_ADDONS = ["עוד חצי שעה של ריקודים", "שטיח אדום", "חידון מונחה לפני המופע", "פסלוני זהב", "הלוגו שלכם בפתיח", "זוג שירים משלכם"]
 IL_ADDON_TEXT = {"עוד חצי שעה של ריקודים": "הלהקה ממשיכה לנגן להיטי רחבה ישראליים אחרי ההכרזה על המנצח",
                  "חידון מונחה לפני המופע": "שאלות על הלהיטים הישראליים, וכל האולם עונה מהטלפון"}
+
+def il_packages_section():
+    """שלוש החבילות, כמו באירועי החברה, בנוסח של המסיבה הישראלית (בלי מסך כברירת מחדל). ינון, 24.11.2026."""
+    return """<section id="packages">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">חבילות</div>
+      <h2>שלוש דרכים להזמין</h2>
+      <p>ההצעה נבנית לפי המקום, גודל הקהל והתוספות שתבחרו. ספרו לנו על האירוע ונחזור אליכם עם הצעת מחיר.</p>
+    </div>
+    <div class="packages">
+      <article class="pkg reveal">
+        <div class="pkg-tag latin">SET</div>
+        <h3>גרסה של 45 דקות</h3>
+        <p class="pkg-for">להרמת כוסית, כנס, או ערב עם תוכנית נוספת</p>
+        <ul>
+          <li>כ-45 דקות</li>
+          <li>5 סיבובים</li>
+          <li>הצבעה חיה ותוצאה בכל טלפון</li>
+          <li>הכרזת מנצח</li>
+        </ul>
+      </article>
+      <article class="pkg reveal">
+        <div class="pkg-tag latin">FULL SHOW</div>
+        <h3>המופע המלא</h3>
+        <p class="pkg-for">חנוכה, ערב קהילה, במת חוץ או מסיבת חברה שהמופע הוא הלב שלה</p>
+        <ul>
+          <li>כ-90 דקות</li>
+          <li>10 סיבובים</li>
+          <li>הצבעה חיה ותוצאה בכל טלפון</li>
+          <li>הגרלת פרסים בין המצביעים</li>
+          <li>להיטים ישראליים מקפיצים ומרקידים</li>
+        </ul>
+        <div class="pkg-up"><b>אפשר להוסיף: חצי שעת מסיבה</b><span>בתוספת תשלום. אחרי ההכרזה על המנצח הלהקה לא יורדת מהבמה: עוד 30 דקות של להיטי רחבה ישראליים, בלי הצבעות, רק לרקוד. בלילה של כוכבים היא כבר כלולה.</span></div>
+      </article>
+      <article class="pkg pkg-star reveal">
+        <div class="pkg-tag latin">A NIGHT OF STARS</div>
+        <h3>לילה של כוכבים</h3>
+        <p class="pkg-for"><b>הקהל שלכם הם הכוכבים.</b> לאירוע השנתי, לערב הוקרה או לחגיגה שרוצים שתיזכר</p>
+        <ul>
+          <li>המופע המלא, ואחריו חצי שעת מסיבה</li>
+          <li>5 תוספות לבחירתכם: שטיח אדום וצלם, פסלוני זהב, חידון על הלהיטים הישראליים, דו־קרב לבחירתכם ועוד</li>
+          <li><b>20% הנחה</b> על התוספות וגם על חצי שעת המסיבה</li>
+          <li>חידון לפני המופע והלוגו שלכם בפתיח, במתנה</li>
+        </ul>
+      </article>
+    </div>
+    <p class="center mt-32" style="color:var(--text-dim)"><b>רוצים את זה גם על מסך גדול?</b> המופע עובד מצוין בלי מסך, והתוצאה עולה בטלפונים. אם יש מסך או מקרן, נוסיף סרטון אווירה מקורי לכל שיר, ואת ההצבעה והתוצאות על המסך הגדול.</p>
+    <div class="cta-row center mt-32"><a class="btn btn-solid" href="contact.html">לקבלת הצעת מחיר</a></div>
+  </div>
+</section>"""
+
+def il_faq_section():
+    qa = [
+        ("צריך מסך?", "לא. כל אחד בקהל רואה את ההצבעה והתוצאה בטלפון שלו. אם יש במקום מסך או מקרן, נוסיף סרטון אווירה מקורי לכל שיר ואת התוצאות על המסך הגדול. זו תוספת שמשדרגת את הערב, לא תנאי."),
+        ("מה קורה אם הקליטה חלשה?", "ההצבעה עובדת בכל טלפון עם קליטה בסיסית או עם ה-Wi-Fi של המקום. ואם הקליטה בכל זאת נופלת, הקרב ממשיך: הקהל מצביע בדגלונים בצבעי שני הצדדים, וההכרעה מוכרזת מהבמה. כך גם מי שבלי טלפון יודע מי ניצח."),
+        ("צריך להוריד אפליקציה?", "לא. סורקים קוד ומצביעים מהדפדפן בטלפון, בלי הורדה ובלי הרשמה."),
+        ("איזה מידע נאסף מהקהל?", "כמעט כלום. מי שרוצה כותב שם פרטי או כינוי, וכל מצביע מקבל מספר כרטיס אקראי. ההגרלה נעשית לפי מספר הכרטיס, והזוכה מראה את המסך שלו ללהקה. לא מבקשים טלפון, מייל או פרטים מזהים."),
+        ("זה מתאים לבמת חוץ ולאירוע גדול?", "כן. המופע עובד באולם, בפארק ובבמה שכונתית, ואין צורך במסך. בהגברה, בתאורה ובאיש הסאונד אנחנו מתאימים את עצמנו למה שיש במקום, ואם חסר משהו, נביא."),
+        ("אפשר לשלב את המופע בתוך ערב עם נאומים, ארוחה או טקס?", "כן. הגרסה של 45 דקות נבנתה בדיוק בשביל זה, ואת המופע המלא אפשר לחלק לשני חלקים סביב התוכנית שלכם."),
+        ("יש לנו קהל שלא מדבר עברית", "המסיבה הישראלית כולה בעברית, והיא בנויה לקהל ישראלי. לצוות מעורב מתאים יותר <a class=\"inline\" href=\"tv-vs-film.html\">סדרות נגד סרטים</a>, שרוב השירים בו באנגלית, ויש לנו גם <a class=\"inline\" href=\"en.html\" lang=\"en\" dir=\"ltr\">עמוד באנגלית</a>."),
+        ("המופע כבר עלה מול קהל?", "הלהקה, האפליקציה והמנגנון כבר עולים על הבמות במופע הניינטיז, ומשם צילומי הקהל בעמוד. המסיבה הישראלית בנויה על אותה להקה ואותה אפליקציה, עם סטליסט ישראלי."),
+    ]
+    items = "".join(f'<details class="reveal"><summary>{q}</summary><p>{a}</p></details>' for q, a in qa)
+    return f"""<section id="faq">
+  <div class="wrap-narrow">
+    <div class="section-head reveal">
+      <div class="eyebrow">שאלות נפוצות</div>
+      <h2>מה צריך לדעת לפני שסוגרים</h2>
+    </div>
+    <div class="faq">{items}</div>
+  </div>
+</section>"""
 
 def proof_strip():
     return f"""<section class="proof-strip">
@@ -984,12 +1063,12 @@ FORMAT_PAGES = {
    sub="שלושה עשורים, מסיבה אחת. הקהל מכריע.",
    arc="מצביקה פיק, משינה וגזוז ועד אתניקס, הדורבנים ודנה אינטרנשיונל: <em>שלושה עשורים</em> של שירים שכל הארץ שרה, ועכשיו גם רוקדת.",
    lede=("10 סיבובים ו-20 להיטים שכולם מכירים: <b>להיט מהסבנטיז או מהאייטיז</b> מול <span class='b-side'>להיט מהניינטיז</span>, באותו וייב. "
-         "מצביעים מהטלפון, והתוצאה עולה מיד בטלפון של כל אחד מהקהל. סולן וסולנית בפרונט, וכל האולם שר ורוקד."),
+         "מצביעים מהטלפון, והתוצאה עולה מיד בטלפון של כל אחד מהקהל, גם בלי מסך. סולן וסולנית בפרונט, וכל האולם שר ורוקד."),
    side_a=("TEAM 70–80", "צד ה-70 וה-80", "הלהקות הגדולות, צביקה פיק והלהיטים ששרים בקולי קולות.",
            ["להקות האייטיז", "צביקה פיק", "להיטי הסבנטיז", "שירי רדיו"]),
    side_b=("TEAM 90s", "צד הניינטיז", "העשור שבו הגיטרות חזרו, הפופ התחדש וזמרות וזמרים חדשים הגדירו דור.",
            ["להקות הניינטיז", "זמרות גדולות", "הפופ החדש", "להיטי רחבה"]),
-   avail="מסיבה ישראלית זמינה להזמנה. ספרו לנו על התאריך, ונבנה את הערב לפי האולם והקהל."),
+   avail="מסיבה ישראלית זמינה להזמנה: לרשויות ולמחלקות תרבות, לוועדי עובדים ולחברות, להיכלים ולמלונות, באולם או בבמת חוץ. ספרו לנו על התאריך, ונבנה את הערב לפי המקום והקהל."),
 
  "screen": dict(
    title="Soundclash סדרות נגד סרטים — קרב השירים של המסך",
@@ -1038,7 +1117,8 @@ ISRAEL_DUELS_SECTION = """<section id="duels">
         <div class="side film"><span class="who latin">90s</span><b>שוב הדיסקו כאן</b><small>הדורבנים</small></div>
       </div>
     </div>
-    <p class="center mt-32" style="color:var(--text-dim)">להיטים מקפיצים ומרקידים שכל האולם שר. אחרי כל סיבוב התוצאה עולה בטלפון של כל אחד מהקהל.</p>
+    <p class="center mt-32" style="color:var(--text-dim)">ועוד שישה סיבובים, עם "שלח לי מלאך", "על קו הזינוק", "חללית", "יעקב", "לגור איתו" ו"דיווה".</p>
+    <p class="center mt-32"><b>לא עוד ערב להיטים: כל שיר נלחם על הקול של הקהל, ובטלפון מחכה הסיפור שמאחוריו.</b></p>
   </div>
 </section>"""
 
@@ -1073,7 +1153,12 @@ for f in FORMATS:
     spec = [(k, (REQ_SCREEN if f["slug"] == "screen" else REQ_NO_SCREEN) if k == "מה נדרש במקום" else v) for k, v in spec]
     spec.insert(5, ("זמינות", d["avail"]))
     if f["slug"] == "israel":
-        spec = [(k, "המופע כולו בעברית") if k == "שפה" else (k, v) for k, v in spec]
+        IL_SPEC = {"שפה": "המופע כולו בעברית",
+                   "אורך המופע": "כ-90 דקות, או גרסה של 45 דקות. אפשר להוסיף חצי שעת מסיבה עם להיטי רחבה ישראליים",
+                   "קהל": "רשויות ומחלקות תרבות, ועדי עובדים וחברות, היכלי תרבות ומתנ״סים, מלונות, אירועי חוץ וחגים, ואירועים פרטיים",
+                   "מה נדרש במקום": "מערכת הגברה עם איש סאונד, ותאורה סטנדרטית, באולם או בבמת חוץ. אין במקום? נביא משלנו, בתוספת תשלום. מסך לא צריך: התוצאה עולה בטלפונים. יש מסך? נוסיף סרטון אווירה לכל שיר ואת התוצאות על המסך"}
+        spec = [(k, IL_SPEC.get(k, v)) for k, v in spec]
+        spec.insert(6, ("אם הקליטה חלשה", "הקרב ממשיך: הקהל מצביע בדגלונים בצבעי שני הצדדים, וההכרעה מוכרזת מהבמה"))
     if f["slug"] == "screen":
         spec.insert(5, ("אם הקליטה חלשה", "הקרב ממשיך: הקהל מצביע בדגלונים בצבעי שני הצדדים, וההכרעה מוכרזת מהבמה"))
 
@@ -1111,12 +1196,13 @@ for f in FORMATS:
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{(DUELS_SECTION + voices_block() + proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי. קליפ מצולם של סדרות נגד סרטים, עם ניקול והלהקה, יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else (ISRAEL_DUELS_SECTION + voices_block(head="הקולות של המסיבה הישראלית") + il_proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, המסיבה הישראלית מהכניסה ועד ההכרעה: נכנסים מהטלפון, עובדה על כל שיר, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה.", wrap=True) + addons_block(only=IL_ADDONS, texts=IL_ADDON_TEXT)) if f["slug"] == "israel" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None)}
+{(DUELS_SECTION + voices_block() + proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי. קליפ מצולם של סדרות נגד סרטים, עם ניקול והלהקה, יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else (ISRAEL_DUELS_SECTION + voices_block(head="הקולות של המסיבה הישראלית") + il_proof_pair("משמאל: הקהל בהופעת הניינטיז בוונדרבר. מימין: האפליקציה של המסיבה הישראלית, מהכניסה ועד ההכרעה. צילומי הבמה והקהל מהופעת הניינטיז, והתוצאה מתוך הדגמה.", wrap=True) + addons_block(only=IL_ADDONS, texts=IL_ADDON_TEXT, cta_href="contact.html").replace('<section id="addons">', '<section id="addons"><style>@media (min-width:900px){#addons .addons{grid-template-columns:repeat(3,1fr)}}</style>', 1) + il_packages_section()) if f["slug"] == "israel" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None)}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
 {vids}
 {crowd_card(head="הקהל בוונדרבר, חיפה", text="ככה נראה ערב ניינטיז מתוך הקהל: 20 שניות מספטמבר, מצולמות בטלפון. הידיים באוויר, כולם שרים, ובסוף כל סיבוב מצביעים.", wrap=True) if f["slug"] == "90s" else ""}
 {screen_videos_section() if f["slug"] == "screen" else (il_phones_section() if f["slug"] == "israel" else gallery_section(IMAGES[3:6], head="תמונות מהבמה"))}
 {spec_block(spec, title="המפרט של המופע")}
+{il_faq_section() if f["slug"] == "israel" else ""}
 {contact_band("רוצים את " + f['name_html'] + " אצלכם?",
               "תגידו לנו תאריך, מקום וגודל קהל משוער, ונחזור אליכם עם הצעה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>', photo=f["slug"] not in ("screen", "israel", "80s"))}
