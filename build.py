@@ -811,7 +811,7 @@ def proof_pair(text, head="ככה נראה ערב של Soundclash", eyebrow="מ�
     </div>"""
     return f'<section class="crowd-sec"><div class="wrap">{card}</div></section>' if wrap else card
 
-IL_VOTE_MP4 = "assets/video/israeli-vote.mp4?v=1"   # 47 שניות: האפליקציה של המסיבה הישראלית בטלפון, הבמה והקהל (24.11.2026)
+IL_VOTE_MP4 = "assets/video/israeli-vote.mp4?v=2"   # 47 שניות: האפליקציה של המסיבה הישראלית בטלפון, הבמה והקהל (24.11.2026)
 IL_VOTE_POSTER = "assets/video/israeli-vote.jpg?v=1"
 def il_proof_pair(text, head="ככה נראה ערב של Soundclash", eyebrow="מהקהל", wrap=False):
     """כמו proof_pair, עם סרטון האפליקציה של המסיבה הישראלית (בלי מסך, הכול בטלפון)."""
