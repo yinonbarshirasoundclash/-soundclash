@@ -388,18 +388,24 @@ def spec_block(rows, title="המפרט, בלי לחפש"):
 </section>"""
 
 ADDONS = [
-    ("חידון מונחה לפני המופע", "מנחה, שאלות על המסך הגדול, וכל האולם עונה יחד מהטלפון. בסוף מגלים מי הזוכה"),
-    ("פופקורן של קולנוע", "עגלת פופקורן בכניסה, כמו בבכורה"),
-    ("שטיח אדום", "וצלם פפראצי שמחכה לאורחים"),
-    ("דמויות בהשראת המסך", "דמויות מקוריות שמסתובבות בין האורחים"),
-    ("הלוגו שלכם בפתיח", "ו״פוסטר הקרב״ עם התוצאות למחרת"),
-    ("זוג שירים משלכם", "לבחירתכם מהרשימה, או סיבוב חדש שנבנה בשבילכם"),
-    ("עוד חצי שעה של ריקודים", "הלהקה ממשיכה לנגן להיטי רחבה אחרי ההכרזה על המנצח"),
-    ("פסלוני זהב", "לזוכי החידון ולמצביעים המצטיינים"),
+    ("חידון מונחה לפני המופע", "מנחה, שאלות על המסך הגדול, וכל האולם עונה יחד מהטלפון. בסוף מגלים מי הזוכה", "quiz"),
+    ("פופקורן של קולנוע", "עגלת פופקורן בכניסה, כמו בבכורה", "popcorn"),
+    ("שטיח אדום", "וצלם פפראצי שמחכה לאורחים", "redcarpet"),
+    ("דמויות בהשראת המסך", "דמויות מקוריות שמסתובבות בין האורחים", "characters"),
+    ("הלוגו שלכם בפתיח", "ו״פוסטר הקרב״ עם התוצאות למחרת", "logo"),
+    ("זוג שירים משלכם", "לבחירתכם מהרשימה, או סיבוב חדש שנבנה בשבילכם", "duel"),
+    ("עוד חצי שעה של ריקודים", "הלהקה ממשיכה לנגן להיטי רחבה אחרי ההכרזה על המנצח", "dance"),
+    ("פסלוני זהב", "לזוכי החידון ולמצביעים המצטיינים", "awards"),
 ]
 
+ADDON_IMG_V = "1"
+def addon_card(h, t, img):
+    return ('<div class="addon has-img reveal"><div class="addon-img"><img src="assets/img/addons/%s.webp?v=%s" '
+            'alt="%s" loading="lazy" decoding="async" width="640" height="480"></div>'
+            '<div class="addon-body"><b>%s</b><span>%s</span></div></div>') % (img, ADDON_IMG_V, h, h, t)
+
 def addons_block(head="ערב בכיכובכם", sub="להיטים מקפיצים ומרקידים שמרימים את כל האולם. רוצים יותר? בונים את הערב מתוספות שאנחנו מביאים:", cta=True):
-    cards = "".join('<div class="addon reveal"><b>%s</b><span>%s</span></div>' % (h, t) for h, t in ADDONS)
+    cards = "".join(addon_card(h, t, i) for h, t, i in ADDONS)
     btn = ('<div class="cta-row center mt-32"><a class="btn btn-outline" href="events.html#quote">לבניית הערב שלכם</a></div>' if cta else "")
     return f"""<section id="addons">
   <div class="wrap">
@@ -836,7 +842,7 @@ def home_shows():
 
 ADDONS_TOP = ["חידון מונחה לפני המופע", "שטיח אדום", "הלוגו שלכם בפתיח", "עוד חצי שעה של ריקודים"]
 def addons_compact():
-    cards = "".join('<div class="addon reveal"><b>%s</b><span>%s</span></div>' % (h, t) for h, t in ADDONS if h in ADDONS_TOP)
+    cards = "".join(addon_card(h, t, i) for h, t, i in ADDONS if h in ADDONS_TOP)
     return f"""<section id="addons">
   <div class="wrap">
     <div class="section-head reveal">

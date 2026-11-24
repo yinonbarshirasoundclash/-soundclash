@@ -831,3 +831,20 @@ body.theme-screen .duel-row .side.film .who{color:#e8a33d;}
 @media (max-width:760px){ .sx-pair{padding:18px 10px} .sx-pair .pair-clips{gap:10px} .sx-pair .crowd-clip .demo-sound{font-size:11px !important; padding:5px 8px; left:8px; bottom:8px} .sx-pair .crowd-clip .demo-full{padding:5px 8px} }
 .sx-pair .pair-clips small{font-size:14px; color:var(--text-dim); direction:rtl}
 @media (max-width:760px){ .sx-pair .crowd-clip .demo-sound .on, .sx-pair .crowd-clip .demo-sound .off{font-size:12px} .sx-pair .crowd-clip .demo-sound{padding:6px 9px} }
+
+/* ===================== תוספות עם תמונה (24.11.2026) ===================== */
+.addons{grid-template-columns:repeat(4, 1fr);}
+@media (max-width:1000px){ .addons{grid-template-columns:repeat(2, 1fr);} }
+.addon.has-img{padding:0; overflow:hidden; gap:0; background:var(--bg-card); transition:border-color .3s;}
+.addon-img{position:relative; aspect-ratio:4/3; overflow:hidden; background:#000;}
+.addon-img img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s cubic-bezier(.2,.7,.2,1);}
+.addon-img::after{content:""; position:absolute; inset:auto 0 0 0; height:38%; background:linear-gradient(180deg, rgba(23,20,19,0), var(--bg-card)); pointer-events:none;}
+.addon-body{display:flex; flex-direction:column; gap:6px; padding:2px 18px 18px; margin-top:-10px; position:relative;}
+.addon.has-img:hover{border-color:rgba(242,193,78,.45);}
+.addon.has-img:hover .addon-img img{transform:scale(1.045);}
+@media (max-width:600px){
+  .addons{grid-template-columns:1fr 1fr;}
+  .addon.has-img{padding:0;}
+  .addon-body{padding:0 12px 14px; margin-top:-6px; gap:4px;}
+}
+@media (prefers-reduced-motion: reduce){ .addon-img img{transition:none;} .addon.has-img:hover .addon-img img{transform:none;} }
