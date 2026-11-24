@@ -1058,7 +1058,7 @@ for f in FORMATS:
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{(DUELS_SECTION + voices_block() + proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי. סרטון מהופעה של סדרות נגד סרטים יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
+{(DUELS_SECTION + voices_block() + proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי. קליפ מצולם של סדרות נגד סרטים, עם ניקול והלהקה, יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None) + (ISRAEL_DUELS_SECTION if f["slug"] == "israel" else "")}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
 {vids}
 {crowd_card(head="הקהל בוונדרבר, חיפה", text="ככה נראה ערב ניינטיז מתוך הקהל: 20 שניות מספטמבר, מצולמות בטלפון. הידיים באוויר, כולם שרים, ובסוף כל סיבוב מצביעים.", wrap=True) if f["slug"] == "90s" else ""}
