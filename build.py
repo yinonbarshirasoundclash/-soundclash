@@ -149,25 +149,37 @@ def ltr(t):
     """עוטף מילה לטינית כדי שתישאר בכיוון שלה בתוך משפט עברי."""
     return '<span class="ltr">%s</span>' % t
 
+# שורת סטטוס כנה לכל מופע. בלי תאריך בכורה, כדי שאף אחד לא יבין שאי אפשר להזמין לפניו (ינון, 24.11.2026)
+LAUNCH_STATUS = "ההופעות הראשונות נסגרות עכשיו · מחיר השקה עד 31.3.2027"
+# הסדר: סדרות נגד סרטים, מסיבה ישראלית, ניינטיז (ינון, 24.11.2026)
 FORMATS = [
     dict(slug="screen", file="tv-vs-film.html", theme="theme-screen", css="f-screen",
          era="TV/FILM", name="Soundclash סדרות נגד סרטים",
          nav="סדרות נגד סרטים", nav_plain="סדרות נגד סרטים",
          name_html=ltr("Soundclash") + " סדרות נגד סרטים",
          tag="המופע החדש", live=False, hot=True, logo="assets/img/logo-tv-vs-film-sm.webp", logo_alt="Soundclash סדרות נגד סרטים",
-         short="שיר מסדרה מול שיר מסרט, 10 סיבובים, ומסך עם וידאו מקורי לכל שיר."),
-    dict(slug="90s", file="90s.html", theme="theme-90", css="f-90",
-         era="90's", name="Soundclash ניינטיז",
-         nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
-         name_html=ltr("Soundclash") + " ניינטיז",
-         tag="כבר על הבמות", live=True, logo="assets/img/logo-90s-sm.webp", logo_alt="Soundclash ניינטיז",
-         short="המופע שכבר עולה על הבמות: ארה״ב מול בריטניה."),
+         short="שיר מסדרה מול שיר מסרט, 10 סיבובים, ומסך עם וידאו מקורי לכל שיר.",
+         occasion="לחנוכה ולאירוע הגדול של השנה: חברות, היכלי תרבות וערבים נוצצים",
+         status=LAUNCH_STATUS,
+         lineup="סולן וסולנית קבועים: ניקול רודוי וינון בר שירה, ואיתם הלהקה. לכל מופע של Soundclash הרכב קבוע משלו."),
     dict(slug="israel", file="israel.html", theme="theme-il", css="f-il",
          era="70–90", name="Soundclash מסיבה ישראלית",
          nav="מסיבה ישראלית", nav_plain="מסיבה ישראלית",
          name_html=ltr("Soundclash") + " מסיבה ישראלית",
          tag="להזמנה", live=False, logo="assets/img/logo-israeli-party-sm.webp?v=2", logo_alt="Soundclash מסיבה ישראלית",
-         short="להיטי הסבנטיז והאייטיז מול להיטי הניינטיז, שירים שכל האולם שר, ורחבה מלאה עד הסוף."),
+         short="להיטי הסבנטיז והאייטיז מול להיטי הניינטיז, שירים שכל האולם שר, ורחבה מלאה עד הסוף.",
+         occasion="לרשויות, לוועדי עובדים, למלונות ולבמות חוץ. בלי מסך, הכול בעברית",
+         status=LAUNCH_STATUS,
+         lineup="סולן וסולנית קבועים: ניקול רודוי וינון בר שירה, ואיתם הלהקה. לכל מופע של Soundclash הרכב קבוע משלו."),
+    dict(slug="90s", file="90s.html", theme="theme-90", css="f-90",
+         era="90's", name="Soundclash ניינטיז",
+         nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
+         name_html=ltr("Soundclash") + " ניינטיז",
+         tag="כבר על הבמות", live=True, logo="assets/img/logo-90s-sm.webp", logo_alt="Soundclash ניינטיז",
+         short="המופע שכבר עולה על הבמות: ארה״ב מול בריטניה.",
+         occasion="לערב צוות, למועדון ולצוות בינלאומי (הנחיה גם באנגלית)",
+         status="עולה עכשיו על הבמות · אפשר לבוא לראות לפני שמזמינים",
+         lineup="סולן וסולנית קבועים: רעות זורמן וינון בר שירה, ואיתם הלהקה. לכל מופע של Soundclash הרכב קבוע משלו."),
     dict(slug="80s", file="80s.html", theme="theme-80", css="f-80",
          era="80's", name="Soundclash אייטיז",
          nav='אייטיז ' + ltr("80's"), nav_plain="אייטיז 80's",
@@ -222,6 +234,7 @@ def nav(active, depth_prefix=""):
         <div class="drop-menu">{formats_menu}</div>
       </details>
       {item("events.html", "לאירועי חברה", "events")}
+      {item("authorities.html", "לרשויות", "authorities")}
       {item("shows.html", "הופעות", "shows")}
       {item("gallery.html", "גלריה", "gallery")}
       {item("about.html", "אודות", "about")}
@@ -284,6 +297,7 @@ def footer(p=""):
           <li><a href="tel:0546589303">054-6589303 · נעמה</a></li>
           <li><a href="{wa_link()}" target="_blank" rel="noopener">וואטסאפ</a></li>
           <li><a href="{p}events.html">לאירועי חברה</a></li>
+          <li><a href="{p}authorities.html">לרשויות ומחלקות תרבות</a></li>
           <li><a href="{p}contact.html">טופס הזמנה</a></li>
         </ul>
       </div>
@@ -583,15 +597,17 @@ def formats_index():
       <div class="{status_cls}">{f['tag']}</div>
       {('<img class="card-logo" src="' + f['logo'] + '" alt="' + f['logo_alt'] + '" loading="lazy" width="300" height="360">') if f.get('logo') else ('<div class="era latin">' + f['era'] + '</div>')}
       <h3>{f['name_html']}</h3>
+      <p class="fc-for">{f.get('occasion', '')}</p>
       <p>{f['short']}</p>
+      <p class="fc-status">{f.get('status', '')}</p>
       <span class="go">לדף המופע ←</span>
     </a>"""
     return f"""<section id="formats">
   <div class="wrap">
     <div class="section-head reveal">
       <div class="eyebrow">המופעים</div>
-      <h2>המופע החדש, והמופעים שכבר הוכיחו את עצמם</h2>
-      <p>אותו מנגנון בכל מופע: שיר מול שיר, והקהל מכריע מהטלפון. בוחרים את המופע שמדבר לקהל שלכם.</p>
+      <h2>בחרו את המופע שלכם</h2>
+      <p>אותו מנגנון בכל מופע: שיר מול שיר, והקהל מכריע מהטלפון. בוחרים לפי האירוע והקהל.</p>
     </div>
     <div class="formats-grid">{cards}</div>
   </div>
@@ -742,7 +758,7 @@ AUDIENCE = [
     ("אירועי חברה",
      "המבנה התחרותי עובד מצוין מול קבוצות: כל העובדים מצביעים מהטלפון, והתוצאות עולות על מסך האולם. ההרכב מאפשר התאמה לגודל האירוע, לכמות האורחים ולמשך הערב."),
     ("פסטיבלים ואירועי עיר",
-     "קל להסביר בשורה אחת בתוכנייה, ובסוף הערב יש לרשות מספר אמיתי: כמה תושבים הצביעו. וארבעת המופעים מאפשרים להחזיר את אותו קונספט בשנה הבאה, עם עשור אחר."),
+     "קל להסביר בשורה אחת בתוכנייה, ובסוף הערב יש לרשות מספר אמיתי: כמה תושבים הצביעו. ושלושת המופעים מאפשרים להחזיר את אותו קונספט בשנה הבאה, עם עשור אחר."),
 ]
 
 def audience_block():
@@ -1173,6 +1189,7 @@ home_body = f"""
       <a class="btn btn-outline hide-m" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
       <a class="btn btn-wa hide-m" href="{wa_link()}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
       <a class="btn btn-outline" href="events.html">לאירועי חברה</a>
+      <a class="btn btn-outline" href="authorities.html">לרשויות</a>
     </div>
   </div>
 </section>
@@ -1193,7 +1210,7 @@ home_body = f"""
 
 page("index.html",
      "Soundclash — מופע קרב מוזיקלי חי שבו הקהל מכריע",
-     "לא עוד להקת קאברים: מופע קרב מוזיקלי חי בשישה נגנים, שיר מול שיר, והקהל מכריע מהטלפון. המופע החדש: סדרות נגד סרטים. וגם ניינטיז ומסיבה ישראלית. להזמנות: 054-6738192.",
+     "לא עוד להקת קאברים: מופע קרב מוזיקלי חי בשישה נגנים, שיר מול שיר, והקהל מכריע מהטלפון. המופע החדש: סדרות נגד סרטים. וגם מסיבה ישראלית וניינטיז. להזמנות: 054-6738192.",
      home_body, "home", theme="theme-90", jsonld=HOME_JSONLD)
 
 
@@ -1289,8 +1306,32 @@ ISRAEL_DUELS_SECTION = """<section id="duels">
         <div class="side film"><span class="who latin">90s</span><b>שוב הדיסקו כאן</b><small>הדורבנים</small></div>
       </div>
     </div>
-    <p class="center mt-32" style="color:var(--text-dim)">ועוד שישה סיבובים, עם "שלח לי מלאך", "על קו הזינוק", "חללית", "יעקב", "לגור איתו" ו"דיווה".</p>
+    <p class="center mt-32" style="color:var(--text-dim)">ועוד שישה סיבובים, עם "שלח לי מלאך", "על קו הזינוק", "חללית", "היא לא יודעת מה עובר עליי", "לגור איתו" ו"דיווה".</p>
     <p class="center mt-32"><b>לא עוד ערב להיטים: כל שיר נלחם על הקול של הקהל, ובטלפון מחכה הסיפור שמאחוריו.</b></p>
+  </div>
+</section>"""
+
+def other_shows(slug):
+    """בתחתית כל עמוד מופע: שני המופעים האחרים, לפי סוג האירוע (24.11.2026)."""
+    cards = ""
+    for o in PUBLIC_FORMATS:
+        if o["slug"] == slug:
+            continue
+        cards += f"""<a class="format-card {o['css']} reveal" href="{o['file']}">
+      {('<img class="card-logo" src="' + o['logo'] + '" alt="' + o['logo_alt'] + '" loading="lazy" width="300" height="360">') if o.get('logo') else ''}
+      <h3>{o['name_html']}</h3>
+      <p class="fc-for">{o.get('occasion', '')}</p>
+      <p class="fc-status">{o.get('status', '')}</p>
+      <span class="go">לדף המופע ←</span>
+    </a>"""
+    return f"""<section id="other-shows">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">עוד מופעים</div>
+      <h2>מחפשים משהו אחר לאירוע שלכם?</h2>
+      <p>אותו מנגנון, רפרטואר אחר. אפשר גם לשלב: מופע אחד לאירוע הגדול, ומופע אחר לאירוע השני בשנה.</p>
+    </div>
+    <div class="formats-grid">{cards}</div>
   </div>
 </section>"""
 
@@ -1362,6 +1403,8 @@ for f in FORMATS:
     {('<img class="hero-logo" src="' + f['logo'].replace('-sm', '') + '" alt="' + f['logo_alt'] + '">') if f.get('logo') else ('<div class="era-mark latin">' + f['era'] + '</div>')}
     <h1 class="as-h2">{d['sub']}</h1>
     <p class="lede">{d['lede']}</p>
+    <p class="status-line">{f.get('status', '')}</p>
+    <p class="lineup-note">{f.get('lineup', '')}</p>
     {trailer_video() if f["live"] else (demo_video() if f["slug"] == "screen" else "")}
     <div class="cta-row center">
       <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
@@ -1388,6 +1431,7 @@ for f in FORMATS:
 {nineties_shows() if f["slug"] == "90s" else ""}
 {spec_block(spec, title="המפרט של המופע")}
 {il_faq_section() if f["slug"] == "israel" else (nineties_faq_section() if f["slug"] == "90s" else "")}
+{other_shows(f["slug"])}
 {contact_band("רוצים את " + f['name_html'] + " אצלכם?",
               "תגידו לנו תאריך, מקום וגודל קהל משוער, ונחזור אליכם עם הצעה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>', photo=f["slug"] not in ("screen", "israel", "80s"))}
@@ -1598,7 +1642,10 @@ contact_body = f"""
               <option value="">בחרו…</option>
               <option>מועדון / במה</option>
               <option>אירוע חברה</option>
-              <option>מחלקת תרבות / מתנ״ס</option>
+              <option>רשות / מועצה / מחלקת תרבות</option>
+              <option>מתנ״ס / היכל תרבות</option>
+              <option>ועד עובדים</option>
+              <option>מלון</option>
               <option>פסטיבל / אירוע עירוני</option>
               <option>אירוע פרטי</option>
               <option>אחר</option>
@@ -1609,7 +1656,7 @@ contact_body = f"""
             <select id="f-format" name="format" required>
               <option value="">בחרו…</option>
               {fmt_options}
-              <option>עוד לא החלטנו</option>
+              <option>עוד לא בטוחים, תמליצו לנו</option>
             </select>
           </div>
         </div>
@@ -1679,7 +1726,7 @@ events_body = r"""<section class="hero hero-corp">
   </div>
 </section>
 
-<div class="stats"><div class="wrap"><div class="stat"><div class="num latin">6</div><div class="lbl">על הבמה, עם סולן וסולנית</div></div><div class="stat"><div class="num latin">20</div><div class="lbl">להיטים שכולם מכירים</div></div><div class="stat"><div class="num latin">10</div><div class="lbl">סיבובים</div></div><div class="stat"><div class="num latin">24</div><div class="lbl">שעות להצעת מחיר</div></div><div class="stat"><div class="num latin">APP</div><div class="lbl">הצבעה מהטלפון</div></div></div></div>
+<div class="stats"><div class="wrap"><div class="stat"><div class="num latin">6</div><div class="lbl">על הבמה, עם סולן וסולנית</div></div><div class="stat"><div class="num latin">20</div><div class="lbl">להיטים שכולם מכירים</div></div><div class="stat"><div class="num latin">10</div><div class="lbl">סיבובים</div></div><div class="stat"><div class="num latin">90</div><div class="lbl">דקות, או גרסה של 45</div></div><div class="stat"><div class="num latin">APP</div><div class="lbl">הצבעה מהטלפון</div></div></div></div>
 
 <section id="proof" class="proof-top">
   <div class="wrap">
@@ -1715,7 +1762,7 @@ events_body = r"""<section class="hero hero-corp">
     <div class="section-head reveal">
       <div class="eyebrow">חבילות</div>
       <h2>שלוש דרכים להזמין</h2>
-      <p>ההצעה נבנית לפי האולם, גודל הקהל והתוספות שתבחרו. ספרו לנו על האירוע ותקבלו הצעת מחיר תוך 24 שעות.</p>
+      <p>ההצעה נבנית לפי האולם, גודל הקהל והתוספות שתבחרו. ספרו לנו על האירוע, ונחזור אליכם עם הצעת מחיר.</p>
     </div>
     <div class="packages">
       <article class="pkg reveal">
@@ -1789,6 +1836,30 @@ events_body = r"""<section class="hero hero-corp">
   </div>
 </section>
 
+<section id="second-event">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">עוד באותה שנה</div>
+      <h2>האירוע השני שלכם בשנה</h2>
+      <p>סדרות נגד סרטים לאירוע הגדול. לאירוע הבא בשנה יש לנו עוד שני מופעים, עם אותו מנגנון ורפרטואר אחר.</p>
+    </div>
+    <div class="packages">
+      <a class="pkg reveal" href="israel.html">
+        <div class="pkg-tag">מסיבה ישראלית</div>
+        <h3>ליום העצמאות, לוועד ולמסיבת הקיץ</h3>
+        <p class="pkg-for">להיטי הסבנטיז והאייטיז מול להיטי הניינטיז, כולו בעברית. עובד גם בלי מסך ובבמת חוץ.</p>
+        <span class="go">למסיבה הישראלית ←</span>
+      </a>
+      <a class="pkg reveal" href="90s.html">
+        <div class="pkg-tag latin">90's</div>
+        <h3>לערב צוות, לגיבוש ולצוות בינלאומי</h3>
+        <p class="pkg-for">ארה״ב מול בריטניה: הלהיטים באנגלית שכל העולם מכיר. הנחיה גם באנגלית, לפי בקשה.</p>
+        <span class="go">לניינטיז ←</span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <section id="why">
   <div class="wrap">
     <div class="section-head reveal">
@@ -1840,7 +1911,7 @@ events_body = r"""<section class="hero hero-corp">
     <div class="contact-band reveal">
       <div class="eyebrow" style="justify-content:center">הצעת מחיר</div>
       <h2>ספרו לנו על האירוע</h2>
-      <p class="sub">תאריך, מקום, כמה עובדים ומה אופי הערב. נחזור אליכם עם הצעה תוך 24 שעות.</p>
+      <p class="sub">תאריך, מקום, כמה עובדים ומה אופי הערב. נחזור אליכם עם הצעה.</p>
       <div class="people"><div class="person"><b>ינון בר שירה</b><a href="tel:0546738192">054-6738192</a></div><div class="person"><b>נעמה בר שירה</b><a href="tel:0546589303">054-6589303</a></div><div class="person"><b>אימייל</b><span>Stageart.pnima@gmail.com</span></div></div>
       <div class="cta-row center">
         <a class="btn btn-wa" href="{CORP_WA}" target="_blank" rel="noopener">{WA} וואטסאפ</a>
@@ -1861,8 +1932,110 @@ events_body = (events_body.replace("{WA}", ICON["wa"]).replace("{PH}", ICON["pho
 events_body = events_body.replace("<!--DEMO-->", demo_video())
 events_body = events_body.replace("<!--CROWD-->", proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR בלי להוריד אפליקציה, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי."))
 page("events.html", "Soundclash לאירועי חברה — קרב מוזיקלי שהעובדים מכריעים",
-     "מופע קרב מוזיקלי חי לאירועי חברה וערבי גיבוש: סדרות נגד סרטים, שישה נגנים, סולן וסולנית, והעובדים מצביעים מהטלפון ומכריעים. הצעת מחיר תוך 24 שעות: 054-6738192.",
+     "מופע קרב מוזיקלי חי לאירועי חברה וערבי גיבוש: סדרות נגד סרטים, שישה נגנים, סולן וסולנית, והעובדים מצביעים מהטלפון ומכריעים. להצעת מחיר: 054-6738192.",
      events_body, "events", theme="theme-screen", og_img=OG["events"])
+
+# ============================================================================
+#  דף לרשויות ומחלקות תרבות (authorities.html), 24.11.2026
+#  המסיבה הישראלית ראשונה: בלי מסך, בעברית, לבמת חוץ ולחגים. בלי מחירים באתר.
+# ============================================================================
+GOV_WA_TEXT = "היי, אשמח לפרטים ולהצעה למופע Soundclash לאירוע של הרשות."
+GOV_SHOWS = [  # (slug, למה זה מתאים לרשות)
+    ("israel", "לחמישי בפארק, לט״ו באב, ליום העצמאות ולחנוכה בקהילה. כולו בעברית, בלי מסך, ועובד גם בבמת חוץ."),
+    ("screen", "להיכל התרבות ולסדרת המנויים: ערב נוצץ לבני 30 פלוס, עם מסך ווידאו מקורי לכל שיר."),
+    ("90s", "לערבי צעירים, לפסטיבל בירה ולפאב הקהילתי. המופע שכבר עולה על הבמות, ואפשר לבוא לראות אותו לפני שמזמינים."),
+]
+def gov_shows():
+    by = {f["slug"]: f for f in PUBLIC_FORMATS}
+    cards = ""
+    for slug, why in GOV_SHOWS:
+        o = by[slug]
+        cards += f"""<a class="format-card {o['css']} reveal" href="{o['file']}">
+      {('<img class="card-logo" src="' + o['logo'] + '" alt="' + o['logo_alt'] + '" loading="lazy" width="300" height="360">') if o.get('logo') else ''}
+      <h3>{o['name_html']}</h3>
+      <p class="fc-for">{why}</p>
+      <p class="fc-status">{o.get('status', '')}</p>
+      <span class="go">לדף המופע ←</span>
+    </a>"""
+    return f"""<section id="formats">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">המופעים</div>
+      <h2>בחרו את המופע לאירוע שלכם</h2>
+      <p>אותו מנגנון בכל מופע: שיר מול שיר, והתושבים מכריעים מהטלפון. משנה רק הרפרטואר.</p>
+    </div>
+    <div class="formats-grid">{cards}</div>
+  </div>
+</section>"""
+
+GOV_SPEC = [
+    ("תשלום", "לפי נוהל הרשות, בתשלום שוטף, בלי מקדמה. החשבונית מופקת על ידי שחר חוויות חינוכיות בע״מ"),
+    ("מחיר", "מחיר השקה להזמנות שייחתמו עד 31.3.2027, בלי תוספת על חגים"),
+    ("אורך", "כ-90 דקות, או גרסה של 45 דקות. אפשר להוסיף חצי שעת מסיבה"),
+    ("מה נדרש במקום", "מערכת הגברה עם איש סאונד, ותאורה סטנדרטית, באולם או בבמת חוץ. אין במקום? נביא משלנו, בתוספת תשלום"),
+    ("מסך", "במסיבה הישראלית ובניינטיז לא צריך מסך: התוצאה עולה בטלפונים של הקהל. בסדרות נגד סרטים, או אם יש מסך במקום, מוסיפים סרטון אווירה לכל שיר ואת התוצאות על המסך הגדול"),
+    ("אם הקליטה חלשה", "הקרב ממשיך: הקהל מצביע בדגלונים בצבעי שני הצדדים, וההכרעה מוכרזת מהבמה"),
+    ("מה נאסף מהקהל", "כמעט כלום: בלי הורדה ובלי הרשמה. מי שרוצה כותב שם או כינוי, וכל מצביע מקבל מספר כרטיס אקראי להגרלה"),
+]
+
+gov_body = f"""
+<section class="hero compact">
+  {hero_photo(IMAGES[1][0])}
+  <div class="hero-glow"></div>
+  <div class="hero-seam"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">לרשויות ומחלקות תרבות</div>
+    <h1 class="as-h2">קרב מוזיקלי שהתושבים מכריעים</h1>
+    <p class="lede">שישה נגנים, סולן וסולנית, להיטים שכל הקהל מכיר, וכל אחד מצביע מהטלפון בין שני צדדים. לבמת חוץ, לחגים, לערבי קהילה ולהיכל התרבות. ובסוף הערב יש לכם מספר אמיתי: כמה תושבים השתתפו.</p>
+    <p class="status-line">מחיר השקה עד 31.3.2027 · בלי תוספת על חגים</p>
+    <div class="cta-row center">
+      <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} {PHONE_MAIN}</a>
+      <a class="btn btn-wa" href="{html.escape(wa_link(GOV_WA_TEXT), quote=True)}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>
+      <a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>
+    </div>
+  </div>
+</section>
+
+{proof_strip()}
+{gov_shows()}
+
+<section id="packages">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">לאירוע הגדול של השנה</div>
+      <h2>התושבים שלכם הם הכוכבים</h2>
+      <p>אפשר להזמין את המופע לבד, או להפוך אותו לערב שלם.</p>
+    </div>
+    <div class="packages" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); max-width:860px; margin:0 auto">
+      <article class="pkg reveal">
+        <div class="pkg-tag latin">A NIGHT OF STARS</div>
+        <h3>לילה של כוכבים</h3>
+        <p class="pkg-for">לחנוכה בקהילה, לערב הוקרה למתנדבים או לאירוע השנתי של היישוב</p>
+        <ul>
+          <li>המופע המלא</li>
+          <li>חצי שעת מסיבה אחרי ההכרזה</li>
+          <li>5 תוספות לבחירה, כמו שטיח אדום, פסלוני זהב ופופקורן</li>
+          <li>הנחה על התוספות ועל המסיבה</li>
+        </ul>
+      </article>
+      <article class="pkg reveal">
+        <div class="pkg-tag">בונוס השקה</div>
+        <h3>מופע קוסם לילדים, בחינם</h3>
+        <p class="pkg-for">להזמנות עד 31.3.2027: מופע קוסם לאירוע ילדים של הרשות, בחנוכה, בפסח או בקייטנה. תאריך בתיאום, למימוש בתוך שנה.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+{mechanism_block(note=NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
+{spec_block(GOV_SPEC, title="איך עובדים איתנו")}
+{contact_band("רוצים את הקרב הזה אצלכם?",
+              "ספרו לנו על האירוע: תאריך, מקום וגודל קהל משוער, ונחזור אליכם עם הצעה מסודרת.",
+              '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>')}
+"""
+page("authorities.html", "Soundclash לרשויות ומחלקות תרבות — קרב מוזיקלי שהתושבים מכריעים",
+     "מופע קרב מוזיקלי חי לרשויות, מועצות ומחלקות תרבות: מסיבה ישראלית, סדרות נגד סרטים וניינטיז. שישה נגנים, והתושבים מצביעים מהטלפון. לבמת חוץ, לחגים ולהיכל. 054-6738192.",
+     gov_body, "authorities", theme="theme-il", og_img=OG["israel"])
 
 # Y2K הוקפא (10.2026): הכתובת הישנה מפנה לדף הקרב הישראלי, כדי שקישורים ישנים לא יישברו
 with open(os.path.join(OUT, "y2k.html"), "w", encoding="utf-8") as fh:
