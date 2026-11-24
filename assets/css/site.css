@@ -284,9 +284,8 @@ section{padding:74px 0;}
 .step p{font-size:14.5px; color:var(--text-dim); line-height:1.6;}
 
 /* ===================== רשת פורמטים ===================== */
-.formats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
-@media (max-width:960px){.formats-grid{grid-template-columns:1fr 1fr;}}
-@media (max-width:540px){.formats-grid{grid-template-columns:1fr;}}
+.formats-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+@media (max-width:760px){.formats-grid{grid-template-columns:1fr; max-width:440px; margin-inline:auto;}}
 .format-card{
   display:block; position:relative; border-radius:var(--radius); overflow:hidden;
   border:1px solid var(--line); background:var(--bg-card); text-align:center;

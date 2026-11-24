@@ -10,7 +10,7 @@
 ```
 index.html            דף הבית
 90s.html              דף נחיתה — Soundclash ניינטיז
-80s.html              דף נחיתה — Soundclash אייטיז
+80s.html              טיוטה (מ-24.11.2026): נבנה עם noindex ולא מקושר מהאתר. להחזרה: draft=True ב-build.py
 y2k.html              דף נחיתה — Soundclash Y2K
 tv-vs-film.html       דף נחיתה — סדרות נגד סרטים
 shows.html            הופעות קרובות (נטען מ-shows.json)

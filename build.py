@@ -170,9 +170,13 @@ FORMATS = [
          era="80's", name="Soundclash אייטיז",
          nav='אייטיז ' + ltr("80's"), nav_plain="אייטיז 80's",
          name_html=ltr("Soundclash") + " אייטיז",
-         tag="לפי בקשה", live=False,
+         tag="לפי בקשה", live=False, draft=True,
          short="ניאון מול איצטדיון. הסינת׳ הבריטי מול הלהיטים הגדולים של אמריקה.")
 ]
+# אייטיז ירד מהאתר כטיוטה (24.11.2026): אין לו עדיין סטליסט סגור בכיוון החדש, ולא בטוח שהוא המופע הבא.
+# הדף 80s.html עדיין נבנה (עם noindex), אבל לא מופיע בתפריט, בפוטר, בכרטיסי הבית, בטופס ובמפת האתר.
+# להחזרה: למחוק draft=True, להחזיר את השורה ב-sitemap.xml, ולעדכן את טקסט האודות ועמוד האירועים.
+PUBLIC_FORMATS = [f for f in FORMATS if not f.get("draft")]
 
 # ============================================================================
 #  4. רכיבים משותפים
@@ -202,7 +206,7 @@ def nav(active, depth_prefix=""):
     drop_active = ' class="is-active"' if active.startswith("fmt-") else ""
     formats_menu = "".join(
         '<a href="%s%s"%s>%s</a>' % (p, f["file"], ' class="active"' if active == "fmt-" + f["slug"] else "", f["nav"])
-        for f in FORMATS)
+        for f in PUBLIC_FORMATS)
     return f"""<header class="nav">
   <nav class="nav-inner" aria-label="ניווט ראשי">
     <a class="nav-logo latin" href="{p}index.html">SOUND<b>CLASH</b></a>
@@ -258,7 +262,7 @@ def contact_band(title, sub, extra_btn="", photo=True):
 </section>"""
 
 def footer(p=""):
-    fmt_links = "".join('<li><a href="%s%s">%s</a></li>' % (p, f["file"], f["nav"]) for f in FORMATS)
+    fmt_links = "".join('<li><a href="%s%s">%s</a></li>' % (p, f["file"], f["nav"]) for f in PUBLIC_FORMATS)
     return f"""<footer class="footer">
   <div class="wrap">
     <div class="footer-grid">
@@ -295,7 +299,7 @@ def mbar(active):
             f'<a class="m-wa" href="{wa_link()}" target="_blank" rel="noopener">{ICON["wa"]} וואטסאפ</a>'
             f'<a class="m-call" href="tel:{PHONE_TEL}">{ICON["phone"]} חיוג</a>{main}</nav>')
 
-def page(filename, title, description, body, active, theme="theme-90", og_img=None, jsonld=""):
+def page(filename, title, description, body, active, theme="theme-90", og_img=None, jsonld="", noindex=False):
     og_img = og_img or OG["home"]
     doc = f"""<!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -304,7 +308,7 @@ def page(filename, title, description, body, active, theme="theme-90", og_img=No
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{title}</title>
 <meta name="description" content="{description}">
-<link rel="canonical" href="{SITE_URL}/{filename}">
+<link rel="canonical" href="{SITE_URL}/{filename}">{'<meta name="robots" content="noindex">' if noindex else ''}
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/icon-32.png">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
@@ -571,7 +575,7 @@ def gallery_section(imgs, head="תמונות מהבמה", eyebrow="גלריה", 
 
 def formats_index():
     cards = ""
-    for f in FORMATS:
+    for f in PUBLIC_FORMATS:
         status_cls = "status" if (f["live"] or f.get("hot")) else "status neutral"
         cards += f"""<a class="format-card {f['css']} reveal" href="{f['file']}">
       <div class="{status_cls}">{f['tag']}</div>
@@ -1114,7 +1118,7 @@ home_body = f"""
 
 page("index.html",
      "Soundclash — מופע קרב מוזיקלי חי שבו הקהל מכריע",
-     "לא עוד להקת קאברים: מופע קרב מוזיקלי חי בשישה נגנים, שיר מול שיר, והקהל מכריע מהטלפון. המופע החדש: סדרות נגד סרטים. וגם ניינטיז, מסיבה ישראלית ואייטיז. להזמנות: 054-6738192.",
+     "לא עוד להקת קאברים: מופע קרב מוזיקלי חי בשישה נגנים, שיר מול שיר, והקהל מכריע מהטלפון. המופע החדש: סדרות נגד סרטים. וגם ניינטיז ומסיבה ישראלית. להזמנות: 054-6738192.",
      home_body, "home", theme="theme-90", jsonld=HOME_JSONLD)
 
 
@@ -1305,7 +1309,7 @@ for f in FORMATS:
               "תגידו לנו תאריך, מקום וגודל קהל משוער, ונחזור אליכם עם הצעה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>', photo=f["slug"] not in ("screen", "israel", "80s"))}
 """
-    page(f["file"], d["title"], d["desc"], body, "fmt-" + f["slug"], theme=f["theme"], og_img={"screen": OG["tv-vs-film"], "israel": OG["israel"]}.get(f["slug"], og_of(IMAGES[1][0])))
+    page(f["file"], d["title"], d["desc"], body, "fmt-" + f["slug"], theme=f["theme"], og_img={"screen": OG["tv-vs-film"], "israel": OG["israel"]}.get(f["slug"], og_of(IMAGES[1][0])), noindex=bool(f.get("draft")))
 
 
 # ============================================================================
@@ -1426,7 +1430,7 @@ about_body = f"""
     <ul class="lineup">{lineup_html}</ul>
 
     <h3>המופעים</h3>
-    <p>אותו מנגנון מוגש בכמה מופעים: סדרות נגד סרטים, המופע החדש; ניינטיז, שכבר עולה על הבמות; מסיבה ישראלית; ואייטיז לפי בקשה.
+    <p>אותו מנגנון מוגש בכמה מופעים: סדרות נגד סרטים, המופע החדש; ניינטיז, שכבר עולה על הבמות; ומסיבה ישראלית.
     כל המופעים זמינים להזמנה בתיאום מראש. גודל ההרכב ומבנה הסיבובים מאפשרים התאמה
     לסוג האירוע, לכמות האורחים ולמשך ההופעה.</p>
 
@@ -1452,7 +1456,7 @@ page("about.html", "אודות הלהקה — Soundclash",
 # ============================================================================
 #  11. יצירת קשר
 # ============================================================================
-fmt_options = "".join('<option>%s</option>' % f["name"] for f in FORMATS)
+fmt_options = "".join('<option>%s</option>' % f["name"] for f in PUBLIC_FORMATS)
 contact_people = "".join(
     '<div class="person"><b>%s</b><a href="tel:%s">%s</a></div>' % (n, t, p) for n, p, t in CONTACTS)
 
@@ -1667,7 +1671,7 @@ events_body = r"""<section class="hero hero-corp">
         </ul>
       </article>
     </div>
-    <p class="center mt-32" style="color:var(--text-dim)">לא מחפשים סדרות וסרטים? אותו מנגנון רץ גם ב<a class="inline" href="90s.html">ניינטיז</a> (המופע שכבר עולה על הבמות) וב<a class="inline" href="israel.html">מסיבה הישראלית</a>. <a class="inline" href="80s.html">אייטיז</a> לפי בקשה.</p>
+    <p class="center mt-32" style="color:var(--text-dim)">לא מחפשים סדרות וסרטים? אותו מנגנון רץ גם ב<a class="inline" href="90s.html">ניינטיז</a> (המופע שכבר עולה על הבמות) וב<a class="inline" href="israel.html">מסיבה הישראלית</a>. רוצים מופע בנושא אחר? <a class="inline" href="contact.html">דברו איתנו</a>.</p>
   </div>
 </section>
 
