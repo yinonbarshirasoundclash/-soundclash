@@ -1067,7 +1067,7 @@ def duel_block(a, b, photos=None):
 for f in FORMATS:
     d = FORMAT_PAGES[f["slug"]]
     spec = [r for r in DEFAULT_SPEC if r[0] != "זמינות פורמט"]
-    spec = [(k, v.replace(SINGER_GENERAL, {"90s": REUT_90, "screen": NICOLE_TV}.get(f["slug"], SINGER_ONLY))
+    spec = [(k, v.replace(SINGER_GENERAL, {"90s": REUT_90, "screen": NICOLE_TV, "israel": NICOLE_TV}.get(f["slug"], SINGER_ONLY))
                  .replace(YINON_ACOUSTIC, YINON_VOCALS if f["slug"] == "screen" else YINON_ACOUSTIC)) if k == "הרכב" else (k, v)
             for k, v in spec]
     spec = [(k, (REQ_SCREEN if f["slug"] == "screen" else REQ_NO_SCREEN) if k == "מה נדרש במקום" else v) for k, v in spec]
@@ -1111,7 +1111,7 @@ for f in FORMATS:
 </section>
 
 {stats_bar(DEFAULT_STATS)}
-{(DUELS_SECTION + voices_block() + proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי. קליפ מצולם של סדרות נגד סרטים, עם ניקול והלהקה, יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else (ISRAEL_DUELS_SECTION + voices_block(head="על הבמה", eyebrow="ההרכב", nicole=False, note="סולן וסולנית בפרונט, ושישה על הבמה. כל השירים בביצוע חי, נאמן למקור.") + il_proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, המסיבה הישראלית מהכניסה ועד ההכרעה: נכנסים מהטלפון, עובדה על כל שיר, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה.", wrap=True) + addons_block(only=IL_ADDONS, texts=IL_ADDON_TEXT)) if f["slug"] == "israel" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None)}
+{(DUELS_SECTION + voices_block() + proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, סדרות נגד סרטים מהכניסה ועד ההכרעה: סורקים QR, סרטון AI מקורי לכל שיר על המסך, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה. בסרטונים מופיעה הזמרת של מופע הניינטיז. בסדרות נגד סרטים שרה ניקול רודוי. קליפ מצולם של סדרות נגד סרטים, עם ניקול והלהקה, יעלה לכאן באמצע דצמבר.", wrap=True) + addons_block()) if f["slug"] == "screen" else (ISRAEL_DUELS_SECTION + voices_block(head="הקולות של המסיבה הישראלית") + il_proof_pair("משמאל, 20 שניות מתוך הקהל בהופעת הניינטיז בוונדרבר, חיפה. מימין, המסיבה הישראלית מהכניסה ועד ההכרעה: נכנסים מהטלפון, עובדה על כל שיר, אימוג׳ים, הצבעה בלחיצה והכרעה. האפליקציה אמיתית, הקהל בצילומים מהופעות הניינטיז, והתוצאה מתוך הדגמה.", wrap=True) + addons_block(only=IL_ADDONS, texts=IL_ADDON_TEXT)) if f["slug"] == "israel" else duel_block(d['side_a'], d['side_b'], photos={"a": "09224", "b": "09296"} if f["slug"] == "90s" else None)}
 {mechanism_block(note=NOTE_SCREEN if f["slug"] == "screen" else NOTE_NO_SCREEN, head="ככה מוכרע הקרב")}
 {vids}
 {crowd_card(head="הקהל בוונדרבר, חיפה", text="ככה נראה ערב ניינטיז מתוך הקהל: 20 שניות מספטמבר, מצולמות בטלפון. הידיים באוויר, כולם שרים, ובסוף כל סיבוב מצביעים.", wrap=True) if f["slug"] == "90s" else ""}
