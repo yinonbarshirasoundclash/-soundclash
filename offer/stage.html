@@ -96,6 +96,13 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
 .range input{flex:1;accent-color:var(--film);min-width:0}
 .range output{font-family:var(--display);font-size:34px;line-height:1;color:var(--film);min-width:3ch;text-align:center}
 .hint{font-size:14px;color:var(--muted)}
+.fullnight{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid color-mix(in srgb,var(--film) 55%,var(--line));background:color-mix(in srgb,var(--film) 8%,var(--surface));border-radius:16px;padding:18px 20px;margin-bottom:28px}
+.fullnight .fn-text{display:flex;flex-direction:column;gap:4px;flex:1 1 320px}
+.fullnight .fn-tag{font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--film)}
+.fullnight b{font-size:19px}
+.fullnight span{color:var(--muted);font-size:15px;line-height:1.55}
+.fullnight .btn.primary{background:var(--film);color:#14110d;padding:13px 20px;font-size:16px;min-height:44px}
+.fullnight .btn.primary:hover{filter:brightness(1.08)}
 .bundle{border:1px dashed color-mix(in srgb,var(--tv) 60%,transparent);color:var(--fg);border-radius:12px;padding:12px 14px;font-size:15px}
 .bundle b{color:var(--tv)}
 
@@ -206,7 +213,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
 <div class="bar" dir="rtl"><div><small>סה"כ לפני מע"מ</small><span class="bt num" id="barTotal"></span></div><a href="#lines" id="barLink">לפירוט</a></div>
 
 <script>
-const CFG = {"kind": "אירוע עירוני", "vat": 0.18, "peakItem": null, "peakPct": 0.1, "paTiers": [{"max": 200, "price": 5500}, {"max": 400, "price": 8500}, {"max": 600, "price": 13000}], "perLabel": null, "guests": {"label": "כמה אנשים צפויים ברחבה?", "min": 300, "max": 5000, "step": 100, "default": 1500, "hint": "כל אחד מצביע מהטלפון שלו, בלי להוריד אפליקציה. אין צורך במסך כדי לשחק.", "short": "קהל צפוי"}, "steps": [{"title": "המופע", "guests": true, "items": [{"id": "show", "type": "radio", "role": "show", "default": "full", "options": [{"id": "full", "label": "המופע בגרסת במה עירונית, 90 דקות", "sub": "הרבה ריקודים, מעט דיבורים. הקהל מצביע מהטלפון, וההכרעה מוכרזת מהבמה", "price": 10500, "list": 12000, "short": "קרב להיטים (90 דק׳)"}]}, {"id": "ext", "type": "toggle", "role": "other", "default": false, "price": 2500, "label": "הלהקה ממשיכה עוד חצי שעה", "sub": "סט מסיבה חי אחרי ההכרזה על המנצח, בלי הצבעות. רק להיטים לרקוד", "short": "סט מסיבה חי נוסף (30 דק׳)", "rec": "מומלץ לאירוע עירוני"}]}, {"title": "מסך", "intro": "אפשר בלי מסך בכלל: כל מי שהצביע רואה את התוצאה בטלפון, והמנצח מוכרז מהבמה. אם יש באירוע מסך לד, נעלה אליו את התוצאות ואת הסרטונים.", "items": [{"id": "screen", "type": "radio", "role": "tech", "default": "none", "options": [{"id": "none", "label": "בלי מסך", "sub": "התוצאות בטלפונים, ההכרזה מהבמה", "price": 0}, {"id": "event", "label": "מסך הלד של האירוע", "sub": "נחבר אליו את המחשב שלנו", "price": 0}, {"id": "led32", "label": "מסך לד 3×2 מ׳", "sub": "כולל טכנאי", "price": 4200, "short": "מסך לד 3×2"}, {"id": "led425", "label": "מסך לד 4×2.5 מ׳", "sub": "לקהל גדול. כולל טכנאי", "price": 7000, "short": "מסך לד 4×2.5"}]}]}, {"title": "הטכניקה", "intro": "באירוע עירוני ההגברה, התאורה והבמה בדרך כלל באחריות הפקת האירוע. אם צריך, נביא הצעה.", "items": [{"id": "eng", "type": "toggle", "role": "tech", "default": false, "price": 1500, "rec": true, "label": "איש סאונד שלנו", "sub": "מכיר את המופע ואת הסאונד של שישה נגנים על הבמה. אחרת, איש הסאונד של הפקת האירוע", "short": "איש סאונד"}, {"id": "pa_open", "type": "toggle", "role": "other", "default": false, "ask": true, "askPrice": "בהצעה", "label": "הגברה ותאורה לבמת האירוע", "sub": "לפי גודל הרחבה. נתאם עם ספק", "short": "הגברה ותאורה"}, {"id": "stage_open", "type": "toggle", "role": "other", "default": false, "ask": true, "askPrice": "בהצעה", "label": "במה", "sub": "לפי גודל האירוע. נתאם עם ספק", "short": "במה"}]}, {"title": "במתנה ותוספות", "items": [{"id": "promo", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 1000, "label": "ערכת קידום לאירוע", "sub": "סרטון של 30 שניות, פוסטר, ושלושה פוסטים מוכנים לרשתות", "short": "ערכת קידום"}, {"id": "magic", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 2000, "label": "בונוס השקה: מופע קוסם לילדים", "sub": "חינם לתקופת ההשקה (הזמנות עד 31.3.2027): מופע קוסם של ינון בר שירה לאירוע ילדים של הרשות, בחנוכה, בפסח או בקייטנה. תאריך בתיאום, למימוש בתוך שנה", "short": "מופע קוסם לילדים"}, {"id": "bench", "type": "stepper", "role": "exp", "default": 0, "price": 1500, "max": 3, "unit": "לדו־קרב", "label": "דו־קרב לבחירתכם", "sub": "אתם בוחרים זוג שירים מתוך הרשימה שלנו, למשל להיט ישראלי לערב החג", "short": "דו־קרב לבחירתכם"}]}, {"title": "הגעה", "items": [{"id": "travel", "type": "radio", "role": "other", "label": "מרחק מהמרכז", "options": [{"id": "near", "label": "עד 60 ק\"מ", "price": 0}, {"id": "mid", "label": "60–150 ק\"מ", "price": 1500, "short": "נסיעה 60–150 ק\"מ"}, {"id": "far", "label": "מעל 150 ק\"מ", "sub": "ולינה לפי עלות, אם המופע נגמר אחרי 23:00", "price": 3000, "short": "נסיעה מעל 150 ק\"מ"}], "default": "near"}]}]};
+const CFG = {"kind": "אירוע עירוני", "vat": 0.18, "peakItem": null, "peakPct": 0.1, "paTiers": [{"max": 200, "price": 5500}, {"max": 400, "price": 8500}, {"max": 600, "price": 13000}], "perLabel": null, "guests": {"label": "כמה אנשים צפויים ברחבה?", "min": 300, "max": 5000, "step": 100, "default": 1500, "hint": "כל אחד מצביע מהטלפון שלו, בלי להוריד אפליקציה. אין צורך במסך כדי לשחק.", "short": "קהל צפוי"}, "steps": [{"title": "המופע", "guests": true, "items": [{"id": "show", "type": "radio", "role": "show", "default": "full", "options": [{"id": "full", "label": "המופע בגרסת במה עירונית, 90 דקות", "sub": "הרבה ריקודים, מעט דיבורים. הקהל מצביע מהטלפון, וההכרעה מוכרזת מהבמה", "price": 10500, "list": 12000, "short": "קרב להיטים (90 דק׳)"}]}, {"id": "ext", "type": "toggle", "role": "other", "default": false, "price": 2500, "label": "חצי שעת מסיבה: הלהקה ממשיכה לנגן", "sub": "סט מסיבה חי אחרי ההכרזה על המנצח, בלי הצבעות. רק להיטים לרקוד. בלילה של כוכבים (5 תוספות ומעלה) גם המסיבה ב-20% הנחה", "short": "חצי שעת מסיבה (30 דק׳)", "rec": "מומלץ לאירוע עירוני", "fullNight": true}]}, {"title": "מסך", "intro": "אפשר בלי מסך בכלל: כל מי שהצביע רואה את התוצאה בטלפון, והמנצח מוכרז מהבמה. אם יש באירוע מסך לד, נעלה אליו את התוצאות ואת הסרטונים.", "items": [{"id": "screen", "type": "radio", "role": "tech", "default": "none", "options": [{"id": "none", "label": "בלי מסך", "sub": "התוצאות בטלפונים, ההכרזה מהבמה", "price": 0}, {"id": "event", "label": "מסך הלד של האירוע", "sub": "נחבר אליו את המחשב שלנו", "price": 0}, {"id": "led32", "label": "מסך לד 3×2 מ׳", "sub": "כולל טכנאי", "price": 4200, "short": "מסך לד 3×2"}, {"id": "led425", "label": "מסך לד 4×2.5 מ׳", "sub": "לקהל גדול. כולל טכנאי", "price": 7000, "short": "מסך לד 4×2.5"}]}]}, {"title": "הטכניקה", "intro": "באירוע עירוני ההגברה, התאורה והבמה בדרך כלל באחריות הפקת האירוע. אם צריך, נביא הצעה.", "items": [{"id": "eng", "type": "toggle", "role": "tech", "default": false, "price": 1500, "rec": true, "label": "איש סאונד שלנו", "sub": "מכיר את המופע ואת הסאונד של שישה נגנים על הבמה. אחרת, איש הסאונד של הפקת האירוע", "short": "איש סאונד"}, {"id": "pa_open", "type": "toggle", "role": "other", "default": false, "ask": true, "askPrice": "בהצעה", "label": "הגברה ותאורה לבמת האירוע", "sub": "לפי גודל הרחבה. נתאם עם ספק", "short": "הגברה ותאורה"}, {"id": "stage_open", "type": "toggle", "role": "other", "default": false, "ask": true, "askPrice": "בהצעה", "label": "במה", "sub": "לפי גודל האירוע. נתאם עם ספק", "short": "במה"}]}, {"title": "מתנות ותוספות חוויה", "items": [{"id": "promo", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 1000, "label": "ערכת קידום לאירוע", "sub": "סרטון של 30 שניות, פוסטר, ושלושה פוסטים מוכנים לרשתות", "short": "ערכת קידום"}, {"id": "magic", "type": "toggle", "role": "exp", "default": true, "gift": true, "giftValue": 2000, "label": "בונוס השקה: מופע קוסם לילדים", "sub": "חינם לתקופת ההשקה (הזמנות עד 31.3.2027): מופע קוסם של ינון בר שירה לאירוע ילדים של הרשות, בחנוכה, בפסח או בקייטנה. תאריך בתיאום, למימוש בתוך שנה", "short": "מופע קוסם לילדים"}, {"id": "bench", "type": "stepper", "role": "exp", "default": 0, "price": 1500, "max": 3, "unit": "לדו־קרב", "label": "דו־קרב לבחירתכם", "sub": "אתם בוחרים זוג שירים מתוך הרשימה שלנו, למשל להיט ישראלי לערב החג", "short": "דו־קרב לבחירתכם"}, {"id": "carpet", "type": "toggle", "role": "exp", "default": false, "price": 5000, "label": "שטיח אדום וצלם פפראצי", "sub": "שעתיים בכניסה לפני המופע. כל מי שמגיע מצטלם כמו בבכורה, והתמונות נשלחות לרשות לפרסום", "short": "שטיח אדום וצלם"}, {"id": "actors", "type": "stepper", "role": "exp", "default": 0, "price": 1600, "max": 6, "minIfAny": 3, "unit": "לשחקן", "label": "דמויות מסתובבות", "sub": "שחקנים בתחפושות מעולם הקולנוע (במאית, סדרן, כוכבת השטיח האדום) מסתובבים בין הקהל שעתיים לפני המופע. מינימום 3", "short": "דמויות מסתובבות"}, {"id": "popcorn", "type": "stepper", "role": "exp", "default": 0, "price": 1200, "max": 30, "unit": "ל-100 מנות", "label": "עגלת פופקורן עם מפעיל", "sub": "פופקורן טרי בשקיות של קולנוע, בכשרות. מחיר קבוע לפי מספר המנות ולא לפי גודל הקהל", "short": "פופקורן (מנות × 100)"}, {"id": "oscars", "type": "stepper", "role": "exp", "default": 0, "price": 90, "max": 40, "step": 5, "unit": "ליחידה", "label": "פסלוני זהב", "sub": "לזוכי החידון, למצביעים המצטיינים, או למתנדבים בערב הוקרה", "short": "פסלוני זהב"}], "intro": "המתנות כלולות בעונת ההשקה. מ-3 תוספות בתשלום יש 10% הנחה עליהן, ומ-5 תוספות 20%.", "bundleNote": true}, {"title": "הגעה", "items": [{"id": "travel", "type": "radio", "role": "other", "label": "מרחק מהמרכז", "options": [{"id": "near", "label": "עד 60 ק\"מ", "price": 0}, {"id": "mid", "label": "60–150 ק\"מ", "price": 1500, "short": "נסיעה 60–150 ק\"מ"}, {"id": "far", "label": "מעל 150 ק\"מ", "sub": "ולינה לפי עלות, אם המופע נגמר אחרי 23:00", "price": 3000, "short": "נסיעה מעל 150 ק\"מ"}], "default": "near"}]}], "bundle": [{"count": 3, "rate": 0.1}, {"count": 5, "rate": 0.2}], "fullNightPreset": {"show": "full", "ext": true, "carpet": true, "actors": 3, "popcorn": 3, "oscars": 10, "bench": 1}, "fullNightText": {"tag": "לילה של כוכבים ✦ A NIGHT OF STARS", "title": "התושבים שלכם הם הכוכבים: מופע, חצי שעת מסיבה ו-5 תוספות, ב-20% הנחה", "body": "לחנוכה בקהילה, לערב הוקרה למתנדבים או לאירוע השנתי של היישוב. לחיצה אחת בוחרת את המופע, חצי שעת מסיבה, שטיח אדום וצלם, 3 דמויות, 300 מנות פופקורן, 10 פסלוני זהב ודו־קרב לבחירתכם. ההנחה חלה על התוספות ועל המסיבה. אחר כך אפשר לשנות כל פריט, וההנחה נשארת כל עוד יש 5 תוספות.", "btn": "לבחירת לילה של כוכבים"}};
 const fmt = n => Math.round(n).toLocaleString('he-IL') + ' ₪';
 const state = {};
 const $ = id => document.getElementById(id);
@@ -232,6 +239,19 @@ function autoPA(g){ for (const t of CFG.paTiers){ if (g<=t.max) return t.price; 
 
 function render(){
   const root = $('steps'); root.innerHTML='';
+  if (CFG.fullNightPreset){
+    const fn = document.createElement('section'); fn.className='fullnight';
+    const T = CFG.fullNightText;
+    fn.innerHTML = `<div class="fn-text"><div class="fn-tag">${T.tag}</div><b>${T.title}</b>
+      <span>${T.body}</span></div>
+      <button type="button" class="btn primary" id="fnBtn">${T.btn}</button>`;
+    root.appendChild(fn);
+    fn.querySelector('#fnBtn').addEventListener('click', () => {
+      Object.assign(state, CFG.fullNightPreset);
+      render(); enforce(); refreshPrices(); calc();
+      const t=document.querySelector('.ticket'); if (t && window.innerWidth<900) t.scrollIntoView({behavior:'smooth'});
+    });
+  }
   CFG.steps.forEach((st, si) => {
     const sec = document.createElement('section'); sec.className='step';
     sec.innerHTML = `<h2><span class="n">${si+1}</span>${st.title}</h2>${st.intro?`<p>${st.intro}</p>`:''}`;
@@ -369,13 +389,18 @@ function calc(){
   }));
   let disc = 0, rate = 0;
   if (CFG.bundle){ for (const b of CFG.bundle){ if (expCount>=b.count) rate=b.rate; } disc = exp*rate; }
+  // לילה של כוכבים: בדרגת ההנחה העליונה גם חצי שעת המסיבה בהנחה (ינון, 24.11.2026)
+  let partyDisc = 0; const topRate = CFG.bundle ? CFG.bundle[CFG.bundle.length-1].rate : 0;
+  const fnItem = CFG.steps.flatMap(st=>st.items).find(it=>it.fullNight);
+  if (fnItem && state[fnItem.id] && rate && rate===topRate){ partyDisc = fnItem.price*rate; disc += partyDisc; }
   const pre = show+tech+exp-disc+other;
   const vat = pre*CFG.vat, total = pre+vat;
   const listTotal = showList+tech+exp+other+listExtra;   // המתנות לא נספרות כחיסכון (14.11.2026)
   const saving = listTotal-pre;
 
   $('lines').innerHTML = lines.map(([n,p,t]) => `<li><span>${n}</span><span class="${t==='מתנה'?'g':''}">${t ? t : fmt(p)}</span></li>`).join('')
-    + (disc? `<li><span>הנחת חבילה ${Math.round(rate*100)}% על התוספות</span><span class="g">−${fmt(disc)}</span></li>`:'');
+    + (disc-partyDisc? `<li><span>הנחת חבילה ${Math.round(rate*100)}% על התוספות</span><span class="g">−${fmt(disc-partyDisc)}</span></li>`:'')
+    + (partyDisc? `<li><span>לילה של כוכבים: ${Math.round(rate*100)}% הנחה גם על המסיבה</span><span class="g">−${fmt(partyDisc)}</span></li>`:'');
   const per = CFG.perLabel ? `<div><span>${CFG.perLabel}</span><span>${(total/g).toLocaleString('he-IL',{maximumFractionDigits:0})} ₪</span></div>` : '';
   $('tot').innerHTML = `
     <div class="was"><span>לפי המחירון</span><s>${fmt(listTotal)}</s></div>
@@ -391,13 +416,13 @@ function calc(){
   if (b && CFG.bundle){
     const next = CFG.bundle.find(x => expCount < x.count);
     b.innerHTML = rate
-      ? `בחרתם ${expCount} תוספות: <b>${Math.round(rate*100)}% הנחה</b> על כל התוספות.${next?` עוד ${next.count-expCount} ותקבלו <b>${Math.round(next.rate*100)}%</b>.`:''}`
-      : `בוחרים ${CFG.bundle[0].count} תוספות בתשלום או יותר ומקבלים <b>${Math.round(CFG.bundle[0].rate*100)}% הנחה</b> על כולן, ומ-${CFG.bundle[1].count} תוספות <b>${Math.round(CFG.bundle[1].rate*100)}%</b>.${expCount?` חסרות ${next.count-expCount}.`:''}`;
+      ? `בחרתם ${expCount} תוספות: <b>${Math.round(rate*100)}% הנחה</b> על כל התוספות.${next?` עוד ${next.count-expCount} ותקבלו <b>${Math.round(next.rate*100)}%</b>, וגם חצי שעת המסיבה תהיה בהנחה.`:(fnItem && !state[fnItem.id]?` הוסיפו את חצי שעת המסיבה ותקבלו גם עליה ${Math.round(rate*100)}% הנחה.`:(partyDisc?' גם חצי שעת המסיבה בהנחה.':''))}`
+      : `בוחרים ${CFG.bundle[0].count} תוספות חוויה בתשלום מהשלב הזה (לא כולל טכניקה) או יותר ומקבלים <b>${Math.round(CFG.bundle[0].rate*100)}% הנחה</b> על כולן, ומ-${CFG.bundle[1].count} תוספות <b>${Math.round(CFG.bundle[1].rate*100)}%</b>.${expCount?` חסרות ${next.count-expCount}.`:''}`;
   }
 
   const text = `שלום ינון, זו הבחירה שלנו ל"סדרות נגד סרטים" (${CFG.kind}):\n${CFG.guests.short}: ${g}\n` +
     lines.map(([n,p,t]) => `• ${n}: ${t ? t : fmt(p)}`).join('\n') +
-    (disc? `\n• הנחת חבילה: −${fmt(disc)}`:'') +
+    (disc-partyDisc? `\n• הנחת חבילה: −${fmt(disc-partyDisc)}`:'') + (partyDisc? `\n• לילה של כוכבים, הנחה על המסיבה: −${fmt(partyDisc)}`:'') +
     `\nסה"כ לפני מע"מ: ${fmt(pre)}\nסה"כ כולל מע"מ: ${fmt(total)}`;
   state._text = text;
   $('wa').href = 'https://wa.me/972546738192?text=' + encodeURIComponent(text);
