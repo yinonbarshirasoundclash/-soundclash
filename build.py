@@ -1416,7 +1416,7 @@ events_body = r"""<section class="hero hero-corp">
           <li>הגרלת פרסים בין המצביעים</li>
           <li>להיטים מקפיצים ומרקידים</li>
         </ul>
-        <div class="pkg-up"><b>+ חצי שעת מסיבה</b><span>אחרי ההכרזה על המנצח הלהקה לא יורדת מהבמה: עוד 30 דקות של להיטי רחבה, בלי הצבעות, רק לרקוד.</span></div>
+        <div class="pkg-up"><b>אפשר להוסיף: חצי שעת מסיבה</b><span>בתוספת תשלום. אחרי ההכרזה על המנצח הלהקה לא יורדת מהבמה: עוד 30 דקות של להיטי רחבה, בלי הצבעות, רק לרקוד. בלילה של כוכבים היא כבר כלולה.</span></div>
       </article>
       <article class="pkg pkg-star reveal">
         <div class="pkg-tag latin">A NIGHT OF STARS</div>
