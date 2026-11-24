@@ -1443,7 +1443,7 @@ events_body = r"""<section class="hero hero-corp">
           <li>הכרזת מנצח</li>
         </ul>
       </article>
-      <article class="pkg pkg-main reveal">
+      <article class="pkg reveal">
         <div class="pkg-tag latin">FULL SHOW</div>
         <h3>המופע המלא</h3>
         <p class="pkg-for">ערב גיבוש או מסיבת חברה שהמופע הוא הלב שלה</p>
@@ -1456,10 +1456,10 @@ events_body = r"""<section class="hero hero-corp">
         </ul>
         <div class="pkg-up"><b>+ חצי שעת מסיבה</b><span>אחרי ההכרזה על המנצח הלהקה לא יורדת מהבמה: עוד 30 דקות של להיטי רחבה, בלי הצבעות, רק לרקוד.</span></div>
       </article>
-      <article class="pkg reveal">
-        <div class="pkg-tag latin">THE FULL NIGHT</div>
-        <h3>הערב המלא</h3>
-        <p class="pkg-for">אירוע שנתי, השקה או חגיגה שרוצים שתיזכר</p>
+      <article class="pkg pkg-star reveal">
+        <div class="pkg-tag latin">A NIGHT OF STARS</div>
+        <h3>לילה של כוכבים</h3>
+        <p class="pkg-for"><b>העובדים שלכם הם הכוכבים.</b> לאירוע השנתי, להשקה או לחגיגה שרוצים שתיזכר</p>
         <ul>
           <li>המופע המלא, ואחריו חצי שעת מסיבה</li>
           <li>5 תוספות לבחירתכם: שטיח אדום וצלם, פופקורן, דמויות, פסלוני זהב, דו־קרב לבחירתכם ועוד</li>
