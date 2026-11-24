@@ -80,6 +80,8 @@ ASSET_V = _h.sha1(open("assets/css/site.css","rb").read() + open("assets/js/site
 # הטריילר מציג את הניינטיז, ולכן הוא מופיע רק בעמוד הניינטיז (ינון, 14.11.2026).
 # בשאר העמודים: הדגמת האפליקציה של סדרות נגד סרטים, עד שיהיה סרטון חדש של המופע.
 VIDEOS_NO_TRAILER = [v for v in VIDEOS if v[0] != TRAILER]
+# בגלריה: הטריילר של הניינטיז (הסרטון החזק מהבמה) במקום "אז מה זה Soundclash?", ואחריו שני סרטוני ההצבעה (ינון, 24.11.2026)
+GALLERY_VIDEOS = [VIDEOS[0], VIDEOS[2], VIDEOS[3]]
 DEMO_MP4 = "assets/video/tv-vs-film-demo.mp4?v=9"
 DEMO_POSTER = "assets/video/tv-vs-film-demo-poster.webp?v=9"
 # תמונת רקע בלי דגלים לעמודי סדרות נגד סרטים: פריים מסרטוני ה-AI של המופע (ינון, 14.11.2026)
@@ -1442,7 +1444,7 @@ gallery_body = f"""
 
 {gallery_section(IMAGES, head="כל התמונות", eyebrow="גלריה", link_more=False)}
 {crowd_card(wrap=True)}
-{video_section(VIDEOS_NO_TRAILER, head="וידאו מההופעות", eyebrow="וידאו", limit=4)}
+{video_section(GALLERY_VIDEOS, head="וידאו מההופעות", eyebrow="וידאו", limit=3)}
 {contact_band("רוצים לראות את זה אצלכם?",
               "אפשר להתקשר, לשלוח וואטסאפ, או למלא את טופס ההזמנה.",
               '<a class="btn btn-outline" href="contact.html">לטופס ההזמנה</a>')}
