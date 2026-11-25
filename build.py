@@ -160,8 +160,7 @@ FORMATS = [
          tag="המופע החדש", live=False, hot=True, logo="assets/img/logo-tv-vs-film-sm.webp", logo_alt="Soundclash סדרות נגד סרטים",
          short="שיר מסדרה מול שיר מסרט, 10 סיבובים, ומסך עם וידאו מקורי לכל שיר.",
          occasion="לחנוכה ולאירוע הגדול של השנה: חברות, היכלי תרבות וערבים נוצצים",
-         status=LAUNCH_STATUS,
-         lineup="סולן וסולנית קבועים: ניקול רודוי וינון בר שירה, ואיתם הלהקה. לכל מופע של Soundclash הרכב קבוע משלו."),
+         status=LAUNCH_STATUS),
     dict(slug="israel", file="israel.html", theme="theme-il", css="f-il",
          era="70–90", name="Soundclash מסיבה ישראלית",
          nav="מסיבה ישראלית", nav_plain="מסיבה ישראלית",
@@ -169,8 +168,7 @@ FORMATS = [
          tag="להזמנה", live=False, logo="assets/img/logo-israeli-party-sm.webp?v=2", logo_alt="Soundclash מסיבה ישראלית",
          short="להיטי הסבנטיז והאייטיז מול להיטי הניינטיז, שירים שכל האולם שר, ורחבה מלאה עד הסוף.",
          occasion="לרשויות, לוועדי עובדים, למלונות ולבמות חוץ. בלי מסך, הכול בעברית",
-         status=LAUNCH_STATUS,
-         lineup="סולן וסולנית קבועים: ניקול רודוי וינון בר שירה, ואיתם הלהקה. לכל מופע של Soundclash הרכב קבוע משלו."),
+         status=LAUNCH_STATUS),
     dict(slug="90s", file="90s.html", theme="theme-90", css="f-90",
          era="90's", name="Soundclash ניינטיז",
          nav='ניינטיז ' + ltr("90's"), nav_plain="ניינטיז 90's",
@@ -178,8 +176,7 @@ FORMATS = [
          tag="כבר על הבמות", live=True, logo="assets/img/logo-90s-sm.webp", logo_alt="Soundclash ניינטיז",
          short="המופע שכבר עולה על הבמות: ארה״ב מול בריטניה.",
          occasion="לערב צוות, למועדון ולצוות בינלאומי (הנחיה גם באנגלית)",
-         status="עולה עכשיו על הבמות · אפשר לבוא לראות לפני שמזמינים",
-         lineup="סולן וסולנית קבועים: רעות זורמן וינון בר שירה, ואיתם הלהקה. לכל מופע של Soundclash הרכב קבוע משלו."),
+         status="עולה עכשיו על הבמות · אפשר לבוא לראות לפני שמזמינים"),
     dict(slug="80s", file="80s.html", theme="theme-80", css="f-80",
          era="80's", name="Soundclash אייטיז",
          nav='אייטיז ' + ltr("80's"), nav_plain="אייטיז 80's",
@@ -1405,7 +1402,6 @@ for f in FORMATS:
     <h1 class="as-h2">{d['sub']}</h1>
     <p class="lede">{d['lede']}</p>
     <p class="status-line">{f.get('status', '')}</p>
-    <p class="lineup-note">{f.get('lineup', '')}</p>
     {trailer_video() if f["live"] else (demo_video() if f["slug"] == "screen" else "")}
     <div class="cta-row center">
       <a class="btn btn-solid" href="tel:{PHONE_TEL}">{ICON["phone"]} להזמנת המופע</a>
