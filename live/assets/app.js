@@ -1306,6 +1306,7 @@
       if (this.st) this.onState(null);
     }
     countReaction(r) {
+      if (this.st && this._rxSid !== this.st.sid) { this._rxSid = this.st.sid; this.rxPend = {}; }
       const key = stageSongKey(this.st); if (!key || !r || !r.c) return;
       const pend = this.rxPend[key] = this.rxPend[key] || {}; let n = 0;
       Object.keys(r.c).forEach(k => { const c = Math.max(0, Math.min(12, +r.c[k] || 0)); if (c) { pend[k] = (pend[k] || 0) + c; n += c; } });
@@ -1320,6 +1321,7 @@
     }
     /* the show's rx with this page's pending counts merged in, or null when nothing is pending */
     takeRx() {
+      if (this.st && this._rxSid !== undefined && this._rxSid !== this.st.sid) { this.rxPend = {}; return null; }
       const p = this.rxPend || {}; if (!Object.keys(p).length) return null;
       const merged = Object.assign({}, (this.st && this.st.rx) || {}); this.rxPend = {};
       Object.keys(p).forEach(key => {
@@ -1684,10 +1686,22 @@
     dangerZone() {
       const wrap = h("div", { class: "danger" });
       const ask = () => setKids(wrap, h("span", null, "לאפס את כל ההצבעות, הכרטיסים והתוצאות?"),
-        h("button", { class: "btn-danger", type: "button", onclick: async () => { await this.be.resetShow(); if (this.crowd) this.crowd.reset(); this.toast("המופע אופס."); } }, "כן, לאפס"),
+        h("button", { class: "btn-danger", type: "button", onclick: async () => {
+          /* forget emojis counted before the reset, and keep the evening's settings */
+          clearTimeout(this._rxFlushT); this._rxFlushT = null; this.rxPend = {};
+          await this.be.resetShow(this.keepSettings());
+          this.rxPend = {}; if (this.crowd) this.crowd.reset(); this.toast("המופע אופס. ההגדרות של הערב נשארו.");
+        } }, "כן, לאפס"),
         h("button", { class: "btn-ghost", type: "button", onclick: () => setKids(wrap, btn) }, "ביטול"));
       const btn = h("button", { class: "btn-ghost btn-warn", type: "button", onclick: ask }, "איפוס מופע");
       wrap.append(btn); return wrap;
+    }
+    /* the evening's setup survives a reset: screen, prizes, vote seconds, voting during songs, live bars, QR / overlay */
+    keepSettings() {
+      const st = this.st || {}, keep = {};
+      ["hasScreen", "prizes", "voteSeconds", "voteDuringSongs", "liveBars"].forEach(k => { if (st[k] !== undefined && st[k] !== null) keep[k] = st[k]; });
+      if (st.screen) keep.screen = Object.assign({}, st.screen);
+      return keep;
     }
     videoCmd(cmd, key) {
       const v = this.st.video || {}, k = key != null ? key : (v.key || (playingSide(this.st) ? videoKey(this.st.round, playingSide(this.st)) : ""));

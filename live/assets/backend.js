@@ -106,7 +106,7 @@
     async setFact(key, v) { this._op({ k: "facts", v: { key, fact: v.fact || "", scene: v.scene || "", base: v.base || "", at: Date.now() } }); }
     onFactsList(cb) { const f = () => cb(Object.assign({}, this.db.facts || {})); setTimeout(f, 0); return this.on("facts", f); }
     async setScreenMeta(m) { this._op({ k: "screen", v: Object.assign({}, m, { at: Date.now() }) }); }
-    async resetShow() { this._op({ k: "reset", v: initialState(this.cfg) }); }
+    async resetShow(keep) { this._op({ k: "reset", v: Object.assign(initialState(this.cfg), keep || {}) }); }
     /* pre-event check (demo: nothing to check) */
     async preflight() { return { demo: true }; }
     /* admin */
@@ -233,7 +233,11 @@
       return this.show.collection("facts").onSnapshot(qs => { const o = {}; qs.docs.forEach(d => { o[d.id] = norm(d.data()); }); cb(o); }, () => {});
     }
     async setScreenMeta(m) { await this.show.collection("meta").doc("screen").set(Object.assign({}, m, { at: this.FV.serverTimestamp() })); }
-    async resetShow() {
+    /* keep: the evening's settings to carry over (screen, prizes, vote seconds…) */
+    async resetShow(keep) {
+      /* 1) close everything first, so no phone can vote or react while the old data is being deleted */
+      await this.show.set({ phase: "lobby", votingEndsAt: 0, updatedAt: this.FV.serverTimestamp() }, { merge: true });
+      /* 2) delete the old votes, players and reactions */
       for (const col of ["votes", "players", "reactions"]) {
         for (;;) {
           const qs = await this.show.collection(col).limit(400).get();
@@ -241,7 +245,8 @@
           const b = this.fs.batch(); qs.docs.forEach(d => b.delete(d.ref)); await b.commit();
         }
       }
-      await this.show.set(Object.assign(initialState(this.cfg), { updatedAt: this.FV.serverTimestamp() }));
+      /* 3) a fresh show (new sid: phones drop their old votes and register again) */
+      await this.show.set(Object.assign(initialState(this.cfg), keep || {}, { updatedAt: this.FV.serverTimestamp() }));
     }
     /* pre-event check, run from the admin page before doors open:
        1. read the show from the server (not the cache) and time it;
