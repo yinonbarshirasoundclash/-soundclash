@@ -1043,3 +1043,9 @@ html[data-view="booth"], html[data-view="booth"] body { height: 100%; overflow: 
 .s-rxchips .rxchip { font-size: 34px; padding: 6px 18px; gap: 8px; }
 .s-rxchips .rxchip b { font-size: 38px; }
 .rxchips-inline .rxchip { font-size: 13px; padding: 1px 7px; }
+
+/* 26.11.2026 — "reconnecting" note on the phone */
+.aud-conn { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 64px); left: 50%; transform: translateX(-50%); z-index: 60;
+  padding: 6px 14px; border-radius: 999px; background: rgba(242,194,48,.95); color: #111; font-size: 13px; font-weight: 700;
+  box-shadow: 0 6px 20px -6px rgba(0,0,0,.6); pointer-events: none; }
+.aud-conn[hidden] { display: none; }

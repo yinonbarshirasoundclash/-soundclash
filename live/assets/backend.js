@@ -146,7 +146,40 @@
       await new Promise((res) => { const u = this.auth.onAuthStateChanged(() => { u(); res(); }); });
       if (!this.auth.currentUser) await this.auth.signInAnonymously();
       this.activeRef = this.fs.collection("live").doc("active");
+      this._wireResync();
       return this;
+    }
+    /* A phone that was locked, or left for another app, comes back with a frozen connection, and Firestore
+       can take up to a minute to notice. So when the page comes back (or the connection returns, or the
+       state is stuck on the cached copy), force a reconnect right away and fetch the current state. */
+    _wireResync() {
+      if (this._resyncWired) return; this._resyncWired = true;
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") { this._hiddenAt = Date.now(); return; }
+        if (this._hiddenAt && Date.now() - this._hiddenAt > 1500) this.resync("visible");
+      });
+      window.addEventListener("pageshow", (e) => { if (e.persisted) this.resync("pageshow"); });
+      window.addEventListener("online", () => this.resync("online"));
+      setInterval(() => {
+        if (document.visibilityState === "visible" && this._online === false && navigator.onLine !== false
+          && Date.now() - (this._offSince || 0) > 6000) this.resync("stuck");
+      }, 3000);
+    }
+    async resync(why) {
+      const now = Date.now();
+      if (this._resyncing || now - (this._lastResync || 0) < 4000) return;
+      this._resyncing = true; this._lastResync = now;
+      try {
+        await this.fs.disableNetwork();
+        await this.fs.enableNetwork();
+        if (this.show && this._stateCbs && this._stateCbs.size) {
+          const snap = await this.show.get({ source: "server" });
+          const st = snap.exists ? norm(snap.data()) : initialState(this.cfg);
+          this._lastState = st; this._setOnline(true);
+          this._stateCbs.forEach(cb => { try { cb(st); } catch (e) { console.error(e); } });
+        }
+      } catch (e) { /* still offline: the live listener catches up when the network is back */ }
+      finally { this._resyncing = false; }
     }
     async getActiveShow() { const s = await this.activeRef.get(); return s.exists ? s.data().showId : null; }
     async setActiveShow(id) { await this.activeRef.set({ showId: id, at: this.FV.serverTimestamp() }); }
@@ -158,10 +191,11 @@
     }
     uid() { return this.auth.currentUser ? this.auth.currentUser.uid : ""; }
     online() { return this._online !== false; }
-    _setOnline(v) { if (v !== this._online) { this._online = v; this.emit("conn", v); } }
+    _setOnline(v) { if (v !== this._online) { this._online = v; if (!v) this._offSince = Date.now(); this.emit("conn", v); } }
     onState(cb) {
       window.addEventListener("offline", () => this._setOnline(false));
       window.addEventListener("online", () => setTimeout(() => this._setOnline(navigator.onLine), 1500));
+      (this._stateCbs = this._stateCbs || new Set()).add(cb);
       /* when the connection drops, Firestore keeps serving the last known state from cache —
          the screen simply keeps showing the last result instead of an error */
       return this.show.onSnapshot({ includeMetadataChanges: true }, s => {

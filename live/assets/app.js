@@ -233,7 +233,14 @@
       this.fx = h("div", { class: "aud-fx", "aria-hidden": "true" });
       this.canvas = h("canvas", { class: "aud-confetti", "aria-hidden": "true" });
       this.sheetEl = h("div", { class: "aud-sheet", hidden: true });
-      root.append(this.top, this.scoreBar, this.main, this.reactBar, this.fx, this.canvas, this.sheetEl);
+      /* a small "reconnecting" note when the phone is not getting live updates */
+      this.connEl = h("div", { class: "aud-conn", hidden: true, role: "status" }, "מתחבר מחדש…");
+      root.append(this.top, this.scoreBar, this.main, this.reactBar, this.fx, this.canvas, this.sheetEl, this.connEl);
+      if (be.on) be.on("conn", (on) => {
+        clearTimeout(this._connT);
+        if (on) this.connEl.hidden = true;
+        else this._connT = setTimeout(() => { this.connEl.hidden = !!(this.be.online && this.be.online()); }, 2000);
+      });
       this.buildReactBar();
       be.onState(st => {
         /* after the admin resets the show, the server forgets every player; a phone that joined before
