@@ -376,6 +376,12 @@
       const p = this.me.prediction;
       const pick = async (side) => { this.me.prediction = side; this.save(); this.render(); try { await this.be.updatePlayer({ prediction: side }); } catch (e) { /* ignore */ } if (navigator.vibrate) navigator.vibrate(12); };
       return h("section", { class: "aud-lobby" },
+        /* make it obvious: you're in, there's nothing else to do, the stage starts it */
+        h("div", { class: "card aud-wait", role: "status" },
+          h("p", { class: "aud-wait-ok" }, "✓ נכנסת לזירה!"),
+          h("p", { class: "aud-wait-txt" }, h("b", null, "מכאן לא צריך לעשות שום דבר."), " כשהקרב יתחיל על הבמה, המסך הזה יתחלף לבד ותוכלו להצביע."),
+          h("p", { class: "aud-wait-live" }, h("span", { class: "aud-wait-dot", "aria-hidden": "true" }), "ממתינים שהלהקה תתחיל…"),
+          p ? null : h("p", { class: "aud-wait-hint" }, "בינתיים אפשר לנחש מי ינצח הערב 👇")),
         h("p", { class: "eyebrow" }, "הכרטיס שלך"),
         this.ticketStub(),
         h("div", { class: "card predict" + (p ? " is-done" : "") },
@@ -387,7 +393,10 @@
         ),
         h("ol", { class: "how" },
           h("li", null, h("span", null, h("b", null, "שיר מול שיר."), " " + SHOW.howPair)),
-          h("li", null, h("span", null, h("b", null, "מצביעים."), " אחרי השיר השני נפתחת ההצבעה לכמה שניות.")),
+          this.st && this.st.voteDuringSongs !== false
+            ? h("li", null, h("span", null, h("b", null, "מצביעים."), " ההצבעה נפתחת כשהשיר הראשון מתחיל ונסגרת בסוף הספירה לאחור. אפשר לשנות עד הסוף."))
+            : h("li", null, h("span", null, h("b", null, "מצביעים."), " אחרי השיר השני נפתחת ההצבעה לכמה שניות.")),
+          h("li", null, h("span", null, h("b", null, "מילים ועובדות."), " מתחת לכל שיר יש כפתור 💡 עם עובדה על השיר וכפתור 📝 עם המילים, כדי לשיר יחד.")),
           hasScreen(this.st)
             ? h("li", null, h("span", null, h("b", null, "המסך מכריע."), " התוצאה עולה מיד, ובסוף הערב יש אלוף" + (prizesOn(this.st) ? " והגרלה." : ".")))
             : h("li", null, h("span", null, h("b", null, "הקהל מכריע."), " התוצאה מופיעה מיד כאן בטלפון, ובסוף הערב יש אלוף" + (prizesOn(this.st) ? " והגרלה." : "."))),
@@ -440,9 +449,9 @@
         }
       }
     }
-    songLinks(r, side) {
+    songLinks(r, side, now) {
       const s = songOf(r, side);
-      return h("div", { class: "song-links" },
+      return h("div", { class: "song-links" + (now ? " is-now" : "") },
         h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("fact", { r, side }) }, SHOW.factLabel),
         h("button", { class: "tile-fact", type: "button", onclick: () => this.openSheet("lyrics", { r, side }) }, "📝 מילים"));
     }
@@ -460,7 +469,7 @@
           h("span", { class: "vbtn-title" + (sg.hebrew ? " is-he" : "") }, bdi(sg.title)),
           h("span", { class: "vbtn-meta" }, meta(sg)),
           open ? h("span", { class: "vbtn-check", "aria-hidden": "true" }, mine === s ? "✓ ההצבעה שלך" : "הצבעה") : null);
-        return h("div", { class: "vote-item" }, btn, this.songLinks(r, s));
+        return h("div", { class: "vote-item" }, btn, this.songLinks(r, s, state === "playing"));
       }));
     }
     vDuel() {
@@ -469,7 +478,8 @@
       const states = ph === "intro" ? ["next", ""] : ph === "song1" ? ["playing", ""] : ["done", "playing"];
       this.voteNote = h("p", { class: "aud-note vote-note" },
         open ? (mine ? "ההצבעה נקלטה. אפשר לשנות עד סוף הדו־קרב." : "אפשר להצביע כבר עכשיו, ולשנות עד סוף הדו־קרב.")
-          : (ph === "song2" ? "ההצבעה נפתחת מיד כשהשיר נגמר. תהיו מוכנים." : "ההצבעה נפתחת אחרי שני השירים."));
+          : (ph === "song2" ? "ההצבעה נפתחת מיד כשהשיר נגמר. תהיו מוכנים."
+            : st.voteDuringSongs !== false ? "ההצבעה תיפתח ברגע שהשיר הראשון יתחיל. המסך יתעדכן לבד, לא צריך לרענן." : "ההצבעה נפתחת אחרי שני השירים."));
       return h("section", { class: "aud-duel" },
         h("div", { class: "vote-top" },
           h("div", null, open ? h("p", { class: "onair" }, h("i"), "ההצבעה פתוחה") : null, this.duelHead(st))),

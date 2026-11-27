@@ -1074,3 +1074,16 @@ html[data-view="booth"], html[data-view="booth"] body { height: 100%; overflow: 
 .btn-next.is-nudge { animation: nudgePulse 1.1s ease-in-out infinite; }
 @keyframes nudgePulse { 0%,100% { box-shadow: 0 0 0 0 rgba(242,194,48,.0); } 50% { box-shadow: 0 0 0 10px rgba(242,194,48,.38); } }
 @media (prefers-reduced-motion: reduce) { .btn-next.is-nudge { animation: none; outline: 3px solid rgba(242,194,48,.8); } }
+
+/* 27.11.2026 — lobby: "you're in, nothing else to do"; song fact / lyrics buttons easier to spot */
+.aud-wait { text-align: center; border-color: rgba(242,194,48,.55); background: linear-gradient(180deg, rgba(242,194,48,.12), rgba(242,194,48,.03)); margin-bottom: 16px; }
+.aud-wait-ok { margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #f6d36a; }
+.aud-wait-txt { margin: 0 0 10px; font-size: 16px; line-height: 1.5; color: var(--paper); }
+.aud-wait-live { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--paper-2); }
+.aud-wait-dot { width: 10px; height: 10px; border-radius: 50%; background: #f2c230; box-shadow: 0 0 0 0 rgba(242,194,48,.6); animation: waitDot 1.6s ease-out infinite; }
+@keyframes waitDot { 0% { box-shadow: 0 0 0 0 rgba(242,194,48,.6); } 100% { box-shadow: 0 0 0 12px rgba(242,194,48,0); } }
+.aud-wait-hint { margin: 10px 0 0; font-size: 14px; color: var(--paper-2); }
+@media (prefers-reduced-motion: reduce) { .aud-wait-dot { animation: none; } }
+.song-links { gap: 10px; }
+.song-links .tile-fact { font-size: 15px; font-weight: 700; padding: 9px 16px; color: var(--paper); background: rgba(255,255,255,.05); border-color: rgba(242,194,48,.45); }
+.song-links.is-now .tile-fact { background: rgba(242,194,48,.18); border-color: rgba(242,194,48,.9); color: #fbe7a8; }
