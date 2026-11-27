@@ -1295,6 +1295,7 @@
           h("section", { class: "adm-col adm-main", "aria-label": "שליטה" },
             this.$now,
             h("div", { class: "go-row" }, this.$next, this.$back),
+            this.$nudge = h("p", { class: "adm-nudge", hidden: true, role: "status" }),
             this.$part,
             h("p", { class: "kbd-hint" }, "רווח = הצעד הבא · V = נגן/עצור סרטון · N = הסרטון הבא במחרוזת · B = אחורה"),
             this.$ctx, this.$tally, this.$manual, this.$promo, this.$settings, this.$pre),
@@ -1361,6 +1362,7 @@
     onState(prev) {
       if (!this.built) return;
       const st = this.st;
+      if (!prev || prev.phase !== st.phase || prev.round !== st.round) { this._phaseSince = Date.now(); this.renderNudge(); }
       if (!prev || prev.round !== st.round || this.vRound !== st.round) {
         if (this.unVotes) this.unVotes(); this.vRound = st.round; this.votes = [];
         this.unVotes = this.be.onVotes(st.round, v => { this.votes = v; this.renderTally(); });
@@ -1864,7 +1866,20 @@
           h("button", { class: c.running ? "btn-ghost" : "btn-primary", type: "button", onclick: () => { c.running ? c.stop() : c.start(); this.renderCrowd(); } }, c.running ? "עצירת הקהל" : "הפעלת קהל וירטואלי"),
           h("span", null, c.count() + " צופים וירטואליים")));
     }
+    /* a reminder when the next step was probably forgotten: the result has been up for a while
+       (the next round's first song may already be playing), or the round intro is still open */
+    renderNudge() {
+      if (!this.$nudge || !this.st) return;
+      const st = this.st, mins = (Date.now() - (this._phaseSince || Date.now())) / 60000;
+      const more = st.round < SHOW.setlist.length - 1;
+      let msg = "";
+      if (st.phase === "reveal" && more && mins >= 2.5) msg = "⏰ התוצאה על המסך כבר " + Math.floor(mins) + " דקות. השיר הבא כבר התחיל? לחצו על הכפתור כדי לפתוח את הדו־קרב הבא.";
+      else if (st.phase === "intro" && mins >= 1) msg = "⏰ ההקדמה פתוחה כבר " + (mins < 2 ? "דקה" : Math.floor(mins) + " דקות") + ". אם השיר הראשון התחיל, לחצו על הכפתור כדי להתחיל אותו (כך גם נפתחת ההצבעה).";
+      this.$nudge.hidden = !msg; if (msg) this.$nudge.textContent = msg;
+      this.$next.classList.toggle("is-nudge", !!msg);
+    }
     tickClock() {
+      if (Date.now() - (this._nudgeT || 0) > 5000) { this._nudgeT = Date.now(); this.renderNudge(); }
       const st = this.st; if (!st || st.phase !== "voting") return;
       const left = st.votingEndsAt - Date.now(), total = (st.voteSeconds || 30) * 1000;
       if (this.$clock) this.$clock.set(Math.ceil(Math.max(0, left) / 1000), Math.max(0, left) / total);

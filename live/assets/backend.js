@@ -164,6 +164,22 @@
         if (document.visibilityState === "visible" && this._online === false && navigator.onLine !== false
           && Date.now() - (this._offSince || 0) > 6000) this.resync("stuck");
       }, 3000);
+      /* a connection can also freeze quietly while still looking fine. So while the page is open, ask the
+         server every 30 seconds for the current state (one small read); if it moved on, catch up at once. */
+      setInterval(() => this.checkFresh(), 30000);
+    }
+    async checkFresh() {
+      if (document.visibilityState !== "visible" || this._resyncing || !this.show || !this._stateCbs || !this._stateCbs.size) return;
+      try {
+        const snap = await this.show.get({ source: "server" });
+        if (!snap.exists) return;
+        const st = norm(snap.data()), mine = this._lastState || {};
+        if ((st.updatedAt || 0) > (mine.updatedAt || 0) + 1500) {
+          this._lastState = st; this._setOnline(true);
+          this._stateCbs.forEach(cb => { try { cb(st); } catch (e) { console.error(e); } });
+          this._lastResync = 0; this.resync("behind");   /* and repair the live connection */
+        }
+      } catch (e) { /* offline: the other checks handle it */ }
     }
     async resync(why) {
       const now = Date.now();
