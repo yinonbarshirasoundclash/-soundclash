@@ -1049,3 +1049,21 @@ html[data-view="booth"], html[data-view="booth"] body { height: 100%; overflow: 
   padding: 6px 14px; border-radius: 999px; background: rgba(242,194,48,.95); color: #111; font-size: 13px; font-weight: 700;
   box-shadow: 0 6px 20px -6px rgba(0,0,0,.6); pointer-events: none; }
 .aud-conn[hidden] { display: none; }
+
+/* 27.11.2026 — the score, big and always visible in the admin; winner banner at the reveal */
+.adm-score { display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px; border-radius: 14px; background: var(--ink-3, #1b1916); border: 1px solid var(--line-2, #333); direction: ltr; }
+.adm-score-side { display: inline-flex; align-items: baseline; gap: 8px; font-family: var(--f-latin); opacity: .8; }
+.adm-score-side b { font-size: 46px; line-height: 1; font-weight: 400; }
+.adm-score-side small { font-size: 18px; letter-spacing: .08em; }
+.adm-score-tv { color: var(--tv-hi); } .adm-score-film { color: var(--film-hi); }
+.adm-score-side.is-lead { opacity: 1; text-shadow: 0 0 18px currentColor; }
+.adm-score-sep { font-size: 34px; color: var(--paper-3, #999); font-family: var(--f-latin); }
+.adm-score-lead { direction: rtl; font-size: 15px; font-weight: 700; color: var(--paper-2, #ddd); margin-inline-start: 8px; }
+.ctx-winner { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; padding: 18px 16px; margin-bottom: 12px; border-radius: 18px; border: 2px solid var(--line-2, #333); background: var(--ink-3, #1b1916); }
+.ctx-winner-tv { border-color: var(--tv); background: linear-gradient(180deg, var(--tv-deep), transparent); }
+.ctx-winner-film { border-color: var(--film); background: linear-gradient(180deg, var(--film-deep), transparent); }
+.ctx-winner-k { font-size: 14px; letter-spacing: .06em; color: var(--paper-2, #ddd); }
+.ctx-winner-team { font-size: 44px; line-height: 1.1; font-family: var(--f-display); }
+.ctx-winner-tv .ctx-winner-team { color: var(--tv-hi); } .ctx-winner-film .ctx-winner-team { color: var(--film-hi); }
+.ctx-winner-song { font-family: var(--f-latin); font-size: 22px; letter-spacing: .03em; }
+.ctx-winner-pct { font-size: 15px; color: var(--paper-2, #ddd); }

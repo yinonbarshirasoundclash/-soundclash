@@ -1263,6 +1263,8 @@
       if (this.built) return; this.built = true;
       this.$mode = h("span", { class: "pill " + (live ? "pill-live" : "pill-demo") }, live ? "חי · Firebase" : "מצב הדגמה");
       this.$players = h("b", null, "0");
+      /* the score of the evening, big and always in view at the top of the admin */
+      this.$score = h("div", { class: "adm-score", "aria-live": "polite" });
       this.$conn = h("span", { class: "pill pill-ok" }, "מחובר");
       const setConn = (on) => { this.$conn.className = "pill " + (on ? "pill-ok" : "pill-off"); this.$conn.textContent = on ? "מחובר" : "אין חיבור · הפקודות יישלחו כשיחזור"; };
       setConn(this.be.online()); this.be.on("conn", setConn);
@@ -1284,6 +1286,7 @@
       setKids(this.root, 
         h("header", { class: "adm-top" },
           h("div", { class: "brand" }, h("span", { class: "brand-word" }, "SOUND", h("b", null, "CLASH")), h("span", { class: "brand-sub" }, "שולחן הבמאי")),
+          this.$score,
           this.showPicker(), this.$mode, this.$conn,
           h("span", { class: "adm-count" }, this.$players, " בזירה"),
           live ? h("button", { class: "btn-link", type: "button", onclick: () => this.be.signOut() }, "יציאה") : null),
@@ -1367,8 +1370,17 @@
       this.$promo.classList.toggle("is-on", !!prOn);
       clearTimeout(this._prT); if (prOn) this._prT = setTimeout(() => this.onState(this.st), pr.at + 25100 - Date.now());
       if (!this._lyrDone) { this._lyrDone = true; this.renderLyrics(); this.renderFacts(); }
-      this.renderRun(); this.renderNow(); this.renderCtx(); this.renderTally(); this.renderManual(); this.renderVideos(); this.renderSettings(); this.renderCrowd();
+      this.renderScore(); this.renderRun(); this.renderNow(); this.renderCtx(); this.renderTally(); this.renderManual(); this.renderVideos(); this.renderSettings(); this.renderCrowd();
       if (this.crowd) this.crowd.onState(st);
+    }
+    renderScore() {
+      if (!this.$score || !this.st) return;
+      const s = scoreboard(this.st), lead = s.tv === s.film ? null : (s.tv > s.film ? "tv" : "film");
+      setKids(this.$score,
+        h("span", { class: "adm-score-side adm-score-tv" + (lead === "tv" ? " is-lead" : "") }, h("small", null, SIDE.tv.latin), h("b", null, s.tv)),
+        h("span", { class: "adm-score-sep" }, ":"),
+        h("span", { class: "adm-score-side adm-score-film" + (lead === "film" ? " is-lead" : "") }, h("b", null, s.film), h("small", null, SIDE.film.latin)),
+        h("span", { class: "adm-score-lead" }, !s.played ? "עוד לא הוכרע סיבוב" : lead ? SIDE[lead].team + " מוביל" : "שוויון"));
     }
     updateCounts() { if (this.$players) this.$players.textContent = this.players.length; this.renderCrowd(); }
     /* -- state machine -- */
@@ -1587,14 +1599,35 @@
     }
     renderNow() {
       const st = this.st, t = phaseTitle(st), a = this.nextAction();
+      const banner = this.winnerBanner();
       setKids(this.$now, ...[
         h("p", { class: "now-eyebrow" }, h("span", { class: "now-dot ph-" + st.phase }), t.eyebrow),
-        h("h1", { class: "now-title" }, bdi(t.title)),
-        t.sub ? h("p", { class: "now-sub" }, bdi(t.sub)) : null,
+        banner || h("h1", { class: "now-title" }, bdi(t.title)),
+        !banner && t.sub ? h("p", { class: "now-sub" }, bdi(t.sub)) : null,
         this.stepStrip()].filter(Boolean));
       setKids(this.$next, a.label, a.song ? bdi(a.song) : ""); this.$next.disabled = !a.run;
       this.$back.disabled = st.phase === "lobby";
       this.renderPart();
+    }
+    /* who won: the round at the reveal, the evening at the end — big, the first thing on the screen */
+    winnerBanner() {
+      const st = this.st, r = st.round, res = st.results || {};
+      if (st.phase === "reveal" && res[r]) {
+        const x = res[r], w = x.winner, tot = x.total || 0;
+        const pct = sd => tot ? Math.round((x[sd] || 0) * 100 / tot) : 0;
+        return h("div", { class: "ctx-winner ctx-winner-" + w },
+          h("span", { class: "ctx-winner-k" }, w === "tie" ? "תיקו בסיבוב" : "ניצח בסיבוב"),
+          w !== "tie" ? h("b", { class: "ctx-winner-team" }, SIDE[w].team) : null,
+          w !== "tie" ? h("span", { class: "ctx-winner-song" }, bdi(songOf(r, w).title)) : null,
+          h("span", { class: "ctx-winner-pct" }, h("bdi", { dir: "ltr" }, SIDE.tv.latin + " " + pct("tv") + "% · " + SIDE.film.latin + " " + pct("film") + "%"), tot ? " · " + tot + " קולות" : " · אין קולות"));
+      }
+      if (["final", "raffle"].includes(st.phase)) {
+        const c = champion(st);
+        return h("div", { class: "ctx-winner ctx-winner-" + c },
+          h("span", { class: "ctx-winner-k" }, c === "tie" ? "סוף הערב" : "האלוף של הערב"),
+          h("b", { class: "ctx-winner-team" }, c === "tie" ? "תיקו" : SIDE[c].team));
+      }
+      return null;
     }
     stepStrip() {
       const st = this.st, r = st.round;
