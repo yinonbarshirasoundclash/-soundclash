@@ -1284,7 +1284,7 @@ ISRAEL_DUELS_SECTION = """<section id="duels">
         <div class="theme">קרב הלהקות</div>
         <div class="side tv"><span class="who latin" dir="ltr">70–80</span><b>רכבת לילה לקהיר</b><small>משינה</small></div>
         <div class="mini-vs latin">VS</div>
-        <div class="side film"><span class="who latin">90s</span><b>ג׳סיקה</b><small>אתניקס</small></div>
+        <div class="side film"><span class="who latin">90s</span><b>תותים</b><small>אתניקס</small></div>
       </div>
       <div class="duel-row reveal">
         <div class="theme">מה אומרים עליה?</div>

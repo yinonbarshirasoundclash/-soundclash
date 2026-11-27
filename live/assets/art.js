@@ -734,6 +734,36 @@
       for (let i = 0; i < 6; i++) { c.fillStyle = "rgba(255,214,140," + (.06 + r() * .1) + ")"; c.beginPath(); c.ellipse(lx + (r() - .5) * 400, H * (.91 + r() * .06), 60 + r() * 80, 6, 0, 0, 7); c.fill(); }
     },
     /* 07 · על קו הזינוק — a running track at dusk: lanes, a starting line and two pairs of sneakers ready to go */
+    /* תותים — summer picnic: checkered blanket, a basket of strawberries, warm late sun */
+    il_tutim(c, r) {
+      fill(c, lin(c, 0, 0, 0, H, [[0, "#ffb36b"], [.38, "#ff7a6b"], [.5, "#8a3a55"], [1, "#2a1420"]]));
+      glow(c, W * .78, H * .26, 220, "rgba(255,230,160,.7)"); c.fillStyle = "#fff1c2"; c.beginPath(); c.arc(W * .78, H * .26, 46, 0, 7); c.fill();
+      c.fillStyle = "#3a6b3a"; c.beginPath(); c.moveTo(0, H * .52);
+      for (let x = 0; x <= W; x += 40) c.lineTo(x, H * .5 + Math.sin(x / 90) * 14); c.lineTo(W, H); c.lineTo(0, H); c.fill();
+      const by = H * .62, sq = 46;
+      for (let row = 0; row < 8; row++) for (let col = -2; col < W / sq + 2; col++) {
+        const skew = (row + 1) * 9, x = col * sq + row * 6 - skew, y = by + row * 34;
+        c.fillStyle = (row + col) % 2 ? "rgba(214,46,64,.92)" : "rgba(250,240,232,.92)";
+        poly(c, [[x, y], [x + sq + 3, y], [x + sq + 9, y + 34], [x + 6, y + 34]], c.fillStyle);
+      }
+      const bx = W * .5, bY = H * .7;
+      c.fillStyle = "#8a5a2b"; c.beginPath(); c.ellipse(bx, bY + 40, 190, 46, 0, 0, 7); c.fill();
+      c.fillStyle = "#b07a3c"; poly(c, [[bx - 190, bY + 40], [bx + 190, bY + 40], [bx + 150, bY + 150], [bx - 150, bY + 150]], "#b07a3c");
+      c.strokeStyle = "rgba(90,50,20,.6)"; c.lineWidth = 3;
+      for (let k = 0; k < 4; k++) { c.beginPath(); c.moveTo(bx - 180 + k * 8, bY + 66 + k * 22); c.lineTo(bx + 180 - k * 8, bY + 66 + k * 22); c.stroke(); }
+      c.strokeStyle = "#6e4420"; c.lineWidth = 12; c.beginPath(); c.ellipse(bx, bY + 30, 150, 150, 0, Math.PI * 1.08, Math.PI * 1.92); c.stroke();
+      const berry = (x, y, s) => {
+        c.fillStyle = "#e0213a"; c.beginPath(); c.moveTo(x, y + s * 1.25);
+        c.bezierCurveTo(x - s * 1.25, y + s * .3, x - s * .95, y - s * .75, x, y - s * .55);
+        c.bezierCurveTo(x + s * .95, y - s * .75, x + s * 1.25, y + s * .3, x, y + s * 1.25); c.fill();
+        c.fillStyle = "rgba(255,255,255,.18)"; c.beginPath(); c.ellipse(x - s * .35, y - s * .1, s * .22, s * .4, -.4, 0, 7); c.fill();
+        c.fillStyle = "#ffe08a"; for (let i = 0; i < 7; i++) { c.fillRect(x - s * .6 + r() * s * 1.2, y - s * .2 + r() * s * 1.1, 2, 3); }
+        c.fillStyle = "#3fa34d"; for (let a = 0; a < 5; a++) { const t = -Math.PI / 2 + (a - 2) * .5; c.beginPath(); c.ellipse(x + Math.cos(t) * s * .35, y - s * .6 + Math.sin(t) * s * .12, s * .32, s * .1, t, 0, 7); c.fill(); }
+      };
+      for (let i = 0; i < 16; i++) berry(bx - 140 + r() * 280, bY + 18 - r() * 40 + Math.abs(i % 5 - 2) * 4, 20 + r() * 8);
+      berry(bx - 250, bY + 150, 26); berry(bx + 240, bY + 170, 24); berry(bx + 300, bY + 120, 18);
+      for (let i = 0; i < 26; i++) { c.fillStyle = "rgba(255,236,190," + r() * .5 + ")"; c.beginPath(); c.arc(r() * W, r() * H * .45, 1.5 + r() * 2, 0, 7); c.fill(); }
+    },
     il_race(c, r) {
       fill(c, lin(c, 0, 0, 0, H, [[0, "#1d2a5a"], [.45, "#e0784a"], [.62, "#f4b860"], [1, "#3a1f1a"]]));
       glow(c, W * .5, H * .58, 260, "rgba(255,200,120,.6)"); c.fillStyle = "#ffd48a"; c.beginPath(); c.arc(W * .5, H * .6, 70, Math.PI, 0); c.fill();
