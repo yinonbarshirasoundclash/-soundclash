@@ -908,3 +908,9 @@ body.theme-screen .duel-row .side.film .who{color:#e8a33d;}
 #second-event .pkg{text-decoration:none; color:inherit; transition:transform .3s ease, border-color .3s ease;}
 #second-event .pkg:hover{transform:translateY(-4px); border-color:var(--accent);}
 #second-event .go{margin-top:auto; color:var(--accent); font-weight:600; font-size:14px;}
+
+/* 27.11.2026 — link to the live voting app in the phone menu (hidden on desktop), quiet band login in the footer */
+.nav-links .nav-vote-mobile{display:none;}
+@media (max-width:940px){ .nav-links .nav-vote-mobile{display:block; margin-top:14px; text-align:center; border:1px solid var(--accent); color:var(--accent); font-weight:700; border-radius:999px;} }
+.footer-bottom .footer-crew{color:inherit; text-decoration:none; opacity:.8;}
+.footer-bottom .footer-crew:hover{opacity:1; text-decoration:underline;}

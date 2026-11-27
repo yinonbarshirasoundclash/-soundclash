@@ -236,6 +236,7 @@ def nav(active, depth_prefix=""):
       {item("gallery.html", "גלריה", "gallery")}
       {item("about.html", "אודות", "about")}
       {item("contact.html", "יצירת קשר", "contact")}
+      <a class="nav-vote-mobile" href="{p}live/">🗳 להצבעה במופע</a>
       <a class="nav-phone-mobile" href="tel:{PHONE_TEL}">חייגו {PHONE_MAIN}</a>
     </div>
     <a class="nav-phone" href="tel:{PHONE_TEL}">{ICON["phone"]} {PHONE_MAIN}</a>
@@ -285,7 +286,7 @@ def footer(p=""):
       </div>
       <div>
         <h4>המופעים</h4>
-        <ul>{fmt_links}</ul>
+        <ul>{fmt_links}<li><a href="{p}live/">🗳 להצבעה במופע</a></li></ul>
       </div>
       <div>
         <h4>יצירת קשר</h4>
@@ -299,7 +300,7 @@ def footer(p=""):
         </ul>
       </div>
     </div>
-    <div class="footer-bottom">© {datetime.date.today().year} <span class="latin">SOUNDCLASH</span> · כל הזכויות שמורות</div>
+    <div class="footer-bottom">© {datetime.date.today().year} <span class="latin">SOUNDCLASH</span> · כל הזכויות שמורות · <a class="footer-crew" href="{p}live/admin/">כניסת להקה</a></div>
   </div>
 </footer>
 <a class="wa-float" href="{wa_link()}" target="_blank" rel="noopener" aria-label="שליחת הודעה בוואטסאפ">{ICON["wa"]}</a>"""
