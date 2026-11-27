@@ -836,8 +836,8 @@ def proof_pair(text, head="ככה נראה ערב של Soundclash", eyebrow="מ�
     </div>"""
     return f'<section class="crowd-sec"><div class="wrap">{card}</div></section>' if wrap else card
 
-IL_VOTE_MP4 = "assets/video/israeli-vote.mp4?v=3"   # 47 שניות: האפליקציה של המסיבה הישראלית בטלפון, הבמה והקהל (24.11.2026)
-IL_VOTE_POSTER = "assets/video/israeli-vote.jpg?v=1"
+IL_VOTE_MP4 = "assets/video/israeli-vote.mp4?v=4"   # 47 שניות: האפליקציה של המסיבה הישראלית בטלפון, הבמה והקהל (24.11.2026)
+IL_VOTE_POSTER = "assets/video/israeli-vote.jpg?v=2"
 def il_proof_pair(text, head="ככה נראה ערב של Soundclash", eyebrow="מהקהל", wrap=False):
     """כמו proof_pair, עם סרטון האפליקציה של המסיבה הישראלית (בלי מסך, הכול בטלפון)."""
     clips = f"""<div class="pair-clips">
@@ -863,7 +863,7 @@ IL_PHONES = [("il-phone-fact", "💡 על כל שיר", "מי כתב, ואיך �
              ("il-phone-result", "🏆 הכרעה", "התוצאה והאימוג׳ים של כל שיר")]
 def il_phones_section():
     """במקום מסך: מה הקהל רואה בטלפון. צילומי מסך אמיתיים מהאפליקציה (24.11.2026)."""
-    items = "".join(f'<figure class="svid reveal"><img src="assets/img/{f}.webp?v=1" alt="{h}: {t}" loading="lazy" width="390" height="844" '
+    items = "".join(f'<figure class="svid reveal"><img src="assets/img/{f}.webp?v=2" alt="{h}: {t}" loading="lazy" width="390" height="844" '
                     f'style="width:100%;height:auto;border-radius:22px;border:1px solid rgba(255,255,255,.12)">'
                     f'<figcaption><b>{h}</b> {t}</figcaption></figure>' for f, h, t in IL_PHONES)
     return f"""<section id="on-phone">
@@ -1082,7 +1082,7 @@ N_PHONES = [("n-phone-fact", "💡 על כל שיר", "הסיפור שמאחור
             ("n-phone-song", "🔥 בזמן השיר", "אימוג׳ים, והמילים כדי לשיר יחד"),
             ("n-phone-result", "🏆 הכרעה", "התוצאה עולה מיד")]
 def phones_section(phones, sub):
-    items = "".join(f'<figure class="svid reveal"><img src="assets/img/{f}.webp?v=1" alt="{h}: {t}" loading="lazy" width="390" height="844" '
+    items = "".join(f'<figure class="svid reveal"><img src="assets/img/{f}.webp?v=2" alt="{h}: {t}" loading="lazy" width="390" height="844" '
                     f'style="width:100%;height:auto;border-radius:22px;border:1px solid rgba(255,255,255,.12)">'
                     f'<figcaption><b>{h}</b> {t}</figcaption></figure>' for f, h, t in phones)
     return f"""<section id="on-phone">
