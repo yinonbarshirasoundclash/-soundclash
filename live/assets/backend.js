@@ -122,7 +122,7 @@
     return new Promise((res, rej) => {
       if (document.querySelector('script[src="' + src + '"]')) return res();
       const s = document.createElement("script"); s.src = src; s.async = false;
-      s.onload = () => res(); s.onerror = () => rej(new Error("load " + src)); document.head.appendChild(s);
+      s.onload = () => res(); s.onerror = () => { s.remove(); rej(new Error("load " + src)); }; document.head.appendChild(s);
     });
   }
   const toMs = (v) => (v && typeof v.toMillis === "function") ? v.toMillis() : (typeof v === "number" ? v : (v ? +new Date(v) : 0));
@@ -217,6 +217,7 @@
       return this.show.onSnapshot({ includeMetadataChanges: true }, s => {
         this._setOnline(!s.metadata.fromCache && navigator.onLine !== false);
         this._exists = s.exists;
+        if (!!s.metadata.hasPendingWrites !== !!this._pending) { this._pending = !!s.metadata.hasPendingWrites; this.emit("pending", this._pending); }
         if (!s.metadata.hasPendingWrites || !this._lastState) { this._lastState = s.exists ? norm(s.data()) : initialState(this.cfg); }
         cb(s.exists ? norm(s.data()) : initialState(this.cfg));
       }, e => this.emit("error", e));
