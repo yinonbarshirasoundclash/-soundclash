@@ -232,7 +232,12 @@
       return this.show.collection("votes").where("r", "==", r).onSnapshot(qs => cb(qs.docs.map(d => norm(d.data()))), e => this.emit("error", e));
     }
     async getVotes(r) {
-      const qs = await this.show.collection("votes").where("r", "==", r).get({ source: "server" });
+      /* A get() on the very query this page is already listening to (onVotes) is answered from that listener,
+         not from the server, and after a rush of votes the listener can be many seconds behind: the result
+         then misses votes the server already accepted. The limit makes this a different query, so it really
+         goes to the server. If it takes more than 5 seconds, the caller falls back to the votes that arrived. */
+      const q = this.show.collection("votes").where("r", "==", r).limit(10000).get({ source: "server" });
+      const qs = await Promise.race([q, new Promise((res, rej) => setTimeout(() => rej(new Error("votes-timeout")), 5000))]);
       return qs.docs.map(d => norm(d.data()));
     }
     async vote(r, side, meta) {
