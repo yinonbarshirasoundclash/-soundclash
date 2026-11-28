@@ -134,6 +134,10 @@
   /* the evening's setup: is there a stage screen, are there prizes for the audience.
      The show file sets the default (screen: false / prizes: false); the admin can change it in the settings. */
   const hasScreen = (st) => st && typeof st.hasScreen === "boolean" ? st.hasScreen : SHOW.screen !== false;
+  /* names typed by the audience show next to the awards and the raffle winner; a company event can turn that off */
+  const namesOn = (st) => st && typeof st.showNames === "boolean" ? st.showNames : SHOW.names !== false;
+  /* six digits: with four, about 100 of 1,000 phones shared a number with another phone */
+  const newTicket = () => String(100000 + Math.floor(Math.random() * 900000));
   const prizesOn = (st) => st && typeof st.prizes === "boolean" ? st.prizes : SHOW.prizes !== false;
   /* the song on stage right now (emoji reactions are counted for it), or null */
   function stageSongKey(st) {
@@ -345,7 +349,7 @@
       const input = h("input", { id: "aud-name", class: "field", type: "text", maxlength: "18", autocomplete: "given-name", placeholder: "למשל: דנה מהשורה השלישית", enterkeyhint: "go" });
       const go = async (e) => {
         e.preventDefault();
-        const ticket = String(1000 + Math.floor(Math.random() * 9000));
+        const ticket = newTicket();
         this.me = { ticket, name: input.value.trim().slice(0, 18), prediction: null, votes: {}, sid: (this.st && this.st.sid) || undefined };
         this.myVotes = {}; if (this.be.forgetVotes) this.be.forgetVotes();
         this.save(); this.render();
@@ -528,7 +532,7 @@
       return h("div", { class: "award" + (me ? " is-me" : "") },
         h("span", { class: "award-ico", "aria-hidden": "true" }, kind === "fast" ? "⚡" : "👑"),
         h("span", { class: "award-k" }, kind === "fast" ? "המצביע המהיר" : "כתר המזל"),
-        h("span", { class: "award-v" }, me ? "זה את/ה! " : "", "#" + a.ticket, a.name ? " · " + a.name : ""),
+        h("span", { class: "award-v" }, me ? "זה את/ה! " : "", "#" + a.ticket, a.name && (me || namesOn(this.st)) ? " · " + a.name : ""),
         me && prizesOn(this.st) ? h("span", { class: "award-cta" }, "גשו לעמדת הלהקה בסוף המופע") : null);
     }
     vReveal() {
@@ -618,7 +622,7 @@
         h("p", { class: "eyebrow" }, "ההגרלה הגדולה"),
         h("div", { class: "stub stub-big" + (me ? " is-win" : "") },
           h("div", { class: "stub-l" }, h("span", { class: "stub-k" }, "WINNER"), h("span", { class: "stub-n" }, "#" + rf.ticket)),
-          h("div", { class: "stub-r" }, h("span", { class: "stub-v" }, rf.name || "אורח/ת"))),
+          h("div", { class: "stub-r" }, h("span", { class: "stub-v" }, ((me || namesOn(st)) && rf.name) || "אורח/ת"))),
         h("h2", { class: "aud-h1" }, me ? "זכית!" : "לא הפעם"),
         h("p", { class: "aud-lead" }, me ? "תראו את המסך הזה ללהקה ותקבלו את הפרס." : "הכרטיס שלך #" + this.me.ticket + ". תודה ששיחקת איתנו."),
         this.contactBlock());
@@ -1142,7 +1146,7 @@
           rxChips(st, videoKey(r, side), "s-rxchips"));
       };
       const aw = (k, a) => a ? h("div", { class: "s-award" }, h("span", { class: "s-award-ico" }, k === "fast" ? "⚡" : "👑"),
-        h("div", null, h("small", null, k === "fast" ? "המצביע המהיר" : "כתר המזל"), h("b", null, "#" + a.ticket), a.name ? h("span", null, a.name) : null)) : null;
+        h("div", null, h("small", null, k === "fast" ? "המצביע המהיר" : "כתר המזל"), h("b", null, "#" + a.ticket), a.name && namesOn(st) ? h("span", null, a.name) : null)) : null;
       const el = h("div", { class: "s-reveal s-reveal-" + w },
         this.topBar("דו־קרב " + pad(r + 1) + " · " + SET[r].theme),
         h("div", { class: "s-reveal-grid" },
@@ -1193,7 +1197,7 @@
       const slot = this.$slot, nm = this.$rname; nm.textContent = ""; slot.classList.remove("is-win");
       const step = (t) => {
         const k = (t - t0) / dur;
-        if (k >= 1) { slot.textContent = "#" + rf.ticket; slot.classList.add("is-win"); nm.textContent = rf.name || ""; confetti(this.canvas, SIDE_COLORS.tie, this.mini ? 0.5 : 2); return; }
+        if (k >= 1) { slot.textContent = "#" + rf.ticket; slot.classList.add("is-win"); nm.textContent = namesOn(this.st) ? (rf.name || "") : ""; confetti(this.canvas, SIDE_COLORS.tie, this.mini ? 0.5 : 2); return; }
         const gap = 40 + k * k * 380;
         if (t - last > gap) { last = t; slot.textContent = "#" + tickets[Math.floor(Math.random() * tickets.length)]; }
         requestAnimationFrame(step);
@@ -1278,6 +1282,12 @@
       this.$conn = h("span", { class: "pill pill-ok" }, "מחובר");
       const setConn = (on) => { this.$conn.className = "pill " + (on ? "pill-ok" : "pill-off"); this.$conn.textContent = on ? "מחובר" : "אין חיבור · הפקודות יישלחו כשיחזור"; };
       setConn(this.be.online()); this.be.on("conn", setConn);
+      /* a stage change that is still on its way: after 2 seconds say so, so the band doesn't play on while the room is stuck */
+      this.be.on("pending", (p) => {
+        clearTimeout(this._pendT);
+        if (!p) { setConn(this.be.online()); return; }
+        this._pendT = setTimeout(() => { this.$conn.className = "pill pill-off"; this.$conn.textContent = "ממתין לשרת · הפקודה עוד לא הגיעה לקהל"; }, 2000);
+      });
       this.$promo = h("button", { class: "btn-ghost btn-promo", type: "button", onclick: () => this.promo() }, "📣 \"עקבו אחרינו\" על המסך ובטלפונים");
       this.$run = h("ol", { class: "run" });
       this.$now = h("div", { class: "now" });
@@ -1731,6 +1741,7 @@
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-live", type: "checkbox", checked: st.liveBars !== false, onchange: (e) => this.set({ liveBars: e.target.checked }) }), "להציג אחוזים חיים על המסך בזמן ההצבעה")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-hasscreen", type: "checkbox", checked: hasScreen(st), onchange: (e) => this.set({ hasScreen: e.target.checked }) }), "יש מסך הערב (אימוג'ים עפים על המסך; בלי מסך הם נספרים לכל שיר)")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-prizes", type: "checkbox", checked: prizesOn(st), onchange: (e) => this.set({ prizes: e.target.checked }) }), "יש פרסים לקהל הערב (הגרלה, \"גשו לעמדת הלהקה\")")),
+        h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-names", type: "checkbox", checked: namesOn(st), onchange: (e) => this.set({ showNames: e.target.checked }) }), "להציג על המסך את השמות שהקהל הקליד (באירוע חברה כדאי לכבות)")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-qr", type: "checkbox", checked: !!(st.screen && st.screen.qr), onchange: (e) => this.set({ screen: Object.assign({}, st.screen, { qr: e.target.checked }) }) }), "QR קבוע בפינת המסך (למאחרים)")),
         h("div", { class: "set-row" }, h("label", { class: "chk" }, h("input", { id: "adm-manual", type: "checkbox", checked: this.manualOn(), onchange: (e) => this.setManualOn(e.target.checked) }), "גיבוי: תוצאה ידנית (רק כשההצבעה בטלפונים לא עובדת). מופיע מתחת לספירה החיה, מהשיר השני ועד החשיפה")),
         this.dangerZone());
@@ -1751,7 +1762,7 @@
     /* the evening's setup survives a reset: screen, prizes, vote seconds, voting during songs, live bars, QR / overlay */
     keepSettings() {
       const st = this.st || {}, keep = {};
-      ["hasScreen", "prizes", "voteSeconds", "voteDuringSongs", "liveBars"].forEach(k => { if (st[k] !== undefined && st[k] !== null) keep[k] = st[k]; });
+      ["hasScreen", "prizes", "showNames", "voteSeconds", "voteDuringSongs", "liveBars"].forEach(k => { if (st[k] !== undefined && st[k] !== null) keep[k] = st[k]; });
       if (st.screen) keep.screen = Object.assign({}, st.screen);
       return keep;
     }
@@ -1909,7 +1920,7 @@
       this.running = true; n = n || 180;
       const add = () => {
         if (!this.running || this.bots.length >= n) return;
-        const b = { uid: "bot_" + rid(6), ticket: String(1000 + Math.floor(Math.random() * 9000)), name: NAMES[Math.floor(Math.random() * NAMES.length)], taste: Math.random() * 0.5 - 0.25 };
+        const b = { uid: "bot_" + rid(6), ticket: newTicket(), name: NAMES[Math.floor(Math.random() * NAMES.length)], taste: Math.random() * 0.5 - 0.25 };
         this.bots.push(b);
         this.be.join({ ticket: b.ticket, name: b.name, prediction: Math.random() < 0.7 ? (Math.random() < 0.42 + b.taste ? "tv" : "film") : null }, b.uid);
         this.timers.push(setTimeout(add, 30 + Math.random() * 120));
@@ -2082,9 +2093,20 @@
     document.documentElement.dataset.view = view;
     /* the demo page (all three screens together) always runs locally, never against the live show */
     const be = window.SCBackend.create(CFG, view === "demo" || view === "booth" || new URLSearchParams(location.search).has("demo"));
-    try { await be.init(); }
-    catch (e) {
-      setKids(root, h("div", { class: "fatal" }, h("h1", null, "אין חיבור לשרת ההצבעות"), h("p", null, "בדקו את החיבור לאינטרנט ורעננו את הדף."), h("p", { class: "muted" }, String(e.message || e))));
+    /* a crowded network at the doors: try again by itself (after 2, 5 and 10 seconds) before showing an error */
+    let bootErr = null;
+    for (const wait of [0, 2000, 5000, 10000]) {
+      if (wait) { setKids(root, h("div", { class: "fatal" }, h("div", { class: "spinner", "aria-hidden": "true" }), h("p", null, "מתחברים לזירה…"))); await new Promise(r => setTimeout(r, wait)); }
+      try { await be.init(); bootErr = null; break; }
+      catch (e) { bootErr = e; if (String(e.code || "").includes("too-many-requests")) break; }
+    }
+    if (bootErr) {
+      const quota = String(bootErr.code || "").includes("too-many-requests");
+      setKids(root, h("div", { class: "fatal" },
+        h("h1", null, quota ? "יותר מדי כניסות מהרשת הזו" : "אין חיבור לשרת ההצבעות"),
+        h("p", null, quota ? "כבו את ה-Wi-Fi בטלפון ולחצו על הכפתור." : "בדקו את החיבור לאינטרנט ולחצו על הכפתור."),
+        h("p", null, h("button", { class: "btn-primary", type: "button", onclick: () => location.reload() }, "לנסות שוב")),
+        h("p", { class: "muted" }, String(bootErr.message || bootErr))));
       return;
     }
     let active = null;
